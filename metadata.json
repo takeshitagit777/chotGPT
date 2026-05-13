@@ -1,0 +1,6 @@
+{
+  "name": "chotGPT",
+  "description": "返信が、あとちょっと足りないAI。ちょっと惜しい。でも、ちょっと助かる。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
