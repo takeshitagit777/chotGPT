@@ -32,11 +32,11 @@ const checkDailyLimit = (ip: string) => {
     dailyUsage.set(ip, { date: today, count: 1 });
     return {
       ok: true,
-      remaining: 4,
+      remaining: 1,
     };
   }
 
-  if (current.count >= 5) {
+  if (current.count >= 2) {
     return {
       ok: false,
       remaining: 0,
@@ -48,7 +48,7 @@ const checkDailyLimit = (ip: string) => {
 
   return {
     ok: true,
-    remaining: Math.max(0, 5 - current.count),
+    remaining: Math.max(0, 2 - current.count),
   };
 };
 
@@ -79,7 +79,7 @@ export default async function handler(req: any, res: any) {
 
     if (!limit.ok) {
       return res.status(429).json({
-        error: "本日の無料ちょっと相談は5回までです。明日また来てください。",
+        error: "本日の無料ちょっと相談は2回までです。明日また来てください。",
         remaining: 0,
       });
     }
