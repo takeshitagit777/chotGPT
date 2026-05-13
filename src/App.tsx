@@ -479,7 +479,7 @@ try {
 
           <div className="hidden items-center gap-2 rounded-full border border-white/70 bg-white/60 px-4 py-2 text-xs font-semibold text-gray-500 shadow-sm backdrop-blur-xl sm:flex">
             <ShieldCheck className="h-4 w-4 text-green-500" />
-            APIなし・課金ゼロのテンプレ版
+            API接続中・1日3回まで
           </div>
 
           <div className="flex items-center gap-3">
