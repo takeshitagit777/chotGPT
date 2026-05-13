@@ -1,4 +1,4 @@
-/**
+/**const combinations
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -315,9 +315,7 @@ export default function App() {
     },
   ]);
 
-  const combinations = useMemo(() => {
-    return openings.length * endings.length * notes.length * defaultBodies.length;
-  }, []);
+const combinations = "AI";
 
   useEffect(() => {
     const handleResize = () => {
