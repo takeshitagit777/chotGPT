@@ -350,20 +350,47 @@ export default function App() {
     setInput("");
     setIsThinking(true);
 
-    setTimeout(() => {
-      const reply = createChotReply(trimmed);
+try {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message: trimmed,
+    }),
+  });
 
-      const assistantMessage: ChatMessage = {
-        id: Date.now() + 1,
-        role: "assistant",
-        text: reply.text,
-        note: reply.note,
-        time: getCurrentTime(),
-      };
+  const data = await response.json();
 
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsThinking(false);
-    }, 850);
+  const assistantMessage: ChatMessage = {
+    id: Date.now() + 1,
+    role: "assistant",
+    text:
+      data.reply ||
+      data.error ||
+      "すみません、chotGPTがちょっと詰まりました。",
+    note:
+      typeof data.remaining === "number"
+        ? `※ 本日の残りちょっと相談: ${data.remaining}回`
+        : "",
+    time: getCurrentTime(),
+  };
+
+  setMessages((prev) => [...prev, assistantMessage]);
+} catch (error) {
+  const assistantMessage: ChatMessage = {
+    id: Date.now() + 1,
+    role: "assistant",
+    text: "すみません、chotGPTがちょっと転びました。",
+    note: "※ 少し時間を置いて試してください。",
+    time: getCurrentTime(),
+  };
+
+  setMessages((prev) => [...prev, assistantMessage]);
+} finally {
+  setIsThinking(false);
+}
   };
 
   return (
