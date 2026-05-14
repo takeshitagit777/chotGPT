@@ -173,6 +173,7 @@ export default function App() {
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [activeMenu, setActiveMenu] = useState("あとちょっと相談室");
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
 
   const combinations = "AI";
@@ -301,6 +302,103 @@ export default function App() {
 
   return (
     <div className="relative flex min-h-screen overflow-hidden bg-[#f7faf8] text-gray-900">
+      <AnimatePresence>
+  {isUpgradeOpen && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30 px-4 backdrop-blur-sm"
+      onClick={() => setIsUpgradeOpen(false)}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 24, scale: 0.96 }}
+        transition={{ type: "spring", damping: 24, stiffness: 260 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-2xl rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_30px_100px_-40px_rgba(15,23,42,0.6)]"
+      >
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <p className="mb-2 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
+              chotGPT Pro
+            </p>
+            <h2 className="font-display text-3xl font-black tracking-[-0.04em] text-gray-950">
+              もっとちょっとする？
+            </h2>
+            <p className="mt-2 text-sm leading-7 text-gray-500">
+              無料版では物足りない人向けの、物足りなさ増量プランです。
+            </p>
+          </div>
+
+          <button
+            onClick={() => setIsUpgradeOpen(false)}
+            className="rounded-full border border-gray-200 bg-white p-2 text-gray-500 transition hover:bg-gray-50"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-[1.5rem] border border-gray-100 bg-gray-50 p-5">
+            <p className="text-sm font-black text-gray-950">無料プラン</p>
+            <p className="mt-2 text-3xl font-black text-gray-950">
+              ¥0
+              <span className="text-sm font-bold text-gray-400"> / 月</span>
+            </p>
+            <div className="mt-5 space-y-3 text-sm text-gray-600">
+              <p>・1日3回まで</p>
+              <p>・ちょっと惜しい回答</p>
+              <p>・たまに転ぶ</p>
+              <p>・最後の詰めは人間</p>
+            </div>
+          </div>
+
+          <div className="relative overflow-hidden rounded-[1.5rem] border border-green-200 bg-green-50 p-5 shadow-lg shadow-green-100">
+            <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-green-300/40 blur-2xl" />
+            <p className="relative text-sm font-black text-green-800">
+              Proプラン
+            </p>
+            <p className="relative mt-2 text-3xl font-black text-gray-950">
+              ¥500
+              <span className="text-sm font-bold text-gray-500"> / 月</span>
+            </p>
+            <div className="relative mt-5 space-y-3 text-sm text-gray-700">
+              <p>・1日50回まで</p>
+              <p>・さらにふざける</p>
+              <p>・長めの返信も対応</p>
+              <p>・履歴保存予定</p>
+              <p>・人類の負担を少し軽減</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-[1.5rem] border border-dashed border-gray-200 bg-gray-50 px-5 py-4 text-sm leading-7 text-gray-500">
+          まだ決済機能は準備中です。  
+          つまり今押しても、お金は減りません。安心だけど、売上も増えません。
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <button
+            onClick={() => setIsUpgradeOpen(false)}
+            className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-600 transition hover:bg-gray-50"
+          >
+            まだ人間で頑張る
+          </button>
+          <button
+            onClick={() => {
+              alert("Proプランは準備中です。chotGPTもまだ社会に出る準備中です。");
+            }}
+            className="rounded-2xl bg-gray-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-gray-200 transition hover:-translate-y-0.5 hover:bg-gray-800"
+          >
+            人類のためにアップグレード
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute left-[18%] top-[-10%] h-72 w-72 rounded-full bg-green-200/50 blur-3xl" />
         <div className="absolute right-[-8%] top-[12%] h-96 w-96 rounded-full bg-emerald-100/80 blur-3xl" />
@@ -408,9 +506,12 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="rounded-full border border-green-200 bg-white/80 px-4 py-2 text-xs font-bold text-green-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-              アップグレード
-            </button>
+<button
+  onClick={() => setIsUpgradeOpen(true)}
+  className="rounded-full border border-green-200 bg-white/80 px-4 py-2 text-xs font-bold text-green-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+>
+  アップグレード
+</button>
             <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gray-200 shadow-sm">
               <Bot className="h-4 w-4 text-gray-500" />
             </div>
