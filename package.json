@@ -22,6 +22,7 @@
     "dotenv": "^17.2.3",
     "motion": "^12.23.24",
     "openai": "latest"
+    "stripe": "latest"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
