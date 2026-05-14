@@ -376,8 +376,8 @@ export default function App() {
               </div>
 
               <div className="mt-6 rounded-[1.5rem] border border-dashed border-gray-200 bg-gray-50 px-5 py-4 text-sm leading-7 text-gray-500">
-                まだ決済機能は準備中です。つまり今押しても、お金は減りません。
-                安心だけど、売上も増えません。
+Proプランでは、1日50回までちょっと相談できます。
+決済後、もう少しだけ頼れるchotGPTをご利用いただけます。
               </div>
 
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
