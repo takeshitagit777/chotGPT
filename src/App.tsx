@@ -2,8 +2,8 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
+import { useEffect, useMemo, useState } from "react";
 
-import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bot,
   Coffee,
@@ -297,7 +297,7 @@ export default function App() {
   );
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -329,9 +329,6 @@ const combinations = "AI";
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isThinking]);
 
   const handleSubmit = async () => {
     const trimmed = input.trim();
@@ -659,7 +656,7 @@ try {
                     <span className="ml-2 text-[10px] text-gray-400">chotGPT</span>
                   </motion.div>
                 )}
-                <div ref={messagesEndRef} />
+                
               </div>
             </motion.div>
 
