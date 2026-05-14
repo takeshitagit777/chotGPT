@@ -387,15 +387,32 @@ export default function App() {
                 >
                   まだ人間で頑張る
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    alert("Proプランは準備中です。chotGPTもまだ社会に出る準備中です。");
-                  }}
-                  className="rounded-2xl bg-gray-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-gray-200 transition hover:-translate-y-0.5 hover:bg-gray-800"
-                >
-                  人類のためにアップグレード
-                </button>
+<button
+  type="button"
+  onClick={async () => {
+    try {
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "決済ページの作成に失敗しました。");
+        return;
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      alert("決済ページに行こうとして転びました。chotGPTらしいですが、困ります。");
+    }
+  }}
+  className="rounded-2xl bg-gray-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-gray-200 transition hover:-translate-y-0.5 hover:bg-gray-800"
+>
+  人類のためにアップグレード
+</button>
               </div>
             </motion.div>
           </motion.div>
