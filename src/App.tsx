@@ -210,6 +210,7 @@ export default function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-chot-plan": plan,
         },
         body: JSON.stringify({
           message: trimmed,
