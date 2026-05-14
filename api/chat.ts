@@ -1,14 +1,11 @@
 import OpenAI from "openai";
 
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 type UsageRecord = {
   date: string;
   count: number;
 };
+
+type Plan = "free" | "pro";
 
 const dailyUsage = new Map<string, UsageRecord>();
 
@@ -24,31 +21,42 @@ const getClientIp = (req: any) => {
   return "unknown";
 };
 
-const checkDailyLimit = (ip: string) => {
+const getPlan = (req: any): Plan => {
+  const planHeader = req.headers["x-chot-plan"];
+  return planHeader === "pro" ? "pro" : "free";
+};
+
+const checkDailyLimit = (ip: string, plan: Plan) => {
   const today = getToday();
-  const current = dailyUsage.get(ip);
+  const limitCount = plan === "pro" ? 50 : 3;
+  const usageKey = `${plan}:${ip}`;
+  const current = dailyUsage.get(usageKey);
 
   if (!current || current.date !== today) {
-    dailyUsage.set(ip, { date: today, count: 1 });
+    dailyUsage.set(usageKey, { date: today, count: 1 });
+
     return {
       ok: true,
-      remaining: 1,
+      remaining: limitCount - 1,
+      limit: limitCount,
     };
   }
 
-  if (current.count >= 2) {
+  if (current.count >= limitCount) {
     return {
       ok: false,
       remaining: 0,
+      limit: limitCount,
     };
   }
 
   current.count += 1;
-  dailyUsage.set(ip, current);
+  dailyUsage.set(usageKey, current);
 
   return {
     ok: true,
-    remaining: Math.max(0, 2 - current.count),
+    remaining: Math.max(0, limitCount - current.count),
+    limit: limitCount,
   };
 };
 
@@ -56,6 +64,12 @@ export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed",
+    });
+  }
+
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(500).json({
+      error: "OPENAI_API_KEY がVercelに設定されていません。",
     });
   }
 
@@ -75,14 +89,24 @@ export default async function handler(req: any, res: any) {
     }
 
     const ip = getClientIp(req);
-    const limit = checkDailyLimit(ip);
+    const plan = getPlan(req);
+    const limit = checkDailyLimit(ip, plan);
 
     if (!limit.ok) {
       return res.status(429).json({
-        error: "本日の無料ちょっと相談は2回までです。明日また来てください。",
+        error:
+          plan === "pro"
+            ? "本日のPro相談は50回までです。今日はかなりちょっとしました。明日また来てください。"
+            : "本日の無料ちょっと相談は3回までです。Proにすると1日50回まで使えます。",
         remaining: 0,
+        plan,
+        limit: limit.limit,
       });
     }
+
+    const client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
@@ -90,7 +114,7 @@ export default async function handler(req: any, res: any) {
       input: [
         {
           role: "system",
-content: `
+          content: `
 あなたは「chotGPT」です。
 chotGPTは「ちょっとGPT」の略です。
 
@@ -160,33 +184,32 @@ chotGPTは「ちょっとGPT」の略です。
 回答例:
 ユーザー「謝罪文考えて」
 回答:
-「申し訳ございません、をまず置きましょう。謝罪文は最初に土下座の気配を出すのが大事です。
-文面としては『このたびはご迷惑をおかけし、申し訳ございません。今後同様のことがないよう注意いたします。』くらいでいけます。
+申し訳ございません、をまず置きましょう。謝罪文は最初に土下座の気配を出すのが大事です。
+文面としては「このたびはご迷惑をおかけし、申し訳ございません。今後同様のことがないよう注意いたします。」くらいでいけます。
 ただ、何に対して謝ってるかは人間が入れてください。そこがないと、ただの謝罪風味です。
-※ 具体性は人間が足してください。」
+※ 具体性は人間が足してください。
 
 ユーザー「明日の天気は？」
 回答:
-「傘を持つか迷う日ですね。chotGPT的には、折りたたみ傘を持てば“ちゃんとしてる人感”が出ます。
+傘を持つか迷う日ですね。chotGPT的には、折りたたみ傘を持てば“ちゃんとしてる人感”が出ます。
 ただし私は空を見ていません。窓すらありません。
 最新情報は天気アプリで確認してください。
-※ chotGPTは雰囲気予報士です。」
+※ chotGPTは雰囲気予報士です。
 
 ユーザー「メール返信考えて」
 回答:
-「まずは『お世話になっております』で社会人の顔を作りましょう。
-そのあと『確認のうえ、改めてご連絡いたします』と置けば、かなり働いている感じになります。
+まずは「お世話になっております」で社会人の顔を作りましょう。
+そのあと「確認のうえ、改めてご連絡いたします」と置けば、かなり働いている感じになります。
 ただし、実際に確認するのはあなたです。私は言っただけです。
-※ 最後の詰めは、あなたの仕事です。」
+※ 最後の詰めは、あなたの仕事です。
 
 ユーザー「アイデア出して」
 回答:
-「方向性は3つあります。便利そうにする、かわいくする、勢いで押す。
+方向性は3つあります。便利そうにする、かわいくする、勢いで押す。
 個人的には勢いで押す案が好きです。理由は、細かいことを考えなくて済むからです。
 ただ、ちゃんと成功させたいなら人間会議を1回挟んでください。
-※ 雰囲気採点なら高得点です。」
-`.trim(),
-
+※ 雰囲気採点なら高得点です。
+          `.trim(),
         },
         {
           role: "user",
@@ -199,12 +222,16 @@ chotGPTは「ちょっとGPT」の略です。
     return res.status(200).json({
       reply: response.output_text,
       remaining: limit.remaining,
+      plan,
+      limit: limit.limit,
     });
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error("chotGPT API error:", error);
 
     return res.status(500).json({
-      error: "chotGPTがちょっと詰まりました。少し時間を置いて試してください。",
+      error:
+        error?.message ||
+        "chotGPTがちょっと詰まりました。少し時間を置いて試してください。",
     });
   }
 }
