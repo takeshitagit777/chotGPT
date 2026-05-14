@@ -34,6 +34,8 @@ type ChatMessage = {
   time: string;
 };
 
+type Plan = "free" | "pro";
+
 const getCurrentTime = () => {
   return new Date().toLocaleTimeString("ja-JP", {
     hour: "2-digit",
@@ -91,7 +93,7 @@ const RobotCard = () => (
     initial={{ opacity: 0, y: 18 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.35 }}
-    className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/70 p-5 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl"
+    className="relative overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/70 p-4 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl sm:rounded-[2rem] sm:p-5"
   >
     <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-green-200/40 blur-3xl" />
     <div className="mb-4 flex items-center justify-between">
@@ -105,16 +107,16 @@ const RobotCard = () => (
       </span>
     </div>
 
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-4 sm:gap-5">
       <motion.div
         animate={{ y: [0, -6, 0] }}
         transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-        className="relative h-32 w-32"
+        className="relative h-28 w-28 shrink-0 sm:h-32 sm:w-32"
       >
         <div className="absolute left-1/2 top-0 h-7 w-1 -translate-x-1/2 rounded-full bg-slate-400">
           <div className="absolute -top-1 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full bg-green-400 shadow-[0_0_20px_rgba(34,197,94,0.7)]" />
         </div>
-        <div className="absolute left-1/2 top-6 flex h-24 w-28 -translate-x-1/2 items-center justify-center rounded-[2rem] border-4 border-gray-50 bg-white p-3 shadow-xl">
+        <div className="absolute left-1/2 top-6 flex h-20 w-24 -translate-x-1/2 items-center justify-center rounded-[1.75rem] border-4 border-gray-50 bg-white p-3 shadow-xl sm:h-24 sm:w-28 sm:rounded-[2rem]">
           <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-[1.35rem] bg-slate-900">
             <div className="flex gap-5">
               <div className="h-4 w-3 rounded-full bg-green-400" />
@@ -123,7 +125,7 @@ const RobotCard = () => (
             <div className="h-1 w-7 rounded-full bg-slate-600" />
           </div>
         </div>
-        <div className="absolute bottom-0 left-1/2 h-8 w-24 -translate-x-1/2 rounded-t-3xl border-x-4 border-t-4 border-gray-50 bg-white shadow-lg" />
+        <div className="absolute bottom-0 left-1/2 h-7 w-20 -translate-x-1/2 rounded-t-3xl border-x-4 border-t-4 border-gray-50 bg-white shadow-lg sm:h-8 sm:w-24" />
       </motion.div>
 
       <div className="min-w-0">
@@ -153,7 +155,7 @@ const FeatureCard = ({
 }) => (
   <motion.div
     whileHover={{ y: -6 }}
-    className="group rounded-[1.75rem] border border-white/80 bg-white/70 p-6 shadow-[0_18px_60px_-36px_rgba(15,23,42,0.4)] backdrop-blur-xl transition-all hover:bg-white"
+    className="group rounded-[1.5rem] border border-white/80 bg-white/70 p-5 shadow-[0_18px_60px_-36px_rgba(15,23,42,0.4)] backdrop-blur-xl transition-all hover:bg-white sm:rounded-[1.75rem] sm:p-6"
   >
     <div
       className={`mb-5 flex h-12 w-12 items-center justify-center rounded-2xl ${color}`}
@@ -174,6 +176,7 @@ export default function App() {
   const [isThinking, setIsThinking] = useState(false);
   const [activeMenu, setActiveMenu] = useState("あとちょっと相談室");
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  const [plan, setPlan] = useState<Plan>("free");
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
 
   const combinations = "AI";
@@ -188,6 +191,24 @@ export default function App() {
     handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkout = params.get("checkout");
+
+    if (checkout === "success") {
+      localStorage.setItem("chotgpt_plan", "pro");
+      setPlan("pro");
+      window.history.replaceState({}, "", window.location.pathname);
+      return;
+    }
+
+    const savedPlan = localStorage.getItem("chotgpt_plan");
+
+    if (savedPlan === "pro") {
+      setPlan("pro");
+    }
   }, []);
 
   const handleSubmit = async () => {
@@ -228,7 +249,9 @@ export default function App() {
           "すみません、chotGPTがちょっと詰まりました。",
         note:
           typeof data.remaining === "number"
-            ? `※ 本日の残りちょっと相談: ${data.remaining}回`
+            ? `※ ${data.plan === "pro" ? "Pro" : "無料"}プラン残り: ${
+                data.remaining
+              }回`
             : "",
         time: getCurrentTime(),
       };
@@ -253,6 +276,27 @@ export default function App() {
     setActiveMenu("あとちょっと相談室");
     setInput("");
     setMessages([]);
+  };
+
+  const handleCheckout = async () => {
+    try {
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "決済ページの作成に失敗しました。");
+        return;
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      alert("決済ページに行こうとして転びました。少し時間を置いて試してください。");
+    }
   };
 
   const mainMenuItems = [
@@ -309,7 +353,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
             onClick={() => setIsUpgradeOpen(false)}
           >
             <motion.div
@@ -318,14 +362,14 @@ export default function App() {
               exit={{ opacity: 0, y: 24, scale: 0.96 }}
               transition={{ type: "spring", damping: 24, stiffness: 260 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-2xl rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_30px_100px_-40px_rgba(15,23,42,0.6)]"
+              className="my-auto w-full max-w-2xl rounded-[1.5rem] border border-white/80 bg-white p-5 shadow-[0_30px_100px_-40px_rgba(15,23,42,0.6)] sm:rounded-[2rem] sm:p-6"
             >
               <div className="mb-6 flex items-start justify-between gap-4">
                 <div>
                   <p className="mb-2 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
                     chotGPT Pro
                   </p>
-                  <h2 className="font-display text-3xl font-black tracking-[-0.04em] text-gray-950">
+                  <h2 className="font-display text-2xl font-black tracking-[-0.04em] text-gray-950 sm:text-3xl">
                     もっとちょっとする？
                   </h2>
                   <p className="mt-2 text-sm leading-7 text-gray-500">
@@ -371,14 +415,14 @@ export default function App() {
                     <p>・さらにふざける</p>
                     <p>・長めの返信も対応</p>
                     <p>・履歴保存予定</p>
-                    <p>・人類の負担を少し軽減</p>
+                    <p>・もう少しだけ頼れる</p>
                   </div>
                 </div>
               </div>
 
               <div className="mt-6 rounded-[1.5rem] border border-dashed border-gray-200 bg-gray-50 px-5 py-4 text-sm leading-7 text-gray-500">
-Proプランでは、1日50回までちょっと相談できます。
-決済後、もう少しだけ頼れるchotGPTをご利用いただけます。
+                Proプランでは、1日50回までちょっと相談できます。
+                決済後、もう少しだけ頼れるchotGPTをご利用いただけます。
               </div>
 
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
@@ -389,32 +433,13 @@ Proプランでは、1日50回までちょっと相談できます。
                 >
                   まだ人間で頑張る
                 </button>
-<button
-  type="button"
-  onClick={async () => {
-    try {
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.error || "決済ページの作成に失敗しました。");
-        return;
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      alert("決済ページに行こうとして転びました。chotGPTらしいですが、困ります。");
-    }
-  }}
-  className="rounded-2xl bg-gray-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-gray-200 transition hover:-translate-y-0.5 hover:bg-gray-800"
->
-  人類のためにアップグレード
-</button>
+                <button
+                  type="button"
+                  onClick={handleCheckout}
+                  className="rounded-2xl bg-gray-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-gray-200 transition hover:-translate-y-0.5 hover:bg-gray-800"
+                >
+                  Proプランにアップグレード
+                </button>
               </div>
             </motion.div>
           </motion.div>
@@ -514,7 +539,7 @@ Proプランでは、1日50回までちょっと相談できます。
       </motion.aside>
 
       <main className="relative z-10 flex h-screen flex-1 flex-col overflow-y-auto">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between bg-[#f7faf8]/75 px-5 backdrop-blur-xl sm:px-8">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between bg-[#f7faf8]/75 px-4 backdrop-blur-xl sm:px-8">
           <button
             type="button"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -526,16 +551,24 @@ Proプランでは、1日50回までちょっと相談できます。
 
           <div className="hidden items-center gap-2 rounded-full border border-white/70 bg-white/60 px-4 py-2 text-xs font-semibold text-gray-500 shadow-sm backdrop-blur-xl sm:flex">
             <ShieldCheck className="h-4 w-4 text-green-500" />
-            ふざけ気味に稼働中・1日3回まで
+            {plan === "pro"
+              ? "Pro稼働中・1日50回まで"
+              : "ふざけ気味に稼働中・1日3回まで"}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {plan === "pro" && (
+              <span className="rounded-full bg-green-100 px-3 py-2 text-xs font-bold text-green-700 sm:hidden">
+                Pro
+              </span>
+            )}
             <button
               type="button"
               onClick={() => setIsUpgradeOpen(true)}
-              className="rounded-full border border-green-200 bg-white/80 px-4 py-2 text-xs font-bold text-green-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              className="rounded-full border border-green-200 bg-white/80 px-3 py-2 text-xs font-bold text-green-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:px-4"
             >
-              アップグレード
+              <span className="hidden sm:inline">アップグレード</span>
+              <span className="sm:hidden">Pro</span>
             </button>
             <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gray-200 shadow-sm">
               <Bot className="h-4 w-4 text-gray-500" />
@@ -543,24 +576,24 @@ Proプランでは、1日50回までちょっと相談できます。
           </div>
         </header>
 
-        <section className="mx-auto flex w-full max-w-6xl flex-col px-5 pb-16 pt-10 sm:px-8 lg:pt-14">
-          <div className="grid items-start gap-8 lg:grid-cols-[1fr,360px]">
+        <section className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-16 pt-6 sm:px-8 lg:pt-14">
+          <div className="grid items-start gap-6 lg:grid-cols-[1fr,360px] lg:gap-8">
             <div>
               <motion.div
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-8"
+                className="mb-6 sm:mb-8"
               >
-                <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-4 py-2 text-xs font-bold text-green-700 shadow-sm backdrop-blur-xl">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-4 py-2 text-xs font-bold text-green-700 shadow-sm backdrop-blur-xl sm:mb-5">
                   <Sparkles className="h-4 w-4" />
                   ちょっと惜しい。でも、ちょっと助かる。
                 </div>
 
-                <h2 className="font-display text-5xl font-black tracking-[-0.06em] text-gray-950 sm:text-7xl">
+                <h2 className="font-display text-4xl font-black tracking-[-0.06em] text-gray-950 sm:text-7xl">
                   chot<span className="text-green-500">GPT</span>
                 </h2>
 
-                <p className="mt-4 max-w-2xl text-xl font-semibold leading-relaxed text-gray-700 sm:text-2xl">
+                <p className="mt-4 max-w-2xl text-lg font-semibold leading-relaxed text-gray-700 sm:text-2xl">
                   返信が、
                   <span className="mx-1 rounded-2xl bg-green-100 px-2 text-green-700">
                     あとちょっと
@@ -578,7 +611,7 @@ Proプランでは、1日50回までちょっと相談できます。
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
-                className="mb-5 rounded-[2rem] border border-white/80 bg-white/75 p-3 shadow-[0_24px_80px_-44px_rgba(15,23,42,0.45)] backdrop-blur-xl"
+                className="mb-5 rounded-[1.5rem] border border-white/80 bg-white/80 p-2 shadow-[0_24px_80px_-44px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:rounded-[2rem] sm:p-3"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <input
@@ -594,7 +627,7 @@ Proプランでは、1日50回までちょっと相談できます。
                     type="button"
                     onClick={handleSubmit}
                     disabled={!input.trim() || isThinking}
-                    className="flex items-center justify-center gap-2 rounded-2xl bg-gray-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none"
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none sm:w-auto"
                   >
                     <Send className="h-4 w-4" />
                     ちょっと聞く
@@ -612,8 +645,10 @@ Proプランでは、1日50回までちょっと相談できます。
                   <span className="text-gray-950"> 接続中</span>
                 </div>
                 <div className="rounded-2xl border border-white/70 bg-white/55 px-4 py-3 text-xs font-semibold text-gray-500 backdrop-blur-xl">
-                  そこそこ考え中
-                  <span className="text-gray-950"> 対応</span>
+                  現在プラン
+                  <span className="text-gray-950">
+                    {plan === "pro" ? " Pro" : " 無料"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -623,12 +658,12 @@ Proプランでは、1日50回までちょっと相談できます。
             </div>
           </div>
 
-          <div className="mt-4 grid gap-8 lg:grid-cols-[1fr,360px]">
+          <div className="mt-2 grid gap-6 lg:mt-4 lg:grid-cols-[1fr,360px] lg:gap-8">
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
-              className="rounded-[2rem] border border-white/80 bg-white/60 p-4 shadow-[0_24px_80px_-46px_rgba(15,23,42,0.4)] backdrop-blur-xl sm:p-6"
+              className="rounded-[1.5rem] border border-white/80 bg-white/70 p-3 shadow-[0_24px_80px_-46px_rgba(15,23,42,0.4)] backdrop-blur-xl sm:rounded-[2rem] sm:p-6"
             >
               <div className="mb-5 flex items-center justify-between">
                 <div>
@@ -636,7 +671,7 @@ Proプランでは、1日50回までちょっと相談できます。
                     <Sparkles className="h-4 w-4 text-green-500" />
                     CHOT CHAT
                   </p>
-                  <h3 className="mt-1 text-lg font-bold text-gray-950">
+                  <h3 className="mt-1 text-base font-bold text-gray-950 sm:text-lg">
                     こんなやりとり、よくあります。
                   </h3>
                 </div>
@@ -666,10 +701,10 @@ Proプランでは、1日50回までちょっと相談できます。
                     }`}
                   >
                     <div
-                      className={`whitespace-pre-line px-5 py-3 text-sm leading-7 shadow-sm ${
+                      className={`whitespace-pre-line px-4 py-3 text-sm leading-7 shadow-sm sm:px-5 ${
                         message.role === "user"
-                          ? "max-w-[88%] rounded-3xl rounded-tr-md bg-gray-950 text-white"
-                          : "max-w-[92%] rounded-3xl rounded-tl-md border border-gray-100 bg-white text-gray-800"
+                          ? "max-w-[94%] rounded-3xl rounded-tr-md bg-gray-950 text-white sm:max-w-[88%]"
+                          : "max-w-[96%] rounded-3xl rounded-tl-md border border-gray-100 bg-white text-gray-800 sm:max-w-[92%]"
                       }`}
                     >
                       {message.text}
@@ -712,7 +747,7 @@ Proプランでは、1日50回までちょっと相談できます。
                 <RobotCard />
               </div>
 
-              <div className="rounded-[2rem] border border-white/80 bg-white/60 p-5 shadow-[0_24px_80px_-46px_rgba(15,23,42,0.35)] backdrop-blur-xl">
+              <div className="rounded-[1.5rem] border border-white/80 bg-white/60 p-5 shadow-[0_24px_80px_-46px_rgba(15,23,42,0.35)] backdrop-blur-xl sm:rounded-[2rem]">
                 <div className="mb-4 flex items-center gap-2">
                   <Zap className="h-4 w-4 text-green-500" />
                   <p className="text-sm font-bold text-gray-950">できること</p>
@@ -736,7 +771,7 @@ Proプランでは、1日50回までちょっと相談できます。
                 </div>
               </div>
 
-              <div className="rounded-[2rem] border border-gray-900 bg-gray-950 p-5 text-white shadow-[0_24px_80px_-42px_rgba(15,23,42,0.8)]">
+              <div className="rounded-[1.5rem] border border-gray-900 bg-gray-950 p-5 text-white shadow-[0_24px_80px_-42px_rgba(15,23,42,0.8)] sm:rounded-[2rem]">
                 <div className="mb-3 flex items-center gap-2">
                   <Copy className="h-4 w-4 text-green-300" />
                   <p className="text-sm font-bold">今日のchotコピー</p>
@@ -770,7 +805,7 @@ Proプランでは、1日50回までちょっと相談できます。
           </div>
 
           <footer className="mt-14 pb-10 text-center">
-            <div className="mx-auto max-w-2xl rounded-[2rem] border border-white/80 bg-white/55 px-6 py-5 text-xs leading-7 text-gray-500 backdrop-blur-xl">
+            <div className="mx-auto max-w-2xl rounded-[1.5rem] border border-white/80 bg-white/55 px-6 py-5 text-xs leading-7 text-gray-500 backdrop-blur-xl sm:rounded-[2rem]">
               <p className="font-semibold text-gray-600">
                 ちょっとだけが、ちょうどいい。そんなAIです。
               </p>
