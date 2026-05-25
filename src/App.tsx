@@ -7,7 +7,6 @@ type StoryInput = {
   role: string;
   mood: string;
 };
-
 const presets = [
   { label: '1999年・夏', value: '1999年の夏' },
   { label: '2007年・冬', value: '2007年の冬' },
