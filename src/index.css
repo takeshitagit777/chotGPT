@@ -1,18 +1,1 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
-
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", sans-serif;
-  
-  --color-chot-green: #22C55E;
-  --color-chot-green-soft: #E6F4EA;
-  --color-chot-gray: #F9FAFB;
-  --color-chot-border: #F3F4F6;
-}
-
-@layer base {
-  body {
-    @apply font-sans bg-chot-gray text-gray-800 antialiased;
-  }
-}
+*{box-sizing:border-box} body{margin:0}
