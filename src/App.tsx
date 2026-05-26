@@ -13,12 +13,12 @@ type WorldResult = {
 };
 
 const features = [
-  { no: '1', title: '写真・アルバム', text: '存在しないアルバムが、まるで昔の写真フォルダのように並びます。', image: '/feature-album.jpg' },
-  { no: '2', title: 'LINEのやりとり', text: '言えなかった言葉や何気ない会話まで、世界線に合わせて生成。', image: '/feature-line.jpg' },
-  { no: '3', title: 'SNS投稿', text: '当時っぽい投稿、コメント、いいねまで作り込みます。', image: '/feature-sns.jpg' },
+  { no: '1', title: '写真・アルバム', text: '存在しない写真が、まるで古いアルバムのように並びます。', image: '/feature-album.jpg' },
+  { no: '2', title: '会話の記録', text: '言えなかった言葉や何気ないやりとりまで、世界線に合わせて生成。', image: '/feature-line.jpg' },
+  { no: '3', title: 'SNS投稿', text: '当時っぽい投稿、コメント、いいねまで自分史の断片として再現します。', image: '/feature-sns.jpg' },
   { no: '4', title: '検索履歴', text: 'その人の人生がにじむ、妙にリアルな検索履歴。', image: '/feature-search.jpg' },
   { no: '5', title: '日記・つぶやき', text: '誰にも見せなかったノートのような短い記録。', image: '/feature-diary.jpg' },
-  { no: '6', title: '思い出の品', text: 'ケータイ、キーホルダー、チケット。物から記憶を作る。', image: '/feature-item.jpg' },
+  { no: '6', title: '思い出の品', text: 'ケータイ、キーホルダー、チケット。物から人生の断片を作る。', image: '/feature-item.jpg' },
   { no: '7', title: '音楽・BGM', text: 'その世界に流れていそうなBGMタイトルや歌詞っぽい空気。', image: '/feature-music.jpg' },
 ];
 
@@ -85,7 +85,7 @@ function parseLineMessage(message: string, index: number) {
   };
 }
 
-function LineConversation({ messages, era }: { messages: string[]; era: string }) {
+function ConversationLog({ messages, era }: { messages: string[]; era: string }) {
   const parsedMessages = messages.length
     ? messages.map(parseLineMessage)
     : [
@@ -95,7 +95,7 @@ function LineConversation({ messages, era }: { messages: string[]; era: string }
       ];
 
   return (
-    <div className="line-window" aria-label="LINE風のやりとり">
+    <div className="line-window" aria-label="会話ログ">
       <div className="line-statusbar">
         <span>19:45</span>
         <span>●●● 4G 78%</span>
@@ -105,7 +105,7 @@ function LineConversation({ messages, era }: { messages: string[]; era: string }
         <button type="button" aria-label="戻る">‹</button>
         <div>
           <strong>あの頃のともだち</strong>
-          <span>{era}の世界線</span>
+          <span>{era}の自分史</span>
         </div>
         <button type="button" aria-label="メニュー">☰</button>
       </div>
@@ -150,7 +150,7 @@ function App() {
 
   const loadingText = useMemo(() => {
     if (!isGenerating) return '';
-    return '世界線を生成しています… 写真、会話、検索履歴をつなぎ合わせています。';
+    return '自分史を生成しています… 写真、会話、検索履歴をつなぎ合わせています。';
   }, [isGenerating]);
 
   const handlePreset = (preset: string[]) => {
@@ -203,19 +203,19 @@ function App() {
     <main className="page">
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">存在しなかったはずなのに、なぜか懐かしい。</p>
-          <h1>あったかもしれない</h1>
+          <p className="eyebrow">存在しないあなたを、記録する。</p>
+          <h1>架空自分史</h1>
           <p className="lead">
             写真、会話、検索履歴、日記、思い出の品まで。
-            あなたの「もうひとつの人生」を、ひとつの世界線として生成します。
+            あなたが選ばなかった世界線を、ひとつの自分史として生成します。
           </p>
           <div className="hero-actions">
-            <a href="#create" className="primary-button">世界線をつくる</a>
+            <a href="#create" className="primary-button">自分史をつくる</a>
             <a href="#features" className="ghost-button">生成される内容を見る</a>
           </div>
         </div>
 
-        <div className="hero-phone" aria-label="世界線プレビュー">
+        <div className="hero-phone" aria-label="架空自分史プレビュー">
           <div className="phone-bar">9:41</div>
           <div className="phone-scene">
             <span>1999年・夏</span>
@@ -223,16 +223,16 @@ function App() {
             <p>放課後、みんなで寄り道してた。あの坂道の夕焼けだけ、なぜか覚えている。</p>
           </div>
           <div className="phone-tabs">
-            <span>写真</span><span>LINE</span><span>SNS</span><span>日記</span>
+            <span>写真</span><span>会話</span><span>SNS</span><span>日記</span>
           </div>
         </div>
       </section>
 
       <section id="features" className="section">
         <div className="section-heading">
-          <p className="eyebrow">Generated Memories</p>
-          <h2>単発の画像ではなく、人生ログとしてつながる。</h2>
-          <p>バラバラの断片を重ねることで、「本当にあったかも」と感じる体験を作ります。</p>
+          <p className="eyebrow">Fictional Autobiography</p>
+          <h2>単発の画像ではなく、自分史としてつながる。</h2>
+          <p>バラバラの断片を重ねることで、「本当に生きたかもしれない」と感じる体験を作ります。</p>
         </div>
 
         <div className="feature-grid">
@@ -252,9 +252,9 @@ function App() {
       <section id="create" className="section creator">
         <div className="creator-panel">
           <div>
-            <p className="eyebrow">Create Your Worldline</p>
-            <h2>設定を入れるだけで、世界線が立ち上がる。</h2>
-            <p className="muted">まずは軽く作って、気に入った世界線だけ深掘りする設計です。</p>
+            <p className="eyebrow">Create Your Fictional History</p>
+            <h2>設定を入れるだけで、もうひとつの自分史が立ち上がる。</h2>
+            <p className="muted">まずは軽く作って、気に入った自分史だけ深掘りする設計です。</p>
           </div>
 
           <div className="preset-row">
@@ -273,7 +273,7 @@ function App() {
           </div>
 
           <button className="generate-button" onClick={handleGenerate} disabled={isGenerating}>
-            {isGenerating ? '生成中…' : 'もうひとつの人生を生成する'}
+            {isGenerating ? '生成中…' : '架空自分史を生成する'}
           </button>
 
           {remainingCount !== null && (
@@ -287,7 +287,7 @@ function App() {
           {generated ? (
             <div className="result-content">
               <p className="eyebrow">Generated</p>
-              <h3>{toText(generated.title, 'あったかもしれない世界線')}</h3>
+              <h3>{toText(generated.title, '架空自分史')}</h3>
 
               <div className="result-block">
                 <strong>写真アルバム</strong>
@@ -295,8 +295,8 @@ function App() {
               </div>
 
               <div className="result-block line-result-block">
-                <strong>LINEのやりとり</strong>
-                <LineConversation messages={line} era={era} />
+                <strong>会話の記録</strong>
+                <ConversationLog messages={line} era={era} />
               </div>
 
               <div className="result-block"><strong>SNS投稿</strong><p>{toText(generated.sns)}</p></div>
@@ -307,7 +307,7 @@ function App() {
             </div>
           ) : (
             <div className="empty-result">
-              <span>まだ存在しない世界線</span>
+              <span>まだ存在しない自分史</span>
               <p>生成すると、ここに写真・会話・日記・検索履歴がまとまって表示されます。</p>
             </div>
           )}
@@ -323,7 +323,7 @@ function App() {
         <div className="price-card premium">
           <p className="eyebrow">Premium</p>
           <h3>プレミアム</h3>
-          <ul><li>高画質・動画生成</li><li>自分の写真を反映</li><li>世界線の続きを生成</li><li>広告なし・保存無制限</li></ul>
+          <ul><li>高画質・動画生成</li><li>自分の写真を反映</li><li>自分史の続きを生成</li><li>広告なし・保存無制限</li></ul>
         </div>
       </section>
     </main>
