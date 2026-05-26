@@ -2,14 +2,14 @@ import { useMemo, useState } from 'react';
 import './App.css';
 
 type WorldResult = {
-  title: string;
-  album: string[];
-  line: string[];
-  sns: string;
-  search: string[];
-  diary: string;
-  item: string;
-  bgm: string;
+  title?: string;
+  album?: string[] | string;
+  line?: string[] | string;
+  sns?: string | string[];
+  search?: string[] | string;
+  diary?: string | string[];
+  item?: string | string[];
+  bgm?: string | string[];
 };
 
 const features = [
@@ -27,6 +27,25 @@ const presets = [
   ['2006年', '夕方の団地', '中学生', '少し痛くて優しい'],
   ['2012年', '雪の日の駅前', '売れないバンドマン', '静かで映画っぽい'],
 ];
+
+function toList(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((v) => String(v ?? '')).filter(Boolean);
+  }
+
+  if (typeof value === 'string' && value.trim()) {
+    return [value.trim()];
+  }
+
+  return [];
+}
+
+function toText(value: unknown, fallback = ''): string {
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return value.map((v) => String(v ?? '')).filter(Boolean).join(' / ');
+  if (value === null || value === undefined) return fallback;
+  return String(value);
+}
 
 function App() {
   const [era, setEra] = useState('1999年');
@@ -84,6 +103,10 @@ function App() {
       setIsGenerating(false);
     }
   };
+
+  const album = toList(generated?.album);
+  const line = toList(generated?.line);
+  const search = toList(generated?.search);
 
   return (
     <main className="page">
@@ -173,14 +196,14 @@ function App() {
           {generated ? (
             <div className="result-content">
               <p className="eyebrow">Generated</p>
-              <h3>{generated.title}</h3>
-              <div className="result-block"><strong>写真アルバム</strong><ul>{generated.album?.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
-              <div className="result-block"><strong>LINE</strong><ul>{generated.line?.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
-              <div className="result-block"><strong>SNS投稿</strong><p>{generated.sns}</p></div>
-              <div className="result-block"><strong>検索履歴</strong><ul>{generated.search?.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
-              <div className="result-block"><strong>日記</strong><p>{generated.diary}</p></div>
-              <div className="result-block"><strong>思い出の品</strong><p>{generated.item}</p></div>
-              <div className="result-block"><strong>BGM</strong><p>{generated.bgm}</p></div>
+              <h3>{toText(generated.title, 'あったかもしれない世界線')}</h3>
+              <div className="result-block"><strong>写真アルバム</strong><ul>{album.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
+              <div className="result-block"><strong>LINE</strong><ul>{line.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
+              <div className="result-block"><strong>SNS投稿</strong><p>{toText(generated.sns)}</p></div>
+              <div className="result-block"><strong>検索履歴</strong><ul>{search.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
+              <div className="result-block"><strong>日記</strong><p>{toText(generated.diary)}</p></div>
+              <div className="result-block"><strong>思い出の品</strong><p>{toText(generated.item)}</p></div>
+              <div className="result-block"><strong>BGM</strong><p>{toText(generated.bgm)}</p></div>
             </div>
           ) : (
             <div className="empty-result">
