@@ -1,20 +1,70 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 生成できない問題の修正パッチ
 
-# Run and deploy your AI Studio app
+## 上書きするファイル
 
-This contains everything you need to run your app locally.
+- api/generate.ts
 
-View your app in AI Studio: https://ai.studio/apps/6bf4c9e8-5cf6-4567-aa78-ffb3a85182f3
+## src/App.tsx の修正
 
-## Run Locally
+`handleGenerate` だけ、README下部のコードに置き換えてください。
 
-**Prerequisites:**  Node.js
+## CSS
 
+`src/App.css` の一番下に `css-addon.txt` の内容を追記してください。
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## package.json
+
+`dependencies` に `openai` がなければ追加してください。
+
+```json
+"openai": "latest"
+```
+
+## Vercel環境変数
+
+Project Settings > Environment Variables に以下が必要です。
+
+```txt
+OPENAI_API_KEY=sk-...
+```
+
+任意でモデルを指定できます。
+
+```txt
+OPENAI_MODEL=gpt-4.1-mini
+```
+
+## App.tsx の handleGenerate 置き換え
+
+```tsx
+const handleGenerate = async () => {
+  setIsGenerating(true);
+  setGenerated(null);
+  setErrorMessage('');
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ era, place, role, mood }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.message || data?.error || '生成APIでエラーが発生しました。');
+    }
+
+    if (!data.result) {
+      throw new Error('生成結果が空でした。');
+    }
+
+    setGenerated(data.result);
+  } catch (e: any) {
+    setErrorMessage(e?.message || '生成に失敗しました。Vercelのログを確認してください。');
+    setGenerated(null);
+  } finally {
+    setIsGenerating(false);
+  }
+};
+```
