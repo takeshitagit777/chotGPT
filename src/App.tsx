@@ -496,7 +496,7 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
     setErrorMessage('');
 
     try {
-      const data = await safeJsonFetch('/api/generate', {
+      const data = await safeJsonFetch('/api/worldline-create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ era, place, role, mood }),
