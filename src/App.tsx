@@ -250,6 +250,28 @@ function useHashRoute() {
   return route;
 }
 
+async function safeJsonFetch(url: string, options: RequestInit) {
+  const res = await fetch(url, options);
+  const text = await res.text();
+
+  let data: any = null;
+
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    const shortText = text.replace(/\s+/g, ' ').slice(0, 180);
+    throw new Error(
+      `APIがJSONではなくテキストを返しました。status=${res.status} ${res.statusText} / ${shortText}`
+    );
+  }
+
+  if (!res.ok) {
+    throw new Error(data?.message || data?.error || `APIエラー status=${res.status}`);
+  }
+
+  return data;
+}
+
 const features = [
   { no: '1', title: '写真・アルバム', text: '存在しない写真が、まるで古いアルバムのように並びます。', image: '/feature-album.jpg', route: '/albums' },
   { no: '2', title: '会話の記録', text: '友達一覧から相手を選び、その世界線の中で会話できます。', image: '/feature-line.jpg', route: '/friends' },
@@ -265,7 +287,6 @@ const presets = [
   ['2006年', '夕方の団地', '中学生', '少し痛くて優しい'],
   ['2012年', '雪の日の駅前', '売れないバンドマン', '静かで映画っぽい'],
 ];
-
 
 function FriendAvatar({ friend, className = '' }: { friend: Character; className?: string }) {
   return (
@@ -345,17 +366,11 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
     setErrorMessage('');
 
     try {
-      const res = await fetch('/api/generate', {
+      const data = await safeJsonFetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ era, place, role, mood }),
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.message || data?.error || '生成に失敗しました。');
-      }
 
       const nextWorldline = normalizeWorldline(data.result ?? {}, { era, place, role, mood });
       saveWorldline(nextWorldline);
@@ -427,8 +442,8 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
       <section id="create" className="section creator">
         <div className="creator-panel">
           <div>
-            <p className="eyebrow">Create Your Fictional History</p>
-            <h2>設定を入れるだけで、もうひとつの自分史が立ち上がる。</h2>
+            <p className="eyebrow">Create Your Worldline</p>
+            <h2>設定を入れるだけで、世界線が立ち上がる。</h2>
             <p className="muted">生成後は、会話とアルバムがアプリ内に保存されます。</p>
           </div>
 
@@ -448,7 +463,7 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
           </div>
 
           <button className="generate-button" onClick={handleGenerate} disabled={isGenerating}>
-            {isGenerating ? '生成中…' : '架空自分史を生成する'}
+            {isGenerating ? '生成中…' : 'もうひとつの人生を生成する'}
           </button>
 
           {remainingCount !== null && (
@@ -459,19 +474,9 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
         </div>
 
         <div className="result-panel">
-          <div className="result-content">
-            <p className="eyebrow">Current World</p>
-            <h3>{worldline.title}</h3>
-            <div className="result-block"><strong>SNS投稿</strong><p>{worldline.sns}</p></div>
-            <div className="result-block"><strong>検索履歴</strong><ul>{worldline.search.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
-            <div className="result-block"><strong>日記</strong><p>{worldline.diary}</p></div>
-            <div className="result-block"><strong>思い出の品</strong><p>{worldline.item}</p></div>
-            <div className="result-block"><strong>BGM</strong><p>{worldline.bgm}</p></div>
-
-            <div className="result-actions">
-              <button onClick={() => setHash('/friends')} className="small-primary">友達一覧へ</button>
-              <button onClick={() => setHash('/albums')} className="small-ghost">アルバムへ</button>
-            </div>
+          <div className="empty-result">
+            <span>まだ存在しない世界線</span>
+            <p>生成すると、ここに写真・会話・日記・検索履歴がまとまって表示されます。</p>
           </div>
         </div>
       </section>
@@ -557,10 +562,18 @@ function ChatPage({ worldline, friendId }: { worldline: Worldline; friendId: str
         body: JSON.stringify({ worldline, character: friend, history: nextMessages, message: userMessage.text }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = null;
+
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        const shortText = text.replace(/\s+/g, ' ').slice(0, 180);
+        throw new Error(`会話APIがJSON以外を返しました。status=${res.status} ${res.statusText} / ${shortText}`);
+      }
 
       if (!res.ok) {
-        throw new Error(data?.message || data?.error || '返信の生成に失敗しました。');
+        throw new Error(data?.message || data?.error || `会話APIエラー status=${res.status}`);
       }
 
       const assistantMessage: ChatMessage = {
