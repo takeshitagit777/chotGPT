@@ -35,6 +35,8 @@ function App() {
   const [mood, setMood] = useState('切なくて懐かしい');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generated, setGenerated] = useState<WorldResult | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [remainingCount, setRemainingCount] = useState<number | null>(null);
 
   const loadingText = useMemo(() => {
     if (!isGenerating) return '';
@@ -51,6 +53,7 @@ function App() {
   const handleGenerate = async () => {
     setIsGenerating(true);
     setGenerated(null);
+    setErrorMessage('');
 
     try {
       const res = await fetch('/api/generate', {
@@ -61,21 +64,22 @@ function App() {
 
       const data = await res.json();
 
-      if (data.result) {
-        const parsed = typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
-        setGenerated(parsed);
+      if (typeof data.remaining === 'number') {
+        setRemainingCount(data.remaining);
       }
-    } catch (e) {
-      setGenerated({
-        title: '生成に失敗しました',
-        album: ['もう一度だけ、設定を変えて試してください。'],
-        line: ['通信が少しだけ途切れました。'],
-        sns: '世界線の接続に失敗しました。',
-        search: ['再生成 方法'],
-        diary: '今日はうまく思い出せなかった。',
-        item: '読み込めなかった写真',
-        bgm: '無音の帰り道',
-      });
+
+      if (!res.ok) {
+        throw new Error(data?.message || data?.error || '生成APIでエラーが発生しました。');
+      }
+
+      if (!data.result) {
+        throw new Error('生成結果が空でした。');
+      }
+
+      setGenerated(data.result);
+    } catch (e: any) {
+      setErrorMessage(e?.message || '生成に失敗しました。Vercelのログを確認してください。');
+      setGenerated(null);
     } finally {
       setIsGenerating(false);
     }
@@ -158,7 +162,11 @@ function App() {
             {isGenerating ? '生成中…' : 'もうひとつの人生を生成する'}
           </button>
 
+          {remainingCount !== null && (
+            <p className="limit-text">本日の残り生成回数：{remainingCount}回</p>
+          )}
           {loadingText && <p className="loading-text">{loadingText}</p>}
+          {errorMessage && <p className="error-text">{errorMessage}</p>}
         </div>
 
         <div className="result-panel">
