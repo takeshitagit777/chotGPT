@@ -1,12 +1,7 @@
-type ChatMessage = {
-  role?: string;
-  text?: string;
-  content?: string;
-};
-
 function jsonResponse(res: any, status: number, body: any) {
-  res.status(status).setHeader("Content-Type", "application/json; charset=utf-8");
-  return res.end(JSON.stringify(body));
+  res.statusCode = status;
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.end(JSON.stringify(body));
 }
 
 export default async function handler(req: any, res: any) {
@@ -17,17 +12,17 @@ export default async function handler(req: any, res: any) {
     });
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
-
-  if (!apiKey) {
-    return jsonResponse(res, 500, {
-      error: "missing_openai_api_key",
-      message: "Vercelの環境変数 OPENAI_API_KEY が未設定です。",
-    });
-  }
-
   try {
-    const { worldline, character, history, message } = req.body ?? {};
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!apiKey) {
+      return jsonResponse(res, 500, {
+        error: "missing_openai_api_key",
+        message: "Vercelの環境変数 OPENAI_API_KEY が未設定です。",
+      });
+    }
+
+    const { worldline, character, history, message } = req.body || {};
 
     if (!worldline || !character || !message) {
       return jsonResponse(res, 400, {
@@ -37,7 +32,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const compactHistory = Array.isArray(history)
-      ? history.slice(-12).map((m: ChatMessage) => ({
+      ? history.slice(-10).map((m: any) => ({
           role: m.role === "assistant" ? "assistant" : "user",
           content: String(m.text || m.content || ""),
         }))
@@ -46,7 +41,6 @@ export default async function handler(req: any, res: any) {
     const systemPrompt = `
 あなたは「架空自分史」というアプリ内に存在するキャラクターです。
 ユーザーはあなたと同じ世界線にいる人物です。
-以下の設定を守って、自然な会話として返信してください。
 
 【世界線】
 タイトル: ${worldline.title || ""}
@@ -65,15 +59,11 @@ export default async function handler(req: any, res: any) {
 背景: ${character.backstory || ""}
 
 【返信ルール】
-- 返信は日本語
-- スマホの会話らしく短め
+- 日本語で返す
+- スマホの会話らしく短く返す
 - 1〜3文まで
-- 自然な口調
-- 説明くさくしない
 - AI、OpenAI、アプリ、生成という言葉は出さない
-- 相手との関係性を大切にする
-- 時代設定に合わない言葉は避ける
-- たまに少しだけ感情がにじむ
+- その人の性格と関係性を守る
 `;
 
     const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
