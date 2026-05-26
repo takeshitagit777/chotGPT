@@ -111,7 +111,7 @@ function toText(value: any, fallback = ""): string {
 
 function normalizeResult(raw: any): WorldResult {
   return {
-    title: toText(raw?.title, "あったかもしれない夏"),
+    title: toText(raw?.title, "存在しないあなたの記録"),
     album: toArray(raw?.album).slice(0, 5),
     line: toArray(raw?.line).slice(0, 5),
     sns: toText(raw?.sns, "あの日の帰り道だけ、まだ少し覚えている。"),
@@ -165,8 +165,8 @@ export default async function handler(req: any, res: any) {
     const response = await client.responses.create({
       model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
       input: `
-あなたは「あったかもしれない」という体験型サービスの生成エンジンです。
-ユーザーの設定から、存在しなかった“もうひとつの人生”を日本語で生成してください。
+あなたは「架空自分史」という体験型サービスの生成エンジンです。
+ユーザーの設定から、存在しないのに妙に懐かしい“もうひとつの自分史”を日本語で生成してください。
 
 設定:
 - 時代: ${era}
@@ -174,11 +174,17 @@ export default async function handler(req: any, res: any) {
 - 立場: ${role}
 - 雰囲気: ${mood}
 
+トーン:
+- 少しだけ切ない
+- 過度にポエムにしない
+- 本当にありそうな具体性を入れる
+- 架空なのに、自分の記録のように感じる文章にする
+
 必ず下記のJSONオブジェクトのみを返してください。
 説明文、Markdown、コードブロックは不要です。
 
 {
-  "title": "短くエモいタイトル",
+  "title": "短くエモい自分史タイトル",
   "album": ["写真アルバムの1枚目の説明", "写真アルバムの2枚目の説明", "写真アルバムの3枚目の説明"],
   "line": ["相手: 短い会話", "自分: 短い返信", "相手: 余韻のある一言"],
   "sns": "当時ありそうな短いSNS投稿文。ハッシュタグも自然に1つだけ。",
