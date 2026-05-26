@@ -556,7 +556,7 @@ function ChatPage({ worldline, friendId }: { worldline: Worldline; friendId: str
     setErrorMessage('');
 
     try {
-      const res = await fetch('/api/chat-send', {
+      const res = await fetch('/api/chat-reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ worldline, character: friend, history: nextMessages, message: userMessage.text }),
