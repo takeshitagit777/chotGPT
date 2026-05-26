@@ -1,44 +1,39 @@
-# 架空自分史 アプリ拡張パッチ
+# Build Failed 修正版パッチ
 
-## 追加されるもの
+前回の版は `react-router-dom` を追加していたため、既存環境・lockfile・Vercel設定によってビルドが落ちる可能性がありました。
 
-- ホーム
-- 友達一覧 `/friends`
-- 会話画面 `/chat/:friendId`
-- アルバム一覧 `/albums`
-- アルバム詳細 `/albums/:albumId`
-- OpenAI APIでキャラクター会話する `/api/chat-send`
-- 世界線生成時に友達・アルバムも生成
-- ローカル保存 localStorage
+この版は **React Routerを使わない** 形に変更しています。
+そのため、新しいフロント依存関係なしで動きます。
 
-## 上書き・追加するファイル
+## 上書きするファイル
 
-ZIPの中身を、GitHubリポジトリの同じ場所にそのまま上書きしてください。
+ZIPの中身を、GitHubリポジトリの同じ場所へ上書きしてください。
 
 ```txt
 package.json
+tsconfig.json
+vite.config.ts
 index.html
 src/main.tsx
 src/index.css
-src/App.css
 src/App.tsx
-src/components/AppShell.tsx
-src/pages/HomePage.tsx
-src/pages/FriendsPage.tsx
-src/pages/ChatPage.tsx
-src/pages/AlbumsPage.tsx
-src/pages/AlbumDetailPage.tsx
-src/lib/types.ts
-src/lib/defaultWorld.ts
-src/lib/storage.ts
-src/lib/api.ts
+src/App.css
 api/generate.ts
 api/chat-send.ts
 ```
 
-## public配下の画像
+## 削除しなくてもよいファイル
 
-既存のままでOKです。
+前回追加した以下のファイルは残っていても問題ありません。
+今回の `src/App.tsx` では読み込まないため、ビルド対象外です。
+
+```txt
+src/pages/*
+src/components/*
+src/lib/*
+```
+
+## 画像はそのまま
 
 ```txt
 public/feature-album.jpg
@@ -50,21 +45,18 @@ public/feature-item.jpg
 public/feature-music.jpg
 ```
 
+## 動く画面
+
+- `/#/` ホーム
+- `/#/friends` 友達一覧
+- `/#/chat/yui` 会話
+- `/#/albums` アルバム一覧
+- `/#/albums/summer` アルバム詳細
+
 ## Vercel環境変数
 
-既存のままでOKです。
+既存のままです。
 
 ```txt
 OPENAI_API_KEY=sk-...
 ```
-
-任意:
-
-```txt
-OPENAI_MODEL=gpt-4.1-mini
-```
-
-## 注意
-
-package.json に `react-router-dom` を追加しています。
-GitHubに反映すると、Vercel側で自動的に install/build されます。
