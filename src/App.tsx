@@ -47,6 +47,97 @@ function toText(value: unknown, fallback = ''): string {
   return String(value);
 }
 
+function parseLineMessage(message: string, index: number) {
+  const raw = String(message ?? '').trim();
+
+  const minePrefixes = ['自分:', '自分：', '私:', '私：', 'わたし:', 'わたし：', '僕:', '僕：', '俺:', '俺：', 'me:', 'Me:'];
+  const otherPrefixes = ['相手:', '相手：', '友達:', '友達：', 'あの子:', 'あの子：', '彼女:', '彼女：', '彼:', '彼：'];
+
+  const minePrefix = minePrefixes.find((prefix) => raw.startsWith(prefix));
+  const otherPrefix = otherPrefixes.find((prefix) => raw.startsWith(prefix));
+
+  if (minePrefix) {
+    return {
+      id: index,
+      side: 'mine' as const,
+      name: '自分',
+      text: raw.replace(minePrefix, '').trim(),
+      time: `19:${String(42 + index).padStart(2, '0')}`,
+    };
+  }
+
+  if (otherPrefix) {
+    return {
+      id: index,
+      side: 'other' as const,
+      name: raw.startsWith('あの子') ? 'あの子' : '友だち',
+      text: raw.replace(otherPrefix, '').trim(),
+      time: `19:${String(41 + index).padStart(2, '0')}`,
+    };
+  }
+
+  return {
+    id: index,
+    side: index % 2 === 0 ? 'other' as const : 'mine' as const,
+    name: index % 2 === 0 ? '友だち' : '自分',
+    text: raw,
+    time: `19:${String(41 + index).padStart(2, '0')}`,
+  };
+}
+
+function LineConversation({ messages, era }: { messages: string[]; era: string }) {
+  const parsedMessages = messages.length
+    ? messages.map(parseLineMessage)
+    : [
+        parseLineMessage('相手: ねえ、今日どうする？', 0),
+        parseLineMessage('自分: いつもの駅で待ち合わせしよ', 1),
+        parseLineMessage('相手: うん。なんか今日、少しだけ特別な気がする', 2),
+      ];
+
+  return (
+    <div className="line-window" aria-label="LINE風のやりとり">
+      <div className="line-statusbar">
+        <span>19:45</span>
+        <span>●●● 4G 78%</span>
+      </div>
+
+      <div className="line-header">
+        <button type="button" aria-label="戻る">‹</button>
+        <div>
+          <strong>あの頃のともだち</strong>
+          <span>{era}の世界線</span>
+        </div>
+        <button type="button" aria-label="メニュー">☰</button>
+      </div>
+
+      <div className="line-date">8月15日　金曜日</div>
+
+      <div className="line-chat-body">
+        {parsedMessages.map((msg) => (
+          <div className={`line-row ${msg.side}`} key={`${msg.id}-${msg.text}`}>
+            {msg.side === 'other' && <div className="line-avatar">友</div>}
+            <div className="line-message-stack">
+              {msg.side === 'other' && <span className="line-name">{msg.name}</span>}
+              <div className="line-bubble-row">
+                {msg.side === 'mine' && <span className="line-time mine-time">既読<br />{msg.time}</span>}
+                <p className="line-bubble">{msg.text}</p>
+                {msg.side === 'other' && <span className="line-time">{msg.time}</span>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="line-inputbar">
+        <span className="line-plus">＋</span>
+        <div className="line-input">メッセージ</div>
+        <span className="line-icon">⌕</span>
+        <span className="line-icon">♡</span>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [era, setEra] = useState('1999年');
   const [place, setPlace] = useState('地方の海辺の町');
@@ -197,8 +288,17 @@ function App() {
             <div className="result-content">
               <p className="eyebrow">Generated</p>
               <h3>{toText(generated.title, 'あったかもしれない世界線')}</h3>
-              <div className="result-block"><strong>写真アルバム</strong><ul>{album.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
-              <div className="result-block"><strong>LINE</strong><ul>{line.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
+
+              <div className="result-block">
+                <strong>写真アルバム</strong>
+                <ul>{album.map((x, i) => <li key={i}>{x}</li>)}</ul>
+              </div>
+
+              <div className="result-block line-result-block">
+                <strong>LINEのやりとり</strong>
+                <LineConversation messages={line} era={era} />
+              </div>
+
               <div className="result-block"><strong>SNS投稿</strong><p>{toText(generated.sns)}</p></div>
               <div className="result-block"><strong>検索履歴</strong><ul>{search.map((x, i) => <li key={i}>{x}</li>)}</ul></div>
               <div className="result-block"><strong>日記</strong><p>{toText(generated.diary)}</p></div>
