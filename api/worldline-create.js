@@ -243,6 +243,7 @@ function normalizeCharacter(c, index) {
 function normalizeResult(raw, input) {
   const albumText = arr(raw && raw.album);
   const search = arr(raw && raw.search);
+  const rawSnsPosts = Array.isArray(raw && raw.snsPosts) ? raw.snsPosts : [];
   const rawCharacters = Array.isArray(raw && raw.characters) ? raw.characters : [];
   const characters = Array.from({ length: 13 }).map((_, index) =>
     normalizeCharacter(rawCharacters[index], index)
@@ -281,6 +282,43 @@ function normalizeResult(raw, input) {
         },
       ];
 
+
+  const snsPosts = rawSnsPosts.length
+    ? rawSnsPosts.slice(0, 12).map((post, index) => {
+        const character = characters[index % characters.length];
+
+        return {
+          id: text(post && post.id, `sns-${index + 1}`),
+          userName: text(post && post.userName, `${character.id}_log`),
+          displayName: text(post && post.displayName, character.name),
+          avatarUrl: text(post && post.avatarUrl, character.avatarUrl),
+          content: text(post && post.content, "今日は、なぜか帰り道が少し長く感じた。"),
+          imageUrl: text(post && post.imageUrl, ["/feature-sns.jpg", "/feature-album.jpg", "/feature-diary.jpg", "/feature-item.jpg"][index % 4]),
+          likes: Number(post && post.likes) || 20 + index * 11,
+          comments: arr(post && post.comments).slice(0, 4),
+          postedAt: text(post && post.postedAt, String(input.era)),
+          location: text(post && post.location, String(input.place)),
+        };
+      })
+    : characters.slice(0, 8).map((character, index) => ({
+        id: `sns-${index + 1}`,
+        userName: `${character.id}_log`,
+        displayName: character.name,
+        avatarUrl: character.avatarUrl,
+        content: [
+          `${input.place}の帰り道、今日はなんか少しだけ静かだった。`,
+          `${input.role}って、思ってたより忙しい。けど今日の空はよかった。`,
+          `明日も同じ道を通るのに、今日だけ覚えておきたい感じがする。`,
+          `${input.mood}日って、あとから急に思い出すんだろうな。`,
+        ][index % 4],
+        imageUrl: ["/feature-sns.jpg", "/feature-album.jpg", "/feature-diary.jpg", "/feature-item.jpg"][index % 4],
+        likes: 40 + index * 17,
+        comments: ["わかる", "それどこ？", "今日の雰囲気よかった"],
+        postedAt: String(input.era),
+        location: String(input.place),
+      }));
+
+
   return {
     id: `worldline-${Date.now()}`,
     title: text(raw && raw.title, "存在しないあなたの記録"),
@@ -292,6 +330,7 @@ function normalizeResult(raw, input) {
     album: albumText,
     line: arr(raw && raw.line),
     sns: text(raw && raw.sns, "あの日の帰り道だけ、まだ少し覚えている。 #架空自分史"),
+    snsPosts,
     search,
     diary: text(raw && raw.diary, "今日は、なぜか少しだけ帰り道が長く感じた。"),
     item: text(raw && raw.item, "少し色あせたキーホルダー"),
@@ -352,6 +391,7 @@ module.exports = async function handler(req, res) {
 
 必ずJSONのみで返してください。Markdownや説明文は不要です。
 charactersは必ず13人作成してください。
+snsPostsは必ず8〜12件作成してください。投稿者はcharactersの人物を中心にし、時代・場所・立場・雰囲気に合う投稿内容にしてください。
 恋愛相手・親友・幼なじみ・先輩・後輩・バイト仲間・ライバル・静かな友人など、関係性と口調を必ず分けてください。
 
 {
@@ -360,6 +400,20 @@ charactersは必ず13人作成してください。
   "album": ["写真説明1", "写真説明2", "写真説明3"],
   "line": ["相手: 短い会話", "自分: 短い返信", "相手: 余韻のある一言"],
   "sns": "短いSNS投稿文。ハッシュタグは1つだけ。",
+  "snsPosts": [
+    {
+      "id": "sns-1",
+      "userName": "投稿者ID",
+      "displayName": "投稿者名",
+      "avatarUrl": "/avatar-yui.svg",
+      "content": "世界線に合った投稿本文",
+      "imageUrl": "/feature-sns.jpg",
+      "likes": 132,
+      "comments": ["短いコメント1", "短いコメント2"],
+      "postedAt": "1999.08.15 19:42",
+      "location": "場所"
+    }
+  ],
   "search": ["検索履歴1", "検索履歴2", "検索履歴3"],
   "diary": "短い日記",
   "item": "思い出の品",
