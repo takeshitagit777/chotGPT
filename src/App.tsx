@@ -30,6 +30,19 @@ type Album = {
   photos: Photo[];
 };
 
+type SnsPost = {
+  id: string;
+  userName: string;
+  displayName: string;
+  avatarUrl: string;
+  content: string;
+  imageUrl?: string;
+  likes: number;
+  comments: string[];
+  postedAt: string;
+  location?: string;
+};
+
 type Worldline = {
   id: string;
   title: string;
@@ -41,6 +54,7 @@ type Worldline = {
   album: string[];
   line: string[];
   sns: string;
+  snsPosts: SnsPost[];
   search: string[];
   diary: string;
   item: string;
@@ -323,6 +337,7 @@ function normalizeWorldline(raw: Partial<Worldline>, input?: Partial<Worldline>)
     albums: Array.isArray(base.albums) && base.albums.length ? base.albums : defaultWorldline.albums,
     album: Array.isArray(base.album) ? base.album : defaultWorldline.album,
     line: Array.isArray(base.line) ? base.line : defaultWorldline.line,
+    snsPosts: Array.isArray(base.snsPosts) && base.snsPosts.length ? base.snsPosts : defaultWorldline.snsPosts,
     search: Array.isArray(base.search) ? base.search : defaultWorldline.search,
   };
 }
@@ -405,7 +420,7 @@ async function safeJsonFetch(url: string, options: RequestInit) {
 const features = [
   { no: '1', title: '写真・アルバム', text: '存在しない写真が、まるで古いアルバムのように並びます。', image: '/feature-album.jpg', route: '/albums' },
   { no: '2', title: '会話の記録', text: '友達一覧から相手を選び、その世界線の中で会話できます。', image: '/feature-line.jpg', route: '/friends' },
-  { no: '3', title: 'SNS投稿', text: '当時っぽい投稿、コメント、いいねまで自分史の断片として再現します。', image: '/feature-sns.jpg', route: '/' },
+  { no: '3', title: 'SNS投稿', text: '世界線に合わせた投稿一覧。海辺なら海辺、中学生なら中学生らしい投稿に変わります。', image: '/feature-sns.jpg', route: '/sns' },
   { no: '4', title: '検索履歴', text: 'その人の人生がにじむ、妙にリアルな検索履歴。', image: '/feature-search.jpg', route: '/' },
   { no: '5', title: '日記・つぶやき', text: '誰にも見せなかったノートのような短い記録。', image: '/feature-diary.jpg', route: '/' },
   { no: '6', title: '思い出の品', text: 'ケータイ、キーホルダー、チケット。物から人生の断片を作る。', image: '/feature-item.jpg', route: '/' },
@@ -445,6 +460,7 @@ function Shell({ route, children }: { route: string; children: React.ReactNode }
         <nav className="desktop-nav">
           <button className={route === '/' ? 'active' : ''} onClick={() => setHash('/')}>ホーム</button>
           <button className={route.startsWith('/friends') || route.startsWith('/chat') ? 'active' : ''} onClick={() => setHash('/friends')}>会話</button>
+          <button className={route === '/sns' ? 'active' : ''} onClick={() => setHash('/sns')}>SNS</button>
           <button className={route.startsWith('/albums') ? 'active' : ''} onClick={() => setHash('/albums')}>アルバム</button>
         </nav>
       </header>
@@ -459,6 +475,10 @@ function Shell({ route, children }: { route: string; children: React.ReactNode }
         <button className={route.startsWith('/friends') || route.startsWith('/chat') ? 'active' : ''} onClick={() => setHash('/friends')}>
           <span>💬</span>
           <small>会話</small>
+        </button>
+        <button className={route === '/sns' ? 'active' : ''} onClick={() => setHash('/sns')}>
+          <span>♡</span>
+          <small>SNS</small>
         </button>
         <button className={route.startsWith('/albums') ? 'active' : ''} onClick={() => setHash('/albums')}>
           <span>▧</span>
@@ -792,6 +812,66 @@ function ChatPage({ worldline, friendId }: { worldline: Worldline; friendId: str
   );
 }
 
+
+function SnsPage({ worldline }: { worldline: Worldline }) {
+  return (
+    <main className="sub-page">
+      <section className="sub-hero compact">
+        <p className="eyebrow">Social Archive</p>
+        <h1>SNS投稿</h1>
+        <p>
+          この世界線に流れている投稿一覧。時代・場所・立場・雰囲気に合わせて、投稿者や内容が変わります。
+        </p>
+      </section>
+
+      <section className="sns-layout">
+        <div className="sns-phone">
+          <div className="sns-topbar">
+            <span>9:41</span>
+            <strong>{worldline.era}のタイムライン</strong>
+            <span>検索</span>
+          </div>
+
+          <div className="sns-feed">
+            {worldline.snsPosts.map((post) => (
+              <article className="sns-card" key={post.id}>
+                <header className="sns-card-header">
+                  <img src={post.avatarUrl} alt={`${post.displayName}のアイコン`} />
+                  <div>
+                    <strong>{post.displayName}</strong>
+                    <span>@{post.userName}・{post.postedAt}</span>
+                  </div>
+                </header>
+
+                <p className="sns-content">{post.content}</p>
+
+                {post.imageUrl && (
+                  <img src={post.imageUrl} alt="投稿画像" className="sns-image" />
+                )}
+
+                <footer className="sns-actions">
+                  <span>♡ {post.likes}</span>
+                  <span>💬 {post.comments.length}</span>
+                  {post.location && <span>📍 {post.location}</span>}
+                </footer>
+
+                {post.comments.length > 0 && (
+                  <div className="sns-comments">
+                    {post.comments.slice(0, 2).map((comment, index) => (
+                      <p key={`${post.id}-comment-${index}`}>{comment}</p>
+                    ))}
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+
 function AlbumsPage({ worldline }: { worldline: Worldline }) {
   return (
     <main className="sub-page">
@@ -861,6 +941,8 @@ function App() {
     page = <AlbumDetailPage worldline={worldline} albumId={route.replace('/albums/', '')} />;
   } else if (route === '/friends') {
     page = <FriendsPage worldline={worldline} />;
+  } else if (route === '/sns') {
+    page = <SnsPage worldline={worldline} />;
   } else if (route === '/albums') {
     page = <AlbumsPage worldline={worldline} />;
   } else {

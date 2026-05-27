@@ -79,10 +79,10 @@
   bottom: 16px;
   transform: translateX(-50%);
   z-index: 30;
-  width: min(420px, calc(100vw - 28px));
+  width: min(520px, calc(100vw - 28px));
   height: 64px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   padding: 8px;
   border-radius: 999px;
@@ -357,7 +357,6 @@ h3 {
 
 .creator-panel,
 .result-panel,
-.price-card,
 .phone-list-panel,
 .chat-shell {
   border-radius: 36px;
@@ -449,37 +448,27 @@ input {
   padding: clamp(24px, 4vw, 44px);
 }
 
-.result-content {
+.empty-result {
+  height: 100%;
+  min-height: 520px;
   display: grid;
-  gap: 16px;
+  place-content: center;
+  text-align: center;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255, 100, 170, .15), transparent 30%),
+    rgba(0,0,0,.22);
 }
 
-.result-block {
-  border-radius: 22px;
-  padding: 16px 18px;
-  background: rgba(0,0,0,.22);
-  border: 1px solid rgba(255,255,255,.08);
+.empty-result span {
+  font-size: 32px;
+  font-weight: 900;
 }
 
-.result-block strong {
-  color: #ffd1df;
-}
-
-.result-block p,
-.result-block li {
-  color: rgba(255,255,255,.72);
-  line-height: 1.75;
-}
-
-.result-block ul {
-  margin: 10px 0 0;
-  padding-left: 1.2em;
-}
-
-.result-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+.empty-result p {
+  color: rgba(255,255,255,.62);
+  line-height: 1.8;
+  max-width: 420px;
 }
 
 .sub-page {
@@ -559,6 +548,20 @@ input {
   color: #150815;
   font-weight: 900;
   box-shadow: 0 16px 38px rgba(255,91,159,.25);
+  overflow: hidden;
+  position: relative;
+}
+
+.friend-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.friend-avatar span {
+  position: relative;
+  z-index: 1;
 }
 
 .friend-avatar.small {
@@ -1033,20 +1036,134 @@ input {
 }
 
 
-/* LINE風プロフィール画像 */
-.friend-avatar {
+.sns-layout {
+  display: grid;
+  place-items: center;
+}
+
+.sns-phone {
+  width: min(760px, 100%);
   overflow: hidden;
-  position: relative;
+  border-radius: 34px;
+  border: 1px solid rgba(255,255,255,.15);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)),
+    #10131d;
+  box-shadow: 0 24px 80px rgba(0,0,0,.28);
 }
 
-.friend-avatar img {
-  width: 100%;
-  height: 100%;
+.sns-topbar {
+  height: 64px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 18px;
+  background: #171d2c;
+  border-bottom: 1px solid rgba(255,255,255,.09);
+}
+
+.sns-topbar span {
+  color: rgba(255,255,255,.58);
+  font-size: 13px;
+}
+
+.sns-topbar span:last-child {
+  text-align: right;
+}
+
+.sns-feed {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.sns-card {
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.22);
+  overflow: hidden;
+}
+
+.sns-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px 8px;
+}
+
+.sns-card-header img {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
   object-fit: cover;
-  display: block;
+  box-shadow: 0 12px 30px rgba(0,0,0,.22);
 }
 
-.friend-avatar span {
-  position: relative;
-  z-index: 1;
+.sns-card-header strong {
+  display: block;
+  color: #fff;
+}
+
+.sns-card-header span {
+  display: block;
+  margin-top: 2px;
+  color: rgba(255,255,255,.48);
+  font-size: 12px;
+}
+
+.sns-content {
+  margin: 0;
+  padding: 6px 16px 14px;
+  color: rgba(255,255,255,.86);
+  line-height: 1.8;
+  font-weight: 700;
+}
+
+.sns-image {
+  width: calc(100% - 32px);
+  height: 320px;
+  display: block;
+  margin: 0 16px;
+  border-radius: 24px;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.sns-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  color: rgba(255,255,255,.62);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sns-comments {
+  display: grid;
+  gap: 8px;
+  margin: 0 16px 16px;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.05);
+}
+
+.sns-comments p {
+  margin: 0;
+  color: rgba(255,255,255,.62);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (max-width: 560px) {
+  .sns-feed {
+    padding: 12px;
+  }
+
+  .sns-image {
+    width: calc(100% - 24px);
+    height: 220px;
+    margin: 0 12px;
+    border-radius: 20px;
+  }
 }
