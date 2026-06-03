@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type Character = {
   id: string;
@@ -421,10 +421,10 @@ const features = [
   { no: '1', title: '写真・アルバム', text: '存在しない写真が、まるで古いアルバムのように並びます。', image: '/feature-album.jpg', route: '/albums' },
   { no: '2', title: '会話の記録', text: '友達一覧から相手を選び、その世界線の中で会話できます。', image: '/feature-line.jpg', route: '/friends' },
   { no: '3', title: 'SNS投稿', text: '世界線に合わせた投稿一覧。海辺なら海辺、中学生なら中学生らしい投稿に変わります。', image: '/feature-sns.jpg', route: '/sns' },
-  { no: '4', title: '検索履歴', text: 'その人の人生がにじむ、妙にリアルな検索履歴。', image: '/feature-search.jpg', route: '/' },
-  { no: '5', title: '日記・つぶやき', text: '誰にも見せなかったノートのような短い記録。', image: '/feature-diary.jpg', route: '/' },
-  { no: '6', title: '思い出の品', text: 'ケータイ、キーホルダー、チケット。物から人生の断片を作る。', image: '/feature-item.jpg', route: '/' },
-  { no: '7', title: '音楽・BGM', text: 'その世界に流れていそうなBGMタイトルや歌詞っぽい空気。', image: '/feature-music.jpg', route: '/' },
+  { no: '4', title: '結果カード', text: '診断結果を画像として保存。投稿に載せやすい1枚にします。', image: '/ogp.png', route: '/share' },
+  { no: '5', title: '世界線ガチャ', text: '時代、場所、立場、空気を一発で引き直す遊び。レア世界線も混ざります。', image: '/viral-worldline-hero.png', route: '/gacha' },
+  { no: '6', title: '相性診断', text: 'この世界線で、誰があなたを一番覚えているかを見ます。', image: '/feature-line.jpg', route: '/compat' },
+  { no: '7', title: '深夜検索と日記', text: '検索履歴、日記、思い出の品。スクショしたくなる断片をまとめます。', image: '/feature-search.jpg', route: '/archive' },
 ];
 
 const presets = [
@@ -480,6 +480,44 @@ const vibeTypes = [
   },
 ];
 
+const gachaWorldlines = [
+  ['1998年', '台風前の海辺の町', '転校を隠している高校生', '青くて危うい', 'RARE'],
+  ['2004年', '閉店前のレンタルビデオ店', '映画を返せない大学生', '静かで未練がある', 'NORMAL'],
+  ['2009年', '文化祭前夜の教室', '最後まで残った実行委員', '眩しくて焦げる', 'EPIC'],
+  ['2016年', '深夜のファミレス', '夢を言えないバンドマン', 'だらしなく優しい', 'RARE'],
+  ['平成最後の春', '終電前の渋谷', 'まだ何者でもない人', '眩しくて少し危うい', 'SECRET'],
+  ['2031年', '雨上がりの高架下', '記憶を集める配達員', '近未来でエモい', 'EPIC'],
+];
+
+const memoryHooks = [
+  'あなたが何気なく言った一言を、まだ覚えている。',
+  '集合写真の端にいるあなたを、たぶん最初に見つける。',
+  '返信しなかったメッセージのことを、今でも少し気にしている。',
+  'あの日の帰り道を、あなたより鮮明に覚えている。',
+];
+
+function scoreText(seed: string) {
+  return Array.from(seed).reduce((sum, char) => sum + char.charCodeAt(0), 0);
+}
+
+function getVibeResult(seed: string) {
+  return vibeTypes[scoreText(seed) % vibeTypes.length];
+}
+
+function getRememberer(worldline: Worldline) {
+  const seed = scoreText(`${worldline.id}${worldline.title}${worldline.mood}`);
+  const friend = worldline.characters[seed % worldline.characters.length];
+  return {
+    friend,
+    hook: memoryHooks[seed % memoryHooks.length],
+    score: 82 + (seed % 17),
+  };
+}
+
+function makeShareText(worldline: Worldline, vibeTitle: string) {
+  return `私は「${vibeTitle}」タイプでした。${worldline.title} / ${worldline.era} ${worldline.place} #あったかもしれないGPT`;
+}
+
 function FriendAvatar({ friend, className = '' }: { friend: Character; className?: string }) {
   return (
     <div className={`friend-avatar ${className}`.trim()}>
@@ -499,13 +537,14 @@ function Shell({ route, children }: { route: string; children: React.ReactNode }
         <button className="brand" type="button" onClick={() => setHash('/')}>
           <span className="brand-mark">架</span>
           <span>
-            <strong>架空自分史</strong>
-            <small>存在しないあなたを、記録する。</small>
+            <strong>あったかもしれないGPT</strong>
+            <small>あったかもしれない人生を、生成する。</small>
           </span>
         </button>
 
         <nav className="desktop-nav">
           <button className={route === '/' ? 'active' : ''} onClick={() => setHash('/')}>ホーム</button>
+          <button className={route === '/gacha' || route === '/share' || route === '/compat' || route === '/archive' ? 'active' : ''} onClick={() => setHash('/gacha')}>遊ぶ</button>
           <button className={route.startsWith('/friends') || route.startsWith('/chat') ? 'active' : ''} onClick={() => setHash('/friends')}>会話</button>
           <button className={route === '/sns' ? 'active' : ''} onClick={() => setHash('/sns')}>SNS</button>
           <button className={route.startsWith('/albums') ? 'active' : ''} onClick={() => setHash('/albums')}>アルバム</button>
@@ -519,6 +558,10 @@ function Shell({ route, children }: { route: string; children: React.ReactNode }
           <span>⌂</span>
           <small>ホーム</small>
         </button>
+        <button className={route === '/gacha' || route === '/share' || route === '/compat' || route === '/archive' ? 'active' : ''} onClick={() => setHash('/gacha')}>
+          <span>◎</span>
+          <small>遊ぶ</small>
+        </button>
         <button className={route.startsWith('/friends') || route.startsWith('/chat') ? 'active' : ''} onClick={() => setHash('/friends')}>
           <span>💬</span>
           <small>会話</small>
@@ -526,10 +569,6 @@ function Shell({ route, children }: { route: string; children: React.ReactNode }
         <button className={route === '/sns' ? 'active' : ''} onClick={() => setHash('/sns')}>
           <span>♡</span>
           <small>SNS</small>
-        </button>
-        <button className={route.startsWith('/albums') ? 'active' : ''} onClick={() => setHash('/albums')}>
-          <span>▧</span>
-          <small>アルバム</small>
         </button>
       </nav>
     </div>
@@ -554,11 +593,11 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
 
   const vibeResult = useMemo(() => {
     const seed = `${era}${place}${role}${mood}${Object.values(answers).join('')}`;
-    const score = Array.from(seed).reduce((sum, char) => sum + char.charCodeAt(0), 0);
-    return vibeTypes[score % vibeTypes.length];
+    return getVibeResult(seed);
   }, [answers, era, place, role, mood]);
 
-  const shareText = `私は「${vibeResult.title}」タイプでした。${worldline.title} / ${worldline.era} ${worldline.place} #架空自分史`;
+  const rememberer = useMemo(() => getRememberer(worldline), [worldline]);
+  const shareText = makeShareText(worldline, vibeResult.title);
 
   const loadingText = useMemo(() => {
     if (!isGenerating) return '';
@@ -616,23 +655,25 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
     <main>
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">5秒で、存在しない自分が立ち上がる。</p>
-          <h1>架空自分史</h1>
+          <p className="eyebrow">AIが生成する、もうひとつのあなたの世界。</p>
+          <h1>あったかもしれないGPT</h1>
           <p className="lead">
-            写真、会話、検索履歴、日記、思い出の品まで。
-            あなたが選ばなかった世界線を、シェアしたくなる自分史として生成します。
+            あなたの“もしも”を、写真・LINEのやりとり・SNS投稿・検索履歴・日記・思い出の品まで生成。
+            存在しないのに、なぜか懐かしい人生をつくります。
           </p>
 
           <div className="buzz-strip" aria-label="サイトの特徴">
-            <span>診断できる</span>
-            <span>会話できる</span>
-            <span>結果を共有できる</span>
+            <span>写真ができる</span>
+            <span>友だちと話せる</span>
+            <span>検索履歴まで残る</span>
+            <span>結果を投稿できる</span>
           </div>
 
           <div className="hero-actions">
-            <a href="#create" className="primary-button">世界線を診断する</a>
+            <a href="#create" className="primary-button">もうひとつの人生を作る</a>
+            <button className="ghost-button" onClick={() => setHash('/gacha')}>ガチャを引く</button>
+            <button className="ghost-button" onClick={() => setHash('/share')}>結果カード</button>
             <button className="ghost-button" onClick={() => setHash('/friends')}>会話を開く</button>
-            <button className="ghost-button" onClick={() => setHash('/albums')}>アルバムを見る</button>
           </div>
         </div>
 
@@ -656,8 +697,8 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
       <section id="features" className="section">
         <div className="section-heading">
           <p className="eyebrow">Fictional Autobiography</p>
-          <h2>診断で終わらない。中に入れる自分史。</h2>
-          <p>会話は友達一覧へ、アルバムは写真フォルダへ、SNSはタイムラインへ。結果画像っぽく見えるだけではなく、触れる記録として残します。</p>
+          <h2>“結果”じゃなくて、世界そのものを作る。</h2>
+          <p>写真アルバム、LINE風の会話、SNS投稿、検索履歴、日記、思い出の品、音楽まで。1枚の診断画像で終わらない、触れるもうひとつの人生です。</p>
         </div>
 
         <div className="feature-grid">
@@ -678,8 +719,8 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
         <div className="creator-panel">
           <div>
             <p className="eyebrow">Create Your Worldline</p>
-            <h2>あなたのバズりそうな世界線をつくる。</h2>
-            <p className="muted">まずは3つ選ぶだけで診断結果が変わります。生成後は、会話とアルバムがアプリ内に保存されます。</p>
+            <h2>あなたにありえた人生を、数秒で立ち上げる。</h2>
+            <p className="muted">まずは3つ選ぶだけで、世界線の空気が変わります。生成後は、会話・アルバム・SNS・日記がアプリ内に保存されます。</p>
           </div>
 
           <div className="quiz-stack">
@@ -742,10 +783,19 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
               <p>{worldline.summary}</p>
             </div>
 
+            <div className="remember-card">
+              <span>あなたを一番覚えている人</span>
+              <strong>{rememberer.friend.name}</strong>
+              <p>{rememberer.hook}</p>
+            </div>
+
             <div className="share-box">
               <p>{shareText}</p>
               <button type="button" className="small-primary" onClick={handleCopyShare}>
                 {copied ? 'コピー済み' : '共有文をコピー'}
+              </button>
+              <button type="button" className="small-ghost" onClick={() => setHash('/share')}>
+                画像カードを作る
               </button>
               <button type="button" className="small-ghost" onClick={() => setHash('/sns')}>
                 タイムラインを見る
@@ -1049,6 +1099,260 @@ function AlbumDetailPage({ worldline, albumId }: { worldline: Worldline; albumId
   );
 }
 
+function makeGachaWorldline(index: number): Worldline {
+  const pick = gachaWorldlines[index % gachaWorldlines.length];
+  const [era, place, role, mood, rarity] = pick;
+  const result = getVibeResult(pick.join(''));
+
+  return normalizeWorldline({
+    id: `gacha-${Date.now()}`,
+    title: `${rarity}世界線: ${place}`,
+    summary: `${role}として過ごす、${mood}架空自分史。結果は「${result.title}」。`,
+    diary: `今日は${place}にいた。何も起きていないふりをしたけど、たぶん全部始まっていた。`,
+    item: `${rarity}の印が入った、少し傷のあるキーホルダー。`,
+    bgm: `${place}、${mood}夜`,
+    search: [`${place} 帰り道`, `${role} 本音`, `${era} 忘れられない日`],
+  }, { era, place, role, mood });
+}
+
+function GachaPage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldline) => void }) {
+  const [index, setIndex] = useState(() => Math.floor(Math.random() * gachaWorldlines.length));
+  const current = gachaWorldlines[index % gachaWorldlines.length];
+  const preview = makeGachaWorldline(index);
+  const vibe = getVibeResult(current.join(''));
+
+  const handleSpin = () => {
+    setIndex((value) => value + 1 + Math.floor(Math.random() * 3));
+  };
+
+  const handleKeep = () => {
+    saveWorldline(preview);
+    onWorldlineUpdate(preview);
+    setHash('/share');
+  };
+
+  return (
+    <main className="sub-page">
+      <section className="sub-hero compact">
+        <p className="eyebrow">Worldline Gacha</p>
+        <h1>世界線ガチャ</h1>
+        <p>時代、場所、立場、空気を一発で引き直します。レア世界線を引いたら、そのまま結果カードにできます。</p>
+      </section>
+
+      <section className="gacha-layout">
+        <div className="gacha-machine">
+          <span className={`rarity rarity-${String(current[4]).toLowerCase()}`}>{current[4]}</span>
+          <h2>{current[1]}</h2>
+          <p>{current[0]} / {current[2]} / {current[3]}</p>
+          <div className="gacha-orbit">
+            <span>{vibe.title}</span>
+            <strong>{vibe.badge}</strong>
+          </div>
+          <div className="hero-actions">
+            <button className="primary-button" onClick={handleSpin}>もう一回引く</button>
+            <button className="ghost-button" onClick={handleKeep}>この世界線で保存</button>
+          </div>
+        </div>
+
+        <div className="gacha-preview">
+          <p className="eyebrow">Preview</p>
+          <h2>{preview.title}</h2>
+          <p>{preview.summary}</p>
+          <div className="archive-list">
+            {preview.search.map((item) => <span key={item}>{item}</span>)}
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function wrapCanvasText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number) {
+  const chars = Array.from(text);
+  let line = '';
+  let currentY = y;
+
+  chars.forEach((char) => {
+    const test = line + char;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      ctx.fillText(line, x, currentY);
+      line = char;
+      currentY += lineHeight;
+    } else {
+      line = test;
+    }
+  });
+
+  if (line) ctx.fillText(line, x, currentY);
+}
+
+function ShareCardPage({ worldline }: { worldline: Worldline }) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const vibe = getVibeResult(`${worldline.title}${worldline.era}${worldline.mood}`);
+  const rememberer = getRememberer(worldline);
+  const shareText = makeShareText(worldline, vibe.title);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#071014');
+    gradient.addColorStop(.48, '#13262a');
+    gradient.addColorStop(1, '#2b1710');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'rgba(110, 231, 242, .18)';
+    ctx.beginPath();
+    ctx.arc(860, 130, 230, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255, 224, 93, .16)';
+    ctx.beginPath();
+    ctx.arc(170, 760, 240, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#6ee7f2';
+    ctx.font = '700 28px sans-serif';
+    ctx.fillText('あったかもしれないGPT 診断結果', 64, 88);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 72px sans-serif';
+    wrapCanvasText(ctx, vibe.title, 64, 190, 880, 82);
+
+    ctx.fillStyle = '#ffe05d';
+    ctx.font = '900 34px sans-serif';
+    ctx.fillText(vibe.badge, 64, 380);
+
+    ctx.fillStyle = 'rgba(255,255,255,.86)';
+    ctx.font = '700 30px sans-serif';
+    wrapCanvasText(ctx, vibe.mood, 64, 450, 880, 42);
+
+    ctx.fillStyle = 'rgba(255,255,255,.72)';
+    ctx.font = '500 24px sans-serif';
+    wrapCanvasText(ctx, worldline.summary, 64, 570, 880, 36);
+
+    ctx.fillStyle = 'rgba(255,255,255,.12)';
+    ctx.fillRect(64, 750, 896, 150);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 28px sans-serif';
+    ctx.fillText(`${worldline.era} / ${worldline.place}`, 94, 812);
+    ctx.fillStyle = 'rgba(255,255,255,.78)';
+    ctx.font = '700 22px sans-serif';
+    ctx.fillText(`あなたを覚えている人: ${rememberer.friend.name}`, 94, 864);
+  }, [rememberer.friend.name, vibe.badge, vibe.mood, vibe.title, worldline]);
+
+  const handleDownload = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = 'kaku-jibunshi-card.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareText);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  return (
+    <main className="sub-page">
+      <section className="sub-hero compact">
+        <p className="eyebrow">Share Studio</p>
+        <h1>結果カードを作る</h1>
+        <p>診断結果を投稿しやすい1枚にします。保存してSNSに載せる導線をここに集約しました。</p>
+      </section>
+
+      <section className="share-studio">
+        <canvas ref={canvasRef} width="1080" height="1080" aria-label="架空自分史の結果カード" />
+        <div className="share-tools">
+          <span className="result-badge">{vibe.badge}</span>
+          <h2>{vibe.title}</h2>
+          <p>{shareText}</p>
+          <button className="primary-button" onClick={handleDownload}>画像を保存</button>
+          <button className="ghost-button" onClick={handleCopy}>{copied ? 'コピー済み' : '投稿文をコピー'}</button>
+          <button className="ghost-button" onClick={() => setHash('/compat')}>相性も見る</button>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function CompatibilityPage({ worldline }: { worldline: Worldline }) {
+  const rememberer = getRememberer(worldline);
+  const [friendId, setFriendId] = useState(rememberer.friend.id);
+  const friend = worldline.characters.find((item) => item.id === friendId) ?? rememberer.friend;
+  const score = 68 + (scoreText(`${friend.id}${worldline.title}`) % 31);
+
+  return (
+    <main className="sub-page">
+      <section className="sub-hero compact">
+        <p className="eyebrow">Memory Compatibility</p>
+        <h1>あなたを覚えている人</h1>
+        <p>この世界線で、誰があなたを一番覚えているか。会話ページへ行く前の、ちょっと刺さる診断です。</p>
+      </section>
+
+      <section className="compat-layout">
+        <div className="compat-card">
+          <FriendAvatar friend={friend} className="compat-avatar" />
+          <span>記憶相性 {score}%</span>
+          <h2>{friend.name}</h2>
+          <p>{memoryHooks[score % memoryHooks.length]}</p>
+          <button className="primary-button" onClick={() => setHash(`/chat/${friend.id}`)}>この人と話す</button>
+        </div>
+        <div className="compat-list">
+          {worldline.characters.slice(0, 9).map((item) => (
+            <button className={item.id === friend.id ? 'selected' : ''} key={item.id} onClick={() => setFriendId(item.id)}>
+              <FriendAvatar friend={item} className="small" />
+              <span>{item.name}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function ArchivePage({ worldline }: { worldline: Worldline }) {
+  return (
+    <main className="sub-page">
+      <section className="sub-hero compact">
+        <p className="eyebrow">Midnight Archive</p>
+        <h1>深夜検索と日記</h1>
+        <p>バズるのは、きれいな説明よりも妙にリアルな断片です。検索履歴、日記、思い出の品をスクショ向けに並べます。</p>
+      </section>
+
+      <section className="archive-grid">
+        <article className="archive-panel">
+          <span>検索履歴 02:13</span>
+          <h2>この世界線のあなたが調べたこと</h2>
+          <div className="archive-list">
+            {worldline.search.map((item) => <span key={item}>{item}</span>)}
+          </div>
+        </article>
+        <article className="archive-panel diary-panel">
+          <span>誰にも見せなかった日記</span>
+          <p>{worldline.diary}</p>
+        </article>
+        <article className="archive-panel">
+          <span>思い出の品</span>
+          <h2>{worldline.item}</h2>
+          <p>BGM: {worldline.bgm}</p>
+        </article>
+      </section>
+    </main>
+  );
+}
+
 function App() {
   const route = useHashRoute();
   const [worldline, setWorldline] = useState<Worldline>(() => getWorldline());
@@ -1063,6 +1367,14 @@ function App() {
     page = <ChatPage worldline={worldline} friendId={route.replace('/chat/', '')} />;
   } else if (route.startsWith('/albums/')) {
     page = <AlbumDetailPage worldline={worldline} albumId={route.replace('/albums/', '')} />;
+  } else if (route === '/gacha') {
+    page = <GachaPage onWorldlineUpdate={setWorldline} />;
+  } else if (route === '/share') {
+    page = <ShareCardPage worldline={worldline} />;
+  } else if (route === '/compat') {
+    page = <CompatibilityPage worldline={worldline} />;
+  } else if (route === '/archive') {
+    page = <ArchivePage worldline={worldline} />;
   } else if (route === '/friends') {
     page = <FriendsPage worldline={worldline} />;
   } else if (route === '/sns') {

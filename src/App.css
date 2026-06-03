@@ -134,7 +134,7 @@
   z-index: -1;
   background:
     linear-gradient(90deg, rgba(5, 7, 13, .94) 0%, rgba(5, 7, 13, .74) 46%, rgba(5, 7, 13, .44) 100%),
-    url('/viral-worldline-hero.png') center right/cover;
+    url('/attaka-hero.png') center right/cover;
   opacity: .72;
 }
 
@@ -626,6 +626,272 @@ input {
   word-break: break-word;
 }
 
+.remember-card {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(110, 231, 242, .22);
+  background: rgba(110, 231, 242, .08);
+}
+
+.remember-card span,
+.remember-card strong {
+  display: block;
+}
+
+.remember-card span {
+  color: rgba(255,255,255,.58);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.remember-card strong {
+  margin-top: 6px;
+  color: #fff;
+  font-size: 28px;
+}
+
+.remember-card p {
+  margin: 8px 0 0;
+  color: rgba(255,255,255,.72);
+  line-height: 1.7;
+}
+
+.gacha-layout,
+.share-studio,
+.compat-layout,
+.archive-grid {
+  display: grid;
+  gap: 22px;
+}
+
+.gacha-layout,
+.compat-layout {
+  grid-template-columns: .95fr 1.05fr;
+}
+
+.gacha-machine,
+.gacha-preview,
+.share-tools,
+.compat-card,
+.compat-list,
+.archive-panel {
+  border-radius: 34px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.065);
+  box-shadow: 0 24px 80px rgba(0,0,0,.30);
+  backdrop-filter: blur(18px);
+}
+
+.gacha-machine {
+  min-height: 560px;
+  padding: clamp(26px, 5vw, 52px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    linear-gradient(180deg, rgba(3,7,12,.32), rgba(3,7,12,.88)),
+    url('/attaka-hero.png') center/cover;
+}
+
+.gacha-machine h2,
+.gacha-preview h2,
+.share-tools h2,
+.compat-card h2,
+.archive-panel h2 {
+  font-size: clamp(30px, 46px, 58px);
+}
+
+.gacha-machine p,
+.gacha-preview p,
+.share-tools p,
+.compat-card p,
+.archive-panel p {
+  color: rgba(255,255,255,.72);
+  line-height: 1.85;
+}
+
+.rarity {
+  width: fit-content;
+  min-height: 34px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  padding: 0 14px;
+  color: #151007;
+  background: #ffe05d;
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+.rarity-secret {
+  background: linear-gradient(135deg, #6ee7f2, #ffe05d, #ff8f70);
+}
+
+.rarity-epic {
+  background: #6ee7f2;
+}
+
+.gacha-orbit {
+  width: min(330px, 100%);
+  aspect-ratio: 1;
+  margin: 28px 0;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,.18);
+  background:
+    radial-gradient(circle, rgba(255,255,255,.18), rgba(255,255,255,.04) 56%, transparent 57%),
+    rgba(0,0,0,.28);
+  box-shadow: inset 0 0 60px rgba(110, 231, 242, .12), 0 28px 80px rgba(0,0,0,.35);
+}
+
+.gacha-orbit span,
+.gacha-orbit strong {
+  display: block;
+}
+
+.gacha-orbit span {
+  color: #fff;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.gacha-orbit strong {
+  color: #ffe05d;
+  margin-top: 8px;
+}
+
+.gacha-preview,
+.share-tools,
+.compat-list,
+.archive-panel {
+  padding: clamp(22px, 4vw, 38px);
+}
+
+.archive-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.archive-list span {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 0 14px;
+  color: rgba(255,255,255,.84);
+  background: rgba(0,0,0,.24);
+  border: 1px solid rgba(255,255,255,.10);
+  font-weight: 800;
+}
+
+.share-studio {
+  grid-template-columns: minmax(320px, 560px) 1fr;
+  align-items: start;
+}
+
+.share-studio canvas {
+  width: 100%;
+  height: auto;
+  border-radius: 34px;
+  border: 1px solid rgba(255,255,255,.15);
+  box-shadow: 0 28px 90px rgba(0,0,0,.38);
+  background: #111;
+}
+
+.share-tools {
+  display: grid;
+  gap: 14px;
+}
+
+.compat-card {
+  min-height: 520px;
+  padding: clamp(24px, 4vw, 46px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.compat-card > span {
+  width: fit-content;
+  margin-top: 20px;
+  border-radius: 999px;
+  padding: 8px 13px;
+  color: #171008;
+  background: #ffe05d;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.friend-avatar.compat-avatar {
+  width: 118px;
+  height: 118px;
+  border-radius: 36px;
+}
+
+.compat-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: start;
+}
+
+.compat-list button {
+  min-height: 118px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,.74);
+  background: rgba(0,0,0,.18);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.compat-list button.selected {
+  border-color: rgba(110, 231, 242, .55);
+  background: rgba(110, 231, 242, .10);
+  color: #fff;
+}
+
+.archive-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.archive-panel {
+  min-height: 320px;
+}
+
+.archive-panel:first-child {
+  grid-row: span 2;
+  background:
+    linear-gradient(180deg, rgba(4,7,12,.45), rgba(4,7,12,.86)),
+    url('/memory-objects-archive.png') center/cover;
+}
+
+.archive-panel > span {
+  display: inline-block;
+  color: #6ee7f2;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.diary-panel {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04)),
+    #2a2014;
+}
+
+.diary-panel p {
+  font-size: 24px;
+  color: rgba(255,255,255,.84);
+}
+
 .sub-page {
   padding: 38px clamp(18px, 5vw, 80px) 110px;
 }
@@ -1081,6 +1347,18 @@ input {
   .photo-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  .gacha-layout,
+  .share-studio,
+  .compat-layout,
+  .archive-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gacha-machine,
+  .compat-card {
+    min-height: auto;
+  }
 }
 
 @media (max-width: 560px) {
@@ -1191,6 +1469,26 @@ input {
   .chat-body {
     min-height: 430px;
     max-height: 58vh;
+  }
+
+  .compat-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .compat-list button {
+    min-height: 104px;
+  }
+
+  .gacha-orbit {
+    width: min(260px, 100%);
+  }
+
+  .gacha-orbit span {
+    font-size: 23px;
+  }
+
+  .diary-panel p {
+    font-size: 20px;
   }
 }
 
