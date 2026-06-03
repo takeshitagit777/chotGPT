@@ -431,6 +431,53 @@ const presets = [
   ['1999年', '地方の海辺の町', '高校2年生', '切なくて懐かしい'],
   ['2006年', '夕方の団地', '中学生', '少し痛くて優しい'],
   ['2012年', '雪の日の駅前', '売れないバンドマン', '静かで映画っぽい'],
+  ['平成最後の春', '終電前の渋谷', 'まだ何者でもない人', '眩しくて少し危うい'],
+  ['2031年', '雨上がりの高架下', '記憶を集める配達員', '近未来でエモい'],
+];
+
+const vibeQuestions = [
+  {
+    id: 'timing',
+    label: '忘れられない時間',
+    options: ['夏の終わり', '夜明け前', '終電間際', '雨上がり'],
+  },
+  {
+    id: 'signal',
+    label: '心に残る通知',
+    options: ['既読だけつく', '写真が1枚届く', '短い不在着信', '消えた投稿'],
+  },
+  {
+    id: 'artifact',
+    label: 'ポケットの中身',
+    options: ['折れた半券', '光るキーホルダー', '書きかけの手紙', '古いイヤホン'],
+  },
+];
+
+const vibeTypes = [
+  {
+    title: '未送信の主人公',
+    badge: '拡散度 92',
+    mood: '言いかけた一言でタイムラインを止めるタイプ',
+    copy: 'あなたの世界線は、派手ではないのに妙に残ります。写真1枚、短文1つで「これ自分かも」と思わせる余白が強い。',
+  },
+  {
+    title: '放課後の予言者',
+    badge: '拡散度 87',
+    mood: '偶然を伏線に変えるタイプ',
+    copy: '小さな出来事を物語に見せる力があります。検索履歴、会話、アルバムの断片がつながった瞬間に刺さる世界線です。',
+  },
+  {
+    title: '終電前の発光体',
+    badge: '拡散度 95',
+    mood: '明るいのに少し寂しいタイプ',
+    copy: 'テンポが速く、感情の温度も高い。SNS投稿にした瞬間、友達が自分の結果も見たくなる引きがあります。',
+  },
+  {
+    title: '雨上がりの記録係',
+    badge: '拡散度 89',
+    mood: '誰かの記憶に居場所を作るタイプ',
+    copy: '会話の余韻と古い写真の相性が抜群。派手な診断より、静かに保存されるタイプのバズを狙えます。',
+  },
 ];
 
 function FriendAvatar({ friend, className = '' }: { friend: Character; className?: string }) {
@@ -494,10 +541,24 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
   const [place, setPlace] = useState('地方の海辺の町');
   const [role, setRole] = useState('高校2年生');
   const [mood, setMood] = useState('切なくて懐かしい');
+  const [answers, setAnswers] = useState<Record<string, string>>({
+    timing: vibeQuestions[0].options[0],
+    signal: vibeQuestions[1].options[0],
+    artifact: vibeQuestions[2].options[0],
+  });
+  const [copied, setCopied] = useState(false);
   const [worldline, setWorldline] = useState<Worldline>(() => getWorldline());
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [remainingCount, setRemainingCount] = useState<number | null>(null);
+
+  const vibeResult = useMemo(() => {
+    const seed = `${era}${place}${role}${mood}${Object.values(answers).join('')}`;
+    const score = Array.from(seed).reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return vibeTypes[score % vibeTypes.length];
+  }, [answers, era, place, role, mood]);
+
+  const shareText = `私は「${vibeResult.title}」タイプでした。${worldline.title} / ${worldline.era} ${worldline.place} #架空自分史`;
 
   const loadingText = useMemo(() => {
     if (!isGenerating) return '';
@@ -509,6 +570,20 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
     setPlace(preset[1]);
     setRole(preset[2]);
     setMood(preset[3]);
+  };
+
+  const handleAnswer = (id: string, value: string) => {
+    setCopied(false);
+    setAnswers((current) => ({ ...current, [id]: value }));
+  };
+
+  const handleCopyShare = async () => {
+    try {
+      await navigator.clipboard.writeText(shareText);
+      setCopied(true);
+    } catch {
+      setErrorMessage('共有文のコピーに失敗しました。');
+    }
   };
 
   const handleGenerate = async () => {
@@ -541,15 +616,21 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
     <main>
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">存在しないあなたを、記録する。</p>
+          <p className="eyebrow">5秒で、存在しない自分が立ち上がる。</p>
           <h1>架空自分史</h1>
           <p className="lead">
             写真、会話、検索履歴、日記、思い出の品まで。
-            あなたが選ばなかった世界線を、ひとつの自分史として生成します。
+            あなたが選ばなかった世界線を、シェアしたくなる自分史として生成します。
           </p>
 
+          <div className="buzz-strip" aria-label="サイトの特徴">
+            <span>診断できる</span>
+            <span>会話できる</span>
+            <span>結果を共有できる</span>
+          </div>
+
           <div className="hero-actions">
-            <a href="#create" className="primary-button">自分史をつくる</a>
+            <a href="#create" className="primary-button">世界線を診断する</a>
             <button className="ghost-button" onClick={() => setHash('/friends')}>会話を開く</button>
             <button className="ghost-button" onClick={() => setHash('/albums')}>アルバムを見る</button>
           </div>
@@ -561,6 +642,10 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
             <span>{worldline.era}・{worldline.mood}</span>
             <strong>{worldline.title}</strong>
             <p>{worldline.summary}</p>
+            <div className="phone-share-card">
+              <small>{vibeResult.badge}</small>
+              <b>{vibeResult.title}</b>
+            </div>
           </div>
           <div className="phone-tabs">
             <span>写真</span><span>会話</span><span>SNS</span><span>日記</span>
@@ -571,8 +656,8 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
       <section id="features" className="section">
         <div className="section-heading">
           <p className="eyebrow">Fictional Autobiography</p>
-          <h2>タップすると、その自分史の中へ入れる。</h2>
-          <p>会話は友達一覧へ、アルバムは写真フォルダへ。単なる生成結果ではなく、触れる記録として残します。</p>
+          <h2>診断で終わらない。中に入れる自分史。</h2>
+          <p>会話は友達一覧へ、アルバムは写真フォルダへ、SNSはタイムラインへ。結果画像っぽく見えるだけではなく、触れる記録として残します。</p>
         </div>
 
         <div className="feature-grid">
@@ -593,8 +678,28 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
         <div className="creator-panel">
           <div>
             <p className="eyebrow">Create Your Worldline</p>
-            <h2>設定を入れるだけで、世界線が立ち上がる。</h2>
-            <p className="muted">生成後は、会話とアルバムがアプリ内に保存されます。</p>
+            <h2>あなたのバズりそうな世界線をつくる。</h2>
+            <p className="muted">まずは3つ選ぶだけで診断結果が変わります。生成後は、会話とアルバムがアプリ内に保存されます。</p>
+          </div>
+
+          <div className="quiz-stack">
+            {vibeQuestions.map((question) => (
+              <fieldset className="quiz-card" key={question.id}>
+                <legend>{question.label}</legend>
+                <div>
+                  {question.options.map((option) => (
+                    <button
+                      type="button"
+                      className={answers[question.id] === option ? 'selected' : ''}
+                      key={option}
+                      onClick={() => handleAnswer(question.id, option)}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+            ))}
           </div>
 
           <div className="preset-row">
@@ -624,9 +729,28 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
         </div>
 
         <div className="result-panel">
-          <div className="empty-result">
-            <span>まだ存在しない世界線</span>
-            <p>生成すると、ここに写真・会話・日記・検索履歴がまとまって表示されます。</p>
+          <div className="result-card">
+            <p className="eyebrow">Your Share Card</p>
+            <span className="result-badge">{vibeResult.badge}</span>
+            <h2>{vibeResult.title}</h2>
+            <p className="result-mood">{vibeResult.mood}</p>
+            <p>{vibeResult.copy}</p>
+
+            <div className="worldline-snapshot">
+              <strong>{worldline.title}</strong>
+              <span>{worldline.era} / {worldline.place} / {worldline.role}</span>
+              <p>{worldline.summary}</p>
+            </div>
+
+            <div className="share-box">
+              <p>{shareText}</p>
+              <button type="button" className="small-primary" onClick={handleCopyShare}>
+                {copied ? 'コピー済み' : '共有文をコピー'}
+              </button>
+              <button type="button" className="small-ghost" onClick={() => setHash('/sns')}>
+                タイムラインを見る
+              </button>
+            </div>
           </div>
         </div>
       </section>

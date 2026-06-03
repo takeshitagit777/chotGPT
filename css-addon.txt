@@ -1,8 +1,9 @@
-node_modules/
-build/
-dist/
-coverage/
-.DS_Store
-*.log
-.env*
-!.env.example
+.error-text {
+  margin: 16px 0 0;
+  color: #ffb4c8;
+  background: rgba(255, 91, 159, .10);
+  border: 1px solid rgba(255, 91, 159, .28);
+  border-radius: 18px;
+  padding: 14px 16px;
+  line-height: 1.7;
+}

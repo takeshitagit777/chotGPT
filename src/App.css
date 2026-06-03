@@ -123,11 +123,24 @@
   align-items: center;
   padding: 72px clamp(20px, 6vw, 96px) 56px;
   position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(5, 7, 13, .94) 0%, rgba(5, 7, 13, .74) 46%, rgba(5, 7, 13, .44) 100%),
+    url('/viral-worldline-hero.png') center right/cover;
+  opacity: .72;
 }
 
 .eyebrow {
-  color: #ff9bc2;
-  letter-spacing: .16em;
+  color: #6ee7f2;
+  letter-spacing: 0;
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 800;
@@ -135,17 +148,17 @@
 }
 
 h1 {
-  font-size: clamp(56px, 9vw, 126px);
+  font-size: clamp(56px, 88px, 126px);
   line-height: .92;
   margin: 0;
-  letter-spacing: -.08em;
+  letter-spacing: 0;
 }
 
 h2 {
-  font-size: clamp(30px, 5vw, 64px);
+  font-size: clamp(30px, 46px, 64px);
   line-height: 1.08;
   margin: 0;
-  letter-spacing: -.05em;
+  letter-spacing: 0;
 }
 
 h3 {
@@ -156,7 +169,7 @@ h3 {
 
 .lead {
   color: rgba(248, 242, 234, .78);
-  font-size: clamp(17px, 2.4vw, 23px);
+  font-size: clamp(17px, 20px, 23px);
   line-height: 1.9;
   max-width: 720px;
   margin: 28px 0 0;
@@ -167,6 +180,26 @@ h3 {
   gap: 14px;
   flex-wrap: wrap;
   margin-top: 34px;
+}
+
+.buzz-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.buzz-strip span {
+  min-height: 38px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  padding: 0 14px;
+  color: #f8f2ea;
+  border: 1px solid rgba(110, 231, 242, .26);
+  background: rgba(110, 231, 242, .08);
+  font-size: 13px;
+  font-weight: 900;
 }
 
 .primary-button,
@@ -246,6 +279,30 @@ h3 {
 .phone-scene p {
   color: rgba(255,255,255,.82);
   line-height: 1.75;
+}
+
+.phone-share-card {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .88);
+  color: #111827;
+  box-shadow: 0 18px 50px rgba(0,0,0,.28);
+}
+
+.phone-share-card small,
+.phone-share-card b {
+  display: block;
+}
+
+.phone-share-card small {
+  color: #d64545;
+  font-weight: 900;
+}
+
+.phone-share-card b {
+  margin-top: 3px;
+  font-size: 20px;
 }
 
 .phone-tabs {
@@ -370,6 +427,48 @@ h3 {
   padding: clamp(24px, 4vw, 44px);
 }
 
+.quiz-stack {
+  display: grid;
+  gap: 14px;
+  margin: 26px 0;
+}
+
+.quiz-card {
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 22px;
+  padding: 16px;
+  background: rgba(0,0,0,.18);
+}
+
+.quiz-card legend {
+  padding: 0 8px;
+  color: rgba(255,255,255,.72);
+  font-weight: 900;
+}
+
+.quiz-card div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.quiz-card button {
+  min-height: 42px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 14px;
+  color: rgba(255,255,255,.82);
+  background: rgba(255,255,255,.06);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.quiz-card button.selected {
+  color: #081215;
+  background: linear-gradient(135deg, #6ee7f2, #ffe05d);
+  border-color: transparent;
+}
+
 .preset-row {
   display: flex;
   flex-wrap: wrap;
@@ -448,27 +547,83 @@ input {
   padding: clamp(24px, 4vw, 44px);
 }
 
-.empty-result {
+.result-card {
   height: 100%;
   min-height: 520px;
-  display: grid;
-  place-content: center;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   border-radius: 28px;
+  padding: clamp(22px, 40px, 40px);
   background:
-    radial-gradient(circle at 50% 30%, rgba(255, 100, 170, .15), transparent 30%),
+    radial-gradient(circle at 18% 12%, rgba(110, 231, 242, .18), transparent 28%),
+    radial-gradient(circle at 90% 18%, rgba(255, 224, 93, .14), transparent 30%),
     rgba(0,0,0,.22);
 }
 
-.empty-result span {
-  font-size: 32px;
+.result-badge {
+  width: fit-content;
+  display: inline-grid;
+  place-items: center;
+  min-height: 34px;
+  border-radius: 999px;
+  padding: 0 13px;
+  color: #1b1208;
+  background: #ffe05d;
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.result-card > p,
+.worldline-snapshot p,
+.share-box p {
+  color: rgba(255,255,255,.68);
+  line-height: 1.8;
+}
+
+.result-mood {
+  margin: 18px 0 0;
+  color: #6ee7f2 !important;
   font-weight: 900;
 }
 
-.empty-result p {
-  color: rgba(255,255,255,.62);
-  line-height: 1.8;
-  max-width: 420px;
+.worldline-snapshot {
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.13);
+  background: rgba(255,255,255,.06);
+}
+
+.worldline-snapshot strong,
+.worldline-snapshot span {
+  display: block;
+}
+
+.worldline-snapshot strong {
+  font-size: 22px;
+}
+
+.worldline-snapshot span {
+  margin-top: 6px;
+  color: rgba(255,255,255,.52);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.share-box {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.share-box p {
+  margin: 0;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(0,0,0,.22);
+  word-break: break-word;
 }
 
 .sub-page {
@@ -480,7 +635,7 @@ input {
 }
 
 .sub-hero.compact h1 {
-  font-size: clamp(42px, 7vw, 84px);
+  font-size: clamp(42px, 64px, 84px);
 }
 
 .sub-hero p:not(.eyebrow) {
@@ -994,6 +1149,10 @@ input {
   }
 
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quiz-card div {
     grid-template-columns: 1fr;
   }
 
