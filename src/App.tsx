@@ -425,6 +425,9 @@ const features = [
   { no: '5', title: '世界線ガチャ', text: '時代、場所、立場、空気を一発で引き直す遊び。レア世界線も混ざります。', image: '/viral-worldline-hero.png', route: '/gacha' },
   { no: '6', title: '相性診断', text: 'この世界線で、誰があなたを一番覚えているかを見ます。', image: '/feature-line.jpg', route: '/compat' },
   { no: '7', title: '深夜検索と日記', text: '検索履歴、日記、思い出の品。スクショしたくなる断片をまとめます。', image: '/feature-search.jpg', route: '/archive' },
+  { no: '8', title: '10秒プロローグ', text: '世界線の冒頭だけを映画の予告みたいに表示。初見の引きを作ります。', image: '/attaka-hero.png', route: '/openers' },
+  { no: '9', title: '思い出の品ガチャ', text: 'ケータイ、半券、キーホルダー。物から人生が立ち上がります。', image: '/memory-objects-archive.png', route: '/items' },
+  { no: '10', title: '友だち招待文', text: '「あなたのも見たい」を自然に送れる文章を自動で作ります。', image: '/feature-sns.jpg', route: '/invite' },
 ];
 
 const presets = [
@@ -496,6 +499,23 @@ const memoryHooks = [
   'あの日の帰り道を、あなたより鮮明に覚えている。',
 ];
 
+const openerLines = [
+  '駅前のロータリーに、まだ夏の匂いが残っていた。',
+  '通知は来ていないのに、何度も画面を見てしまう。',
+  'あの日、違う電車に乗っていたら、たぶん全部変わっていた。',
+  '写真の中のあなたは、まだその結末を知らない。',
+  '誰にも言わなかった名前だけが、検索履歴に残っている。',
+];
+
+const itemPool = [
+  ['折れた映画の半券', '渡せなかった誘いの証拠。裏に小さく時間だけが書いてある。', 'RARE'],
+  ['傷だらけのピンクのケータイ', '最後に残っている未送信メールが、なぜか消せない。', 'EPIC'],
+  ['夜店で買ったキーホルダー', '安っぽいのに、捨てるタイミングだけをずっと逃している。', 'NORMAL'],
+  ['片方だけのイヤホン', '同じ曲を聴いた帰り道のことだけ、妙にはっきりしている。', 'RARE'],
+  ['古いプリクラ', '端に写っている手だけで、誰だったか思い出せる。', 'SECRET'],
+  ['雨でにじんだメモ', '待ち合わせ場所だけ読める。名前はもう読めない。', 'EPIC'],
+];
+
 function scoreText(seed: string) {
   return Array.from(seed).reduce((sum, char) => sum + char.charCodeAt(0), 0);
 }
@@ -518,16 +538,35 @@ function makeShareText(worldline: Worldline, vibeTitle: string) {
   return `私は「${vibeTitle}」タイプでした。${worldline.title} / ${worldline.era} ${worldline.place} #あったかもしれないGPT`;
 }
 
+function getAvatarTone(id: string) {
+  const female = ['yui', 'mika', 'aki', 'nana', 'riko', 'mao', 'eri'];
+  const male = ['ren', 'haru', 'daichi', 'toma', 'shun'];
+
+  if (female.includes(id)) return 'avatar-female';
+  if (male.includes(id)) return 'avatar-male';
+  return 'avatar-neutral';
+}
+
 function FriendAvatar({ friend, className = '' }: { friend: Character; className?: string }) {
   return (
-    <div className={`friend-avatar ${className}`.trim()}>
-      {friend.avatarUrl ? (
-        <img src={friend.avatarUrl} alt={`${friend.name}のアイコン`} />
-      ) : (
-        <span>{friend.avatar}</span>
-      )}
+    <div className={`friend-avatar ${getAvatarTone(friend.id)} ${className}`.trim()} aria-label={`${friend.name}のアイコン`}>
+      <span>{friend.avatar || friend.name.slice(0, 1)}</span>
     </div>
   );
+}
+
+function postAvatarFriend(post: SnsPost, index: number): Character {
+  return {
+    id: post.userName || `post-${index}`,
+    name: post.displayName,
+    relationship: 'SNSの投稿者',
+    age: '',
+    personality: '',
+    speakingStyle: '',
+    backstory: '',
+    avatar: post.displayName.slice(0, 1),
+    latestMessage: post.content,
+  };
 }
 
 function Shell({ route, children }: { route: string; children: React.ReactNode }) {
@@ -544,7 +583,7 @@ function Shell({ route, children }: { route: string; children: React.ReactNode }
 
         <nav className="desktop-nav">
           <button className={route === '/' ? 'active' : ''} onClick={() => setHash('/')}>ホーム</button>
-          <button className={route === '/gacha' || route === '/share' || route === '/compat' || route === '/archive' ? 'active' : ''} onClick={() => setHash('/gacha')}>遊ぶ</button>
+          <button className={route === '/gacha' || route === '/share' || route === '/compat' || route === '/archive' || route === '/openers' || route === '/items' || route === '/invite' ? 'active' : ''} onClick={() => setHash('/gacha')}>遊ぶ</button>
           <button className={route.startsWith('/friends') || route.startsWith('/chat') ? 'active' : ''} onClick={() => setHash('/friends')}>会話</button>
           <button className={route === '/sns' ? 'active' : ''} onClick={() => setHash('/sns')}>SNS</button>
           <button className={route.startsWith('/albums') ? 'active' : ''} onClick={() => setHash('/albums')}>アルバム</button>
@@ -558,7 +597,7 @@ function Shell({ route, children }: { route: string; children: React.ReactNode }
           <span>⌂</span>
           <small>ホーム</small>
         </button>
-        <button className={route === '/gacha' || route === '/share' || route === '/compat' || route === '/archive' ? 'active' : ''} onClick={() => setHash('/gacha')}>
+        <button className={route === '/gacha' || route === '/share' || route === '/compat' || route === '/archive' || route === '/openers' || route === '/items' || route === '/invite' ? 'active' : ''} onClick={() => setHash('/gacha')}>
           <span>◎</span>
           <small>遊ぶ</small>
         </button>
@@ -809,12 +848,24 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
 }
 
 function FriendsPage({ worldline }: { worldline: Worldline }) {
+  const rememberer = getRememberer(worldline);
+
   return (
     <main className="sub-page">
       <section className="sub-hero compact">
         <p className="eyebrow">Conversation Archive</p>
         <h1>会話の記録</h1>
         <p>この自分史の中にいる人たち。相手を選ぶと、その人の性格や関係性のまま会話できます。</p>
+      </section>
+
+      <section className="friend-spotlight">
+        <div>
+          <p className="eyebrow">Most Remembered</p>
+          <h2>{rememberer.friend.name}が、あなたを一番覚えている。</h2>
+          <p>{rememberer.hook}</p>
+          <button className="primary-button" onClick={() => setHash(`/chat/${rememberer.friend.id}`)}>この人と話す</button>
+        </div>
+        <FriendAvatar friend={rememberer.friend} className="memory-avatar" />
       </section>
 
       <section className="phone-list-panel">
@@ -860,6 +911,11 @@ function ChatPage({ worldline, friendId }: { worldline: Worldline; friendId: str
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const quickReplies = [
+    'あの日のこと、まだ覚えてる？',
+    'もし違う選択をしてたらどうなってたかな',
+    '最後に会った日のことを教えて',
+  ];
 
   const handleSend = async () => {
     if (!input.trim() || isSending) return;
@@ -944,6 +1000,14 @@ function ChatPage({ worldline, friendId }: { worldline: Worldline; friendId: str
           <small>{friend.backstory}</small>
         </div>
 
+        <div className="quick-replies">
+          {quickReplies.map((reply) => (
+            <button key={reply} type="button" onClick={() => setInput(reply)}>
+              {reply}
+            </button>
+          ))}
+        </div>
+
         <div className="chat-body">
           <div className="chat-date">{worldline.era}　{worldline.place}</div>
 
@@ -988,6 +1052,9 @@ function ChatPage({ worldline, friendId }: { worldline: Worldline; friendId: str
 
 
 function SnsPage({ worldline }: { worldline: Worldline }) {
+  const topPost = worldline.snsPosts.reduce((best, post) => post.likes > best.likes ? post : best, worldline.snsPosts[0]);
+  const savedCount = worldline.snsPosts.reduce((sum, post) => sum + post.likes + post.comments.length * 7, 0);
+
   return (
     <main className="sub-page">
       <section className="sub-hero compact">
@@ -996,6 +1063,24 @@ function SnsPage({ worldline }: { worldline: Worldline }) {
         <p>
           この世界線に流れている投稿一覧。時代・場所・立場・雰囲気に合わせて、投稿者や内容が変わります。
         </p>
+      </section>
+
+      <section className="social-snapshot">
+        <article>
+          <span>一番伸びた投稿</span>
+          <strong>{topPost.displayName}</strong>
+          <p>{topPost.content}</p>
+        </article>
+        <article>
+          <span>保存された断片</span>
+          <strong>{savedCount}</strong>
+          <p>この世界線の誰かが、あとで見返した投稿の数。</p>
+        </article>
+        <article>
+          <span>一言でいうと</span>
+          <strong>{worldline.mood}</strong>
+          <p>説明より先に空気が伝わるタイムラインです。</p>
+        </article>
       </section>
 
       <section className="sns-layout">
@@ -1007,10 +1092,10 @@ function SnsPage({ worldline }: { worldline: Worldline }) {
           </div>
 
           <div className="sns-feed">
-            {worldline.snsPosts.map((post) => (
+            {worldline.snsPosts.map((post, index) => (
               <article className="sns-card" key={post.id}>
                 <header className="sns-card-header">
-                  <img src={post.avatarUrl} alt={`${post.displayName}のアイコン`} />
+                  <FriendAvatar friend={postAvatarFriend(post, index)} className="small" />
                   <div>
                     <strong>{post.displayName}</strong>
                     <span>@{post.userName}・{post.postedAt}</span>
@@ -1034,6 +1119,7 @@ function SnsPage({ worldline }: { worldline: Worldline }) {
                     {post.comments.slice(0, 2).map((comment, index) => (
                       <p key={`${post.id}-comment-${index}`}>{comment}</p>
                     ))}
+                    <button onClick={() => setHash('/invite')}>この空気を友だちに送る</button>
                   </div>
                 )}
               </article>
@@ -1047,12 +1133,29 @@ function SnsPage({ worldline }: { worldline: Worldline }) {
 
 
 function AlbumsPage({ worldline }: { worldline: Worldline }) {
+  const totalPhotos = worldline.albums.reduce((sum, album) => sum + album.photos.length, 0);
+
   return (
     <main className="sub-page">
       <section className="sub-hero compact">
         <p className="eyebrow">Photo Archive</p>
         <h1>架空アルバム</h1>
         <p>この自分史に保存されている写真。日付、場所、キャプションまで、ひとつの記録として残ります。</p>
+      </section>
+
+      <section className="album-museum">
+        <div>
+          <span>保存写真</span>
+          <strong>{totalPhotos}枚</strong>
+        </div>
+        <div>
+          <span>主な場所</span>
+          <strong>{worldline.place}</strong>
+        </div>
+        <div>
+          <span>展示タイトル</span>
+          <strong>{worldline.title}</strong>
+        </div>
       </section>
 
       <section className="album-grid">
@@ -1160,6 +1263,11 @@ function GachaPage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: World
           <p>{preview.summary}</p>
           <div className="archive-list">
             {preview.search.map((item) => <span key={item}>{item}</span>)}
+          </div>
+          <div className="mini-route-grid">
+            <button onClick={() => setHash('/openers')}>プロローグを見る</button>
+            <button onClick={() => setHash('/items')}>思い出の品を引く</button>
+            <button onClick={() => setHash('/invite')}>友だちに送る</button>
           </div>
         </div>
       </section>
@@ -1353,6 +1461,109 @@ function ArchivePage({ worldline }: { worldline: Worldline }) {
   );
 }
 
+function OpenersPage({ worldline }: { worldline: Worldline }) {
+  const lines = openerLines.map((line, index) => ({
+    line,
+    time: `00:0${index + 1}`,
+  }));
+
+  return (
+    <main className="sub-page">
+      <section className="sub-hero compact">
+        <p className="eyebrow">10 Second Prologue</p>
+        <h1>10秒プロローグ</h1>
+        <p>初見でスクロールを止めるための、映画予告みたいな冒頭です。世界線の空気を短く濃く見せます。</p>
+      </section>
+
+      <section className="opener-screen">
+        <div className="opener-visual">
+          <span>{worldline.era}</span>
+          <h2>{worldline.place}</h2>
+          <p>{worldline.role} / {worldline.mood}</p>
+        </div>
+        <div className="opener-timeline">
+          {lines.map((item) => (
+            <article key={item.time}>
+              <span>{item.time}</span>
+              <p>{item.line}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function ItemsPage({ worldline }: { worldline: Worldline }) {
+  const [index, setIndex] = useState(() => scoreText(worldline.title) % itemPool.length);
+  const item = itemPool[index % itemPool.length];
+
+  return (
+    <main className="sub-page">
+      <section className="sub-hero compact">
+        <p className="eyebrow">Memory Item Gacha</p>
+        <h1>思い出の品ガチャ</h1>
+        <p>物から人生を想像させるページです。結果カードよりも、スクショで広がりやすい断片を作ります。</p>
+      </section>
+
+      <section className="item-gacha-layout">
+        <div className="item-stage">
+          <span className={`rarity rarity-${String(item[2]).toLowerCase()}`}>{item[2]}</span>
+          <h2>{item[0]}</h2>
+          <p>{item[1]}</p>
+          <button className="primary-button" onClick={() => setIndex((value) => value + 1)}>別の品を引く</button>
+        </div>
+        <div className="item-wall">
+          {itemPool.map((entry) => (
+            <button key={entry[0]} className={entry[0] === item[0] ? 'selected' : ''} onClick={() => setIndex(itemPool.indexOf(entry))}>
+              <strong>{entry[0]}</strong>
+              <span>{entry[2]}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function InvitePage({ worldline }: { worldline: Worldline }) {
+  const rememberer = getRememberer(worldline);
+  const [copied, setCopied] = useState('');
+  const invites = [
+    `これやって。あなたの「あったかもしれない人生」も見たい。私は${worldline.place}の${worldline.role}だった。`,
+    `私の世界線、${rememberer.friend.name}が一番覚えてくれてた。あなたは誰が出るか気になる。`,
+    `写真・会話・検索履歴まで出るのずるい。あなたの結果も送って。 #あったかもしれないGPT`,
+  ];
+
+  const copyInvite = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(text);
+    } catch {
+      setCopied('');
+    }
+  };
+
+  return (
+    <main className="sub-page">
+      <section className="sub-hero compact">
+        <p className="eyebrow">Invite Copy</p>
+        <h1>友だちに送る</h1>
+        <p>バズるサイトは、投稿だけでなくDMでも広がります。「あなたのも見たい」が自然に言える文面を作りました。</p>
+      </section>
+
+      <section className="invite-grid">
+        {invites.map((text) => (
+          <article className="invite-card" key={text}>
+            <p>{text}</p>
+            <button className="small-primary" onClick={() => copyInvite(text)}>{copied === text ? 'コピー済み' : 'コピー'}</button>
+          </article>
+        ))}
+      </section>
+    </main>
+  );
+}
+
 function App() {
   const route = useHashRoute();
   const [worldline, setWorldline] = useState<Worldline>(() => getWorldline());
@@ -1375,6 +1586,12 @@ function App() {
     page = <CompatibilityPage worldline={worldline} />;
   } else if (route === '/archive') {
     page = <ArchivePage worldline={worldline} />;
+  } else if (route === '/openers') {
+    page = <OpenersPage worldline={worldline} />;
+  } else if (route === '/items') {
+    page = <ItemsPage worldline={worldline} />;
+  } else if (route === '/invite') {
+    page = <InvitePage worldline={worldline} />;
   } else if (route === '/friends') {
     page = <FriendsPage worldline={worldline} />;
   } else if (route === '/sns') {
