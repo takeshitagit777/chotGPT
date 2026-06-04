@@ -1,4 +1,5 @@
 {
+  "name": "moshimo-log",
   "dependencies": {
     "@vitejs/plugin-react": "latest",
     "vite": "latest",

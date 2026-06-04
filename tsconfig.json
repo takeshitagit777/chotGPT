@@ -16,6 +16,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
+  "include": ["src/main.tsx", "src/App.tsx"],
   "exclude": ["api", "node_modules", "dist"]
 }

@@ -1,4 +1,4 @@
-function jsonResponse(res: any, status: number, body: any) {
+﻿function jsonResponse(res: any, status: number, body: any) {
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.end(JSON.stringify(body));
@@ -39,7 +39,7 @@ export default async function handler(req: any, res: any) {
       : [];
 
     const systemPrompt = `
-あなたは「架空自分史」というアプリ内に存在するキャラクターです。
+あなたは「もしもログ」というアプリ内に存在するキャラクターです。
 ユーザーはあなたと同じ世界線にいる人物です。
 
 【世界線】
@@ -73,7 +73,7 @@ export default async function handler(req: any, res: any) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_CHAT_MODEL || process.env.OPENAI_MODEL || "gpt-4o-mini",
+        model: process.env.OPENAI_CHAT_MODEL || process.env.OPENAI_MODEL || "-4o-mini",
         temperature: 0.9,
         max_tokens: 180,
         messages: [
@@ -117,3 +117,4 @@ export default async function handler(req: any, res: any) {
     });
   }
 }
+

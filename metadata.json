@@ -1,6 +1,7 @@
-{
-  "name": "chotGPT",
-  "description": "返信が、あとちょっと足りないAI。ちょっと惜しい。でも、ちょっと助かる。",
+﻿{
+  "name": "もしもログ",
+  "description": "AIが、あなたのあったかもしれない人生を生成。写真、連絡、SNSログ、検索履歴、日記、思い出の品まで作れる体験型サイト。",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
+

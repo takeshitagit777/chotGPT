@@ -1,4 +1,4 @@
-const https = require("https");
+﻿const https = require("https");
 
 function sendJson(res, status, body) {
   res.statusCode = status;
@@ -130,7 +130,7 @@ module.exports = async function handler(req, res) {
       : [];
 
     const systemPrompt = `
-あなたは「架空自分史」というアプリ内に存在するキャラクターです。
+あなたは「もしもログ」というアプリ内に存在するキャラクターです。
 ユーザーはあなたと同じ世界線にいる人物です。
 
 【世界線】
@@ -166,7 +166,7 @@ module.exports = async function handler(req, res) {
 
     const openai = await postToOpenAI(
       {
-        model: process.env.OPENAI_CHAT_MODEL || process.env.OPENAI_MODEL || "gpt-4o-mini",
+        model: process.env.OPENAI_CHAT_MODEL || process.env.OPENAI_MODEL || "-4o-mini",
         temperature: 0.9,
         max_tokens: 180,
         messages: [
@@ -206,3 +206,4 @@ module.exports = async function handler(req, res) {
     });
   }
 };
+
