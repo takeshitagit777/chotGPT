@@ -1,5 +1,5 @@
 {
-  "name": "moshimo-log",
+  "name": "kurorekishi-unread",
   "dependencies": {
     "@vitejs/plugin-react": "latest",
     "vite": "latest",
@@ -15,3 +15,4 @@
     "preview": "vite preview"
   }
 }
+

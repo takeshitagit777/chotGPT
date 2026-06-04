@@ -116,12 +116,12 @@
 }
 
 .hero {
-  min-height: calc(92vh - 74px);
+  min-height: calc(100vh - 74px);
   display: grid;
   grid-template-columns: 1.05fr .95fr;
-  gap: 56px;
+  gap: 42px;
   align-items: center;
-  padding: 72px clamp(20px, 6vw, 96px) 56px;
+  padding: 48px clamp(20px, 6vw, 96px) 36px;
   position: relative;
   overflow: hidden;
   z-index: 0;
@@ -133,9 +133,23 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(5, 7, 13, .94) 0%, rgba(5, 7, 13, .74) 46%, rgba(5, 7, 13, .44) 100%),
-    url('/attaka-hero.png') center right/cover;
-  opacity: .72;
+    linear-gradient(90deg, rgba(5, 7, 13, .96) 0%, rgba(5, 7, 13, .76) 43%, rgba(5, 7, 13, .34) 100%),
+    url('/kuro-hero-woman.png') center right/cover;
+  opacity: .82;
+}
+
+.hero::after {
+  content: "OPEN AT YOUR OWN RISK";
+  position: absolute;
+  right: clamp(18px, 5vw, 76px);
+  top: 94px;
+  z-index: -1;
+  color: rgba(255, 91, 159, .13);
+  font-size: clamp(52px, 8vw, 142px);
+  font-weight: 900;
+  line-height: .8;
+  max-width: 660px;
+  text-align: right;
 }
 
 .eyebrow {
@@ -148,10 +162,11 @@
 }
 
 h1 {
-  font-size: clamp(56px, 88px, 126px);
-  line-height: .92;
+  font-size: clamp(64px, 10vw, 148px);
+  line-height: .86;
   margin: 0;
   letter-spacing: 0;
+  max-width: 760px;
 }
 
 h2 {
@@ -169,10 +184,10 @@ h3 {
 
 .lead {
   color: rgba(248, 242, 234, .78);
-  font-size: clamp(17px, 20px, 23px);
-  line-height: 1.9;
-  max-width: 720px;
-  margin: 28px 0 0;
+  font-size: clamp(18px, 2vw, 26px);
+  line-height: 1.72;
+  max-width: 780px;
+  margin: 24px 0 0;
 }
 
 .hero-actions {
@@ -200,6 +215,96 @@ h3 {
   background: rgba(110, 231, 242, .08);
   font-size: 13px;
   font-weight: 900;
+}
+
+.instant-quiz {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+  max-width: 760px;
+}
+
+.instant-question {
+  display: grid;
+  grid-template-columns: 148px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.26);
+  backdrop-filter: blur(18px);
+}
+
+.instant-question > span {
+  color: rgba(255,255,255,.64);
+  font-size: 12px;
+  font-weight: 900;
+  padding-left: 8px;
+}
+
+.instant-question div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.instant-question button {
+  min-height: 42px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  color: rgba(255,255,255,.86);
+  background: rgba(255,255,255,.07);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.instant-question button.selected {
+  color: #140912;
+  background: linear-gradient(135deg, #ff5b9f, #ffe05d);
+  border-color: transparent;
+}
+
+.panic-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+  max-width: 760px;
+}
+
+.panic-stats article {
+  min-height: 112px;
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.88);
+  color: #111827;
+  box-shadow: 0 18px 50px rgba(0,0,0,.25);
+}
+
+.panic-stats span,
+.panic-stats strong {
+  display: block;
+}
+
+.panic-stats span {
+  color: #e11d48;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.panic-stats strong {
+  margin-top: 4px;
+  font-size: 38px;
+  line-height: 1;
+}
+
+.panic-stats p {
+  margin: 8px 0 0;
+  color: #4b5563;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 800;
 }
 
 .primary-button,
@@ -262,7 +367,7 @@ h3 {
   justify-content: end;
   background:
     linear-gradient(180deg, rgba(2,4,10,.05), rgba(2,4,10,.84)),
-    url('/feature-sns.jpg') center/cover;
+    url('/kuro-hero-woman.png') center/cover;
   overflow: hidden;
 }
 
@@ -305,6 +410,33 @@ h3 {
   font-size: 20px;
 }
 
+.fake-notification {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(225, 29, 72, .94);
+  color: #fff;
+  box-shadow: 0 18px 50px rgba(0,0,0,.28);
+}
+
+.fake-notification span,
+.fake-notification p {
+  display: block;
+  margin: 0;
+}
+
+.fake-notification span {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fake-notification p {
+  margin-top: 4px;
+  color: #fff;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
 .phone-tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -319,6 +451,192 @@ h3 {
   background: rgba(255,255,255,.07);
   color: rgba(255,255,255,.72);
   font-size: 12px;
+}
+
+.viral-command {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 22px;
+  align-items: stretch;
+  padding-top: 34px;
+}
+
+.exposure-zone {
+  padding-top: 44px;
+}
+
+.exposure-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.exposure-grid button {
+  min-height: 360px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 34px;
+  padding: 26px;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    linear-gradient(180deg, rgba(4,7,12,.18), rgba(4,7,12,.88)),
+    url('/kuro-hero-woman.png') center/cover;
+  box-shadow: 0 24px 80px rgba(0,0,0,.32);
+}
+
+.exposure-grid button:nth-child(2) {
+  background:
+    linear-gradient(180deg, rgba(4,7,12,.18), rgba(4,7,12,.88)),
+    url('/kuro-social-woman.png') center/cover;
+}
+
+.exposure-grid button:nth-child(3) {
+  background:
+    linear-gradient(180deg, rgba(4,7,12,.18), rgba(4,7,12,.88)),
+    url('/kuro-archive-woman.png') center/cover;
+}
+
+.exposure-grid span {
+  width: fit-content;
+  min-height: 34px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  padding: 0 13px;
+  color: #fff;
+  background: rgba(225, 29, 72, .92);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.exposure-grid strong {
+  margin-top: auto;
+  display: block;
+  font-size: clamp(27px, 3vw, 44px);
+  line-height: 1.08;
+}
+
+.exposure-grid p {
+  color: rgba(255,255,255,.72);
+  line-height: 1.7;
+  font-weight: 800;
+}
+
+.viral-copy,
+.viral-stack article,
+.hook-grid button,
+.contact-bait,
+.sns-viral-lab,
+.challenge-panel {
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  box-shadow: 0 24px 80px rgba(0,0,0,.28);
+  backdrop-filter: blur(18px);
+}
+
+.viral-copy {
+  min-height: 430px;
+  border-radius: 36px;
+  padding: clamp(26px, 5vw, 54px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    linear-gradient(135deg, rgba(255,91,159,.16), rgba(110,231,242,.10)),
+    rgba(255,255,255,.06);
+}
+
+.viral-copy p:not(.eyebrow),
+.contact-bait p,
+.sns-viral-lab p,
+.challenge-panel p {
+  color: rgba(255,255,255,.70);
+  line-height: 1.9;
+}
+
+.viral-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.viral-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.viral-stack article {
+  min-height: 130px;
+  border-radius: 28px;
+  padding: 22px;
+  display: grid;
+  align-content: center;
+}
+
+.viral-stack span,
+.hook-grid span,
+.contact-chip-grid span,
+.comment-forecast span,
+.challenge-grid span {
+  color: #6ee7f2;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.viral-stack strong {
+  color: #ffe05d;
+  font-size: 44px;
+  line-height: 1;
+}
+
+.viral-stack p {
+  margin: 8px 0 0;
+  color: rgba(255,255,255,.66);
+  line-height: 1.65;
+}
+
+.hook-wall {
+  padding-top: 44px;
+}
+
+.hook-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hook-grid button {
+  min-height: 250px;
+  border-radius: 30px;
+  padding: 24px;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hook-grid button:nth-child(2) {
+  background:
+    linear-gradient(180deg, rgba(6,9,15,.16), rgba(6,9,15,.82)),
+    url('/memory-objects-archive.png') center/cover;
+}
+
+.hook-grid button:nth-child(3) {
+  background:
+    linear-gradient(180deg, rgba(6,9,15,.16), rgba(6,9,15,.82)),
+    url('/chat-memory-phone.png') center/cover;
+}
+
+.hook-grid strong {
+  font-size: clamp(23px, 2.2vw, 34px);
+  line-height: 1.22;
 }
 
 .section {
@@ -1058,6 +1376,24 @@ input {
   font-weight: 900;
 }
 
+.challenge-panel {
+  margin-top: 22px;
+  background:
+    linear-gradient(135deg, rgba(255,224,93,.13), rgba(255,91,159,.10)),
+    rgba(255,255,255,.055);
+}
+
+.challenge-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.challenge-grid button {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .social-snapshot,
 .album-museum,
 .inbox-summary {
@@ -1105,13 +1441,13 @@ input {
 .chat-band {
   background:
     linear-gradient(180deg, rgba(4,7,12,.12), rgba(4,7,12,.30)),
-    url('/chat-memory-phone.png') center/cover;
+    url('/kuro-chat-woman.png') center/cover;
 }
 
 .sns-band {
   background:
     linear-gradient(180deg, rgba(4,7,12,.12), rgba(4,7,12,.30)),
-    url('/social-feed-memory.png') center/cover;
+    url('/kuro-social-woman.png') center/cover;
 }
 
 .album-band {
@@ -1197,6 +1533,103 @@ input {
 .composer-actions button.selected {
   color: #151007;
   background: #ffe05d;
+}
+
+.contact-bait,
+.sns-viral-lab,
+.challenge-panel {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 24px;
+  border-radius: 34px;
+  padding: clamp(22px, 4vw, 38px);
+}
+
+.contact-bait {
+  background:
+    linear-gradient(135deg, rgba(141,224,85,.12), rgba(110,231,242,.08)),
+    rgba(255,255,255,.055);
+}
+
+.contact-bait p,
+.sns-viral-lab p,
+.challenge-panel p {
+  color: rgba(255,255,255,.70);
+  line-height: 1.9;
+}
+
+.contact-chip-grid,
+.sns-hook-list,
+.challenge-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.contact-chip-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.contact-chip-grid button,
+.sns-hook-list button,
+.challenge-grid button {
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 22px;
+  padding: 16px;
+  color: #fff;
+  background: rgba(0,0,0,.22);
+  cursor: pointer;
+  text-align: left;
+}
+
+.contact-chip-grid span,
+.comment-forecast span,
+.challenge-grid span {
+  color: #6ee7f2;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.contact-chip-grid strong,
+.challenge-grid strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.sns-viral-lab {
+  background:
+    linear-gradient(180deg, rgba(4,7,12,.34), rgba(4,7,12,.86)),
+    url('/kuro-social-woman.png') center/cover;
+}
+
+.sns-hook-list button {
+  min-height: 58px;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.comment-forecast {
+  border-radius: 28px;
+  padding: 22px;
+  background: rgba(255,255,255,.88);
+  color: #111827;
+  box-shadow: 0 24px 70px rgba(0,0,0,.30);
+}
+
+.comment-forecast span {
+  color: #d64545;
+}
+
+.comment-forecast p {
+  margin: 10px 0;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: #f2f5f7;
+  color: #111827;
+  font-weight: 900;
 }
 
 .sns-comments button {
@@ -1727,7 +2160,8 @@ input {
   }
 
   .hero,
-  .creator {
+  .creator,
+  .viral-command {
     grid-template-columns: 1fr;
   }
 
@@ -1762,10 +2196,19 @@ input {
   .item-gacha-layout,
   .invite-grid,
   .social-snapshot,
-  .album-museum,
-  .inbox-summary,
-  .sns-composer {
+    .album-museum,
+    .inbox-summary,
+    .sns-composer,
+    .contact-bait,
+    .sns-viral-lab,
+    .challenge-panel {
     grid-template-columns: 1fr;
+  }
+
+  .hook-grid,
+  .challenge-grid,
+  .exposure-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .gacha-machine,
@@ -1797,6 +2240,15 @@ input {
     flex-direction: column;
   }
 
+  .instant-question,
+  .panic-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .instant-question div {
+    grid-template-columns: 1fr;
+  }
+
   .primary-button,
   .ghost-button {
     text-align: center;
@@ -1826,6 +2278,13 @@ input {
   .feature-grid {
     grid-template-columns: repeat(7, 232px);
     gap: 14px;
+  }
+
+  .hook-grid,
+  .contact-chip-grid,
+  .challenge-grid,
+  .exposure-grid {
+    grid-template-columns: 1fr;
   }
 
   .feature-card {

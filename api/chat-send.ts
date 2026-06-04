@@ -1,4 +1,4 @@
-﻿function jsonResponse(res: any, status: number, body: any) {
+function jsonResponse(res: any, status: number, body: any) {
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.end(JSON.stringify(body));
@@ -39,7 +39,7 @@ export default async function handler(req: any, res: any) {
       : [];
 
     const systemPrompt = `
-あなたは「もしもログ」というアプリ内に存在するキャラクターです。
+あなたは「未読の人生」というアプリ内に存在するキャラクターです。
 ユーザーはあなたと同じ世界線にいる人物です。
 
 【世界線】

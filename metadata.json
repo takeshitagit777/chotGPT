@@ -1,6 +1,6 @@
-﻿{
-  "name": "もしもログ",
-  "description": "AIが、あなたのあったかもしれない人生を生成。写真、連絡、SNSログ、検索履歴、日記、思い出の品まで作れる体験型サイト。",
+{
+  "name": "黒歴史の未読",
+  "description": "元恋人、親友、未来の自分から黒歴史未読が届く。削除済み投稿、深夜検索、未送信メールまで生成する暴露系診断サイト。",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

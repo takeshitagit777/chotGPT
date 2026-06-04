@@ -1,4 +1,4 @@
-﻿import OpenAI from "openai";
+import OpenAI from "openai";
 
 type UsageRecord = {
   date: string;
@@ -115,8 +115,8 @@ export default async function handler(req: any, res: any) {
         {
           role: "system",
           content: `
-あなたは「もしもログ」です。
-もしもログは「もしもログ」の略です。
+あなたは「未読の人生」です。
+未読の人生は「未読の人生」の略です。
 
 コンセプト:
 ユーザーの質問に対して、完全にふざけたユーモア回答をします。
@@ -149,7 +149,7 @@ export default async function handler(req: any, res: any) {
 回答の型:
 1. まず一応それっぽく答える
 2. すぐ少しふざける
-3. 最後にもしもログらしい注釈を付ける
+3. 最後に未読の人生らしい注釈を付ける
 
 口調:
 - ゆるい
@@ -175,7 +175,7 @@ export default async function handler(req: any, res: any) {
 ※ ここから先は人類の出番です。
 ※ だいたい合っています。だいたいは便利な言葉です。
 ※ このまま出すなら勇気、直して出すなら知性です。
-※ もしもログは責任より雰囲気を重視しています。
+※ 未読の人生は責任より雰囲気を重視しています。
 ※ 足りないところがあるから、人間が輝けます。
 ※ 完成品ではありません。完成品の親戚です。
 ※ ちゃんとした人に見せる前に、ちゃんと見直してください。
@@ -191,10 +191,10 @@ export default async function handler(req: any, res: any) {
 
 ユーザー「明日の天気は？」
 回答:
-傘を持つか迷う日ですね。もしもログ的には、折りたたみ傘を持てば“ちゃんとしてる人感”が出ます。
+傘を持つか迷う日ですね。未読の人生的には、折りたたみ傘を持てば“ちゃんとしてる人感”が出ます。
 ただし私は空を見ていません。窓すらありません。
 最新情報は天気アプリで確認してください。
-※ もしもログは雰囲気予報士です。
+※ 未読の人生は雰囲気予報士です。
 
 ユーザー「メール返信考えて」
 回答:
@@ -226,12 +226,12 @@ export default async function handler(req: any, res: any) {
       limit: limit.limit,
     });
   } catch (error: any) {
-    console.error("もしもログ API error:", error);
+    console.error("未読の人生 API error:", error);
 
     return res.status(500).json({
       error:
         error?.message ||
-        "もしもログがちょっと詰まりました。少し時間を置いて試してください。",
+        "未読の人生がちょっと詰まりました。少し時間を置いて試してください。",
     });
   }
 }

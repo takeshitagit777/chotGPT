@@ -1,4 +1,4 @@
-﻿import OpenAI from "openai";
+import OpenAI from "openai";
 
 type RateRecord = {
   date: string;
@@ -125,7 +125,7 @@ function normalizeResult(raw: any, input: any) {
     summary: String(raw?.summary || raw?.diary || "存在しないはずなのに、どこか懐かしい自分史。"),
     album: albumText,
     line: Array.isArray(raw?.line) ? raw.line : [],
-    sns: String(raw?.sns || "あの日の帰り道だけ、まだ少し覚えている。 #もしもログ"),
+    sns: String(raw?.sns || "あの日の帰り道だけ、まだ少し覚えている。 #未読の人生"),
     search,
     diary: String(raw?.diary || "今日は、なぜか少しだけ帰り道が長く感じた。"),
     item: String(raw?.item || "少し色あせたキーホルダー"),
@@ -186,7 +186,7 @@ export default async function handler(req: any, res: any) {
     const response = await client.responses.create({
       model: process.env.OPENAI_MODEL || "-4.1-mini",
       input: `
-あなたは「もしもログ」という体験型サービスの生成エンジンです。
+あなたは「未読の人生」という体験型サービスの生成エンジンです。
 ユーザーの設定から、存在しないのに妙に懐かしい“もうひとつの自分史”を日本語で生成してください。
 
 設定:

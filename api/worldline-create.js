@@ -1,4 +1,4 @@
-﻿const https = require("https");
+const https = require("https");
 
 const DAILY_LIMIT = 3;
 const store = global.__kakuJibunshiWorldlineStore || new Map();
@@ -329,7 +329,7 @@ function normalizeResult(raw, input) {
     summary: text(raw && raw.summary, "存在しないはずなのに、どこか懐かしい自分史。"),
     album: albumText,
     line: arr(raw && raw.line),
-    sns: text(raw && raw.sns, "あの日の帰り道だけ、まだ少し覚えている。 #もしもログ"),
+    sns: text(raw && raw.sns, "あの日の帰り道だけ、まだ少し覚えている。 #未読の人生"),
     snsPosts,
     search,
     diary: text(raw && raw.diary, "今日は、なぜか少しだけ帰り道が長く感じた。"),
@@ -380,7 +380,7 @@ module.exports = async function handler(req, res) {
     }
 
     const prompt = `
-あなたは「もしもログ」という体験型サービスの生成エンジンです。
+あなたは「未読の人生」という体験型サービスの生成エンジンです。
 ユーザーの設定から、存在しないのに妙に懐かしい“もうひとつの自分史”を日本語で生成してください。
 
 設定:

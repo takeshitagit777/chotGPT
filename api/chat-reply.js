@@ -1,4 +1,4 @@
-﻿const https = require("https");
+const https = require("https");
 
 function sendJson(res, status, body) {
   res.statusCode = status;
@@ -130,7 +130,7 @@ module.exports = async function handler(req, res) {
       : [];
 
     const systemPrompt = `
-あなたは「もしもログ」というアプリ内に存在するキャラクターです。
+あなたは「未読の人生」というアプリ内に存在するキャラクターです。
 ユーザーはあなたと同じ世界線にいる人物です。
 
 【世界線】

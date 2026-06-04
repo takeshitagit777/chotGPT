@@ -1,4 +1,6 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+import type { ReactNode } from 'react';
 
 type Character = {
   id: string;
@@ -89,7 +91,7 @@ const defaultWorldline: Worldline = {
     '自分: いいよ、いつもの駅で待ってる',
     '相手: なんか今日、忘れたくない日になりそう',
   ],
-  sns: '夏の終わりって、なんで少しだけ静かなんだろう。 #もしもログ',
+  sns: '夏の終わりって、なんで少しだけ静かなんだろう。 #黒歴史の未読',
   search: ['好きな人 脈あり サイン', '夏祭り 帰り道 告白', '写真 現像 安い'],
   diary: '今日は楽しかった。でも、楽しいだけじゃなかった。帰り道、少しだけ言葉が足りなかった気がする。',
   item: '制服のポケットに入れたままの、少し折れた映画の半券。',
@@ -419,12 +421,12 @@ async function safeJsonFetch(url: string, options: RequestInit) {
 
 const features = [
   { no: '1', title: '写真・アルバム', text: '存在しない写真が、まるで古いアルバムのように並びます。', image: '/album-memory-collage.png', route: '/albums' },
-  { no: '2', title: '連絡', text: '未読、最後の連絡、言い残したこと。世界線の人たちからメッセージが届きます。', image: '/chat-memory-phone.png', route: '/friends' },
-  { no: '3', title: 'SNSログ', text: '投稿、コメント、保存数、投稿メーカーまで。世界線のタイムラインを覗けます。', image: '/social-feed-memory.png', route: '/sns' },
-  { no: '4', title: '結果カード', text: '診断結果を画像として保存。投稿に載せやすい1枚にします。', image: '/ogp.png', route: '/share' },
+  { no: '2', title: '連絡', text: '元恋人、親友、未来の自分。開けたら気まずい未読が届きます。', image: '/kuro-chat-woman.png', route: '/friends' },
+  { no: '3', title: 'SNSログ', text: '削除済み投稿、コメント予測、伸びる投稿文まで作ります。', image: '/kuro-social-woman.png', route: '/sns' },
+  { no: '4', title: '暴露カード', text: '黒歴史の結果を1枚で保存。投稿に載せたくなるカードにします。', image: '/kuro-hero-woman.png', route: '/share' },
   { no: '5', title: '世界線ガチャ', text: '時代、場所、立場、空気を一発で引き直す遊び。レア世界線も混ざります。', image: '/viral-worldline-hero.png', route: '/gacha' },
   { no: '6', title: '相性診断', text: 'この世界線で、誰があなたを一番覚えているかを見ます。', image: '/feature-line.jpg', route: '/compat' },
-  { no: '7', title: '深夜検索と日記', text: '検索履歴、日記、思い出の品。スクショしたくなる断片をまとめます。', image: '/feature-search.jpg', route: '/archive' },
+  { no: '7', title: '深夜検索と日記', text: '2:13の検索履歴、削除済み投稿、見られたくない断片をまとめます。', image: '/kuro-archive-woman.png', route: '/archive' },
   { no: '8', title: '10秒プロローグ', text: '世界線の冒頭だけを映画の予告みたいに表示。初見の引きを作ります。', image: '/attaka-hero.png', route: '/openers' },
   { no: '9', title: '思い出の品ガチャ', text: 'ケータイ、半券、キーホルダー。物から人生が立ち上がります。', image: '/memory-objects-archive.png', route: '/items' },
   { no: '10', title: '友だち招待文', text: '「あなたのも見たい」を自然に送れる文章を自動で作ります。', image: '/feature-sns.jpg', route: '/invite' },
@@ -441,45 +443,45 @@ const presets = [
 const vibeQuestions = [
   {
     id: 'timing',
-    label: '忘れられない時間',
-    options: ['夏の終わり', '夜明け前', '終電間際', '雨上がり'],
+    label: '一番バレたくない時間',
+    options: ['深夜2:13', '終電後', '卒業式の夜', '雨の日の帰り'],
   },
   {
     id: 'signal',
-    label: '心に残る通知',
-    options: ['既読だけつく', '写真が1枚届く', '短い不在着信', '消えた投稿'],
+    label: '届いたら終わる通知',
+    options: ['元恋人から未読', '親友のスクショ', '未来の自分', '削除済み投稿'],
   },
   {
     id: 'artifact',
-    label: 'ポケットの中身',
-    options: ['折れた半券', '光るキーホルダー', '書きかけの手紙', '古いイヤホン'],
+    label: '証拠として残った物',
+    options: ['消せない検索履歴', '未送信メール', '古いプリクラ', '雨でにじんだメモ'],
   },
 ];
 
 const vibeTypes = [
   {
-    title: '未送信の主人公',
-    badge: '拡散度 92',
-    mood: '言いかけた一言でタイムラインを止めるタイプ',
-    copy: 'あなたの世界線は、派手ではないのに妙に残ります。写真1枚、短文1つで「これ自分かも」と思わせる余白が強い。',
+    title: '未送信で人生を狂わせる人',
+    badge: '黒歴史度 92',
+    mood: '送らなかった一言が、いちばん重いタイプ',
+    copy: 'あなたの黒歴史は派手ではないのに逃げ場がありません。未送信、検索履歴、古い写真がつながった瞬間に刺さります。',
   },
   {
-    title: '放課後の予言者',
-    badge: '拡散度 87',
-    mood: '偶然を伏線に変えるタイプ',
-    copy: '小さな出来事を物語に見せる力があります。検索履歴、連絡、アルバムの断片がつながった瞬間に刺さる世界線です。',
+    title: '検索履歴で全部バレる人',
+    badge: '黒歴史度 87',
+    mood: '深夜の検索ワードが一番正直なタイプ',
+    copy: '言葉にしていない気持ちほど検索履歴に残ります。スクショされたら友だちに見せたくなる危うさがあります。',
   },
   {
-    title: '終電前の発光体',
-    badge: '拡散度 95',
-    mood: '明るいのに少し寂しいタイプ',
-    copy: 'テンポが速く、感情の温度も高い。SNSログにした瞬間、友達が自分の結果も見たくなる引きがあります。',
+    title: '元恋人から通知が来る人',
+    badge: '黒歴史度 95',
+    mood: '明るく振る舞うほど未読が重くなるタイプ',
+    copy: '結果を見た瞬間「誰から来るか」だけで話題にできます。恋愛、未練、削除済み投稿の引きが強いタイプです。',
   },
   {
-    title: '雨上がりの記録係',
-    badge: '拡散度 89',
-    mood: '誰かの記憶に居場所を作るタイプ',
-    copy: '連絡の余韻と古い写真の相性が抜群。派手な診断より、静かに保存されるタイプのバズを狙えます。',
+    title: '親友にスクショされる人',
+    badge: '黒歴史度 89',
+    mood: '一番近い人にだけ弱みが残るタイプ',
+    copy: '連絡の余韻と古い写真の相性が強いです。笑えるのに少し痛い、共有されやすい黒歴史になります。',
   },
 ];
 
@@ -516,6 +518,57 @@ const itemPool = [
   ['雨でにじんだメモ', '待ち合わせ場所だけ読める。名前はもう読めない。', 'EPIC'],
 ];
 
+const viralReceipts = [
+  { label: '黒歴史開封', value: '3秒', text: '元恋人、親友、未来の自分から誰が来るかで止める。' },
+  { label: '晒せるカード', value: '1枚', text: '未読、相性、検索履歴をそのまま投稿できる。' },
+  { label: '巻き込み導線', value: '指名', text: '「あなたは誰から来る？」でDMに投げられる。' },
+];
+
+const viralTriggers = [
+  '元恋人から未読が来たら、あなたは何タイプ？',
+  '深夜2:13の検索履歴で黒歴史がバレる。',
+  '親友が持ってるスクショ、まだ残ってる。',
+  '未来の自分から「それ消せ」と通知が来る。',
+];
+
+const snsHooks = [
+  '私の黒歴史未読、元恋人から来た。あなた誰から来る？',
+  '深夜の検索履歴、普通に見られたくない結果だった。',
+  '親友にスクショされるタイプって出てしんどい。',
+  '未来の自分から通知が来る診断、ちょっと怖い。',
+];
+
+const contactHooks = [
+  '未送信メールを開封する',
+  '消された写真について聞く',
+  '既読無視の理由を聞く',
+  'スクショされた自分を見る',
+];
+
+const panicStats = [
+  ['黒歴史', 'A級', 'いま開くと少し気まずいです'],
+  ['未読', '3件', '元恋人・親友・未来の自分'],
+  ['検索履歴', '02:13', '見られたくない夜が残っています'],
+];
+
+const exposureCards = [
+  {
+    label: '元恋人',
+    title: '「あの時の未送信、まだ残ってる」',
+    text: '送らなかった一言から、選ばなかった恋愛の世界線を生成。',
+  },
+  {
+    label: '親友',
+    title: '「その投稿、消す前に見てた」',
+    text: '削除済み投稿、変な検索、古い写真で笑える黒歴史を作る。',
+  },
+  {
+    label: '未来の自分',
+    title: '「その選択、あとで効いてくる」',
+    text: '10年後の自分から、今の自分に刺さる通知が届く。',
+  },
+];
+
 function scoreText(seed: string) {
   return Array.from(seed).reduce((sum, char) => sum + char.charCodeAt(0), 0);
 }
@@ -535,7 +588,7 @@ function getRememberer(worldline: Worldline) {
 }
 
 function makeShareText(worldline: Worldline, vibeTitle: string) {
-  return `私は「${vibeTitle}」タイプでした。${worldline.title} / ${worldline.era} ${worldline.place} #もしもログ`;
+  return `私の黒歴史未読は「${vibeTitle}」でした。あなたは元恋人・親友・未来の自分、誰から来る？ #黒歴史の未読`;
 }
 
 function getAvatarTone(id: string) {
@@ -569,14 +622,14 @@ function postAvatarFriend(post: SnsPost, index: number): Character {
   };
 }
 
-function Shell({ route, children }: { route: string; children: React.ReactNode }) {
+function Shell({ route, children }: { route: string; children: ReactNode }) {
   return (
     <div className="app">
       <header className="topbar">
         <button className="brand" type="button" onClick={() => setHash('/')}>
-          <span className="brand-mark">架</span>
+          <span className="brand-mark">未</span>
           <span>
-            <strong>もしもログ</strong>
+            <strong>黒歴史の未読</strong>
             <small>あったかもしれない人生を、生成する。</small>
           </span>
         </button>
@@ -694,50 +747,129 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
     <main>
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">AIが生成する、もうひとつのあなたの世界。</p>
-          <h1>もしもログ</h1>
+          <p className="eyebrow">元恋人・親友・未来の自分から、未読が届く。</p>
+          <h1>黒歴史の未読</h1>
           <p className="lead">
-            あなたの“もしも”を、写真・連絡・SNSログ・検索履歴・日記・思い出の品まで生成。
-            存在しないのに、なぜか懐かしい人生をつくります。
+            開けたら少し気まずい。だけど見たい。
+            未送信メール、削除済み投稿、深夜2:13の検索履歴まで生成する、友だちに送りたくなる暴露系診断です。
           </p>
 
-          <div className="buzz-strip" aria-label="サイトの特徴">
-            <span>写真ができる</span>
-            <span>連絡が届く</span>
-            <span>検索履歴まで残る</span>
-            <span>結果を投稿できる</span>
+          <div className="instant-quiz" aria-label="3タップ診断">
+            {vibeQuestions.map((question) => (
+              <div className="instant-question" key={question.id}>
+                <span>{question.label}</span>
+                <div>
+                  {question.options.slice(0, 2).map((option) => (
+                    <button
+                      key={option}
+                      className={answers[question.id] === option ? 'selected' : ''}
+                      onClick={() => handleAnswer(question.id, option)}
+                      type="button"
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="panic-stats" aria-label="生成される結果">
+            {panicStats.map(([label, value, text]) => (
+              <article key={label}>
+                <span>{label}</span>
+                <strong>{value}</strong>
+                <p>{text}</p>
+              </article>
+            ))}
           </div>
 
           <div className="hero-actions">
-            <a href="#create" className="primary-button">もうひとつの人生を作る</a>
-            <button className="ghost-button" onClick={() => setHash('/gacha')}>ガチャを引く</button>
-            <button className="ghost-button" onClick={() => setHash('/share')}>結果カード</button>
-            <button className="ghost-button" onClick={() => setHash('/friends')}>連絡を開く</button>
+            <a href="#create" className="primary-button">黒歴史を開封する</a>
+            <button className="ghost-button" onClick={() => setHash('/share')}>暴露カードを作る</button>
+            <button className="ghost-button" onClick={() => setHash('/friends')}>未読を覗く</button>
           </div>
         </div>
 
-        <div className="hero-phone" aria-label="もしもログプレビュー">
+        <div className="hero-phone hero-inbox" aria-label="黒歴史の未読プレビュー">
           <div className="phone-bar">9:41</div>
           <div className="phone-scene">
-            <span>{worldline.era}・{worldline.mood}</span>
-            <strong>{worldline.title}</strong>
-            <p>{worldline.summary}</p>
+            <span>黒歴史の未読</span>
+            <strong>{rememberer.friend.name}がスクショを持っています</strong>
+            <p>{rememberer.hook}</p>
             <div className="phone-share-card">
               <small>{vibeResult.badge}</small>
               <b>{vibeResult.title}</b>
             </div>
+            <div className="fake-notification">
+              <span>{rememberer.friend.name} から未読</span>
+              <p>これ、まだ消してないよね？</p>
+            </div>
           </div>
           <div className="phone-tabs">
-            <span>写真</span><span>連絡</span><span>SNS</span><span>日記</span>
+            <span>未読</span><span>写真</span><span>検索</span><span>投稿</span>
           </div>
+        </div>
+      </section>
+
+      <section className="section viral-command">
+        <div className="viral-copy">
+          <p className="eyebrow">Viral Engine</p>
+          <h2>「誰から黒歴史未読が来た？」だけで送れる。</h2>
+          <p>説明しないで広がるように、結果の中心を“気まずい未読”に寄せました。元恋人、親友、未来の自分のどれが出たかだけで、スクショして投げられます。</p>
+          <div className="viral-actions">
+            <button className="primary-button" onClick={() => setHash('/compat')}>誰に覚えられてるか見る</button>
+            <button className="ghost-button" onClick={() => setHash('/invite')}>友だちへ送る文を作る</button>
+          </div>
+        </div>
+        <div className="viral-stack">
+          {viralReceipts.map((item) => (
+            <article key={item.label}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section exposure-zone">
+        <div className="section-heading">
+          <p className="eyebrow">Open If You Dare</p>
+          <h2>開けたら気まずい、でも見たい。</h2>
+          <p>バズるには「きれい」より「自分も怖いもの見たさでやる」が強いので、結果を3つの暴露ルートに分けています。</p>
+        </div>
+        <div className="exposure-grid">
+          {exposureCards.map((card) => (
+            <button key={card.label} onClick={() => setHash(card.label === '親友' ? '/archive' : '/share')}>
+              <span>{card.label}</span>
+              <strong>{card.title}</strong>
+              <p>{card.text}</p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="section hook-wall">
+        <div className="section-heading">
+          <p className="eyebrow">Scroll Stopper</p>
+          <h2>説明文じゃなく、送信したくなる一言で広げる。</h2>
+        </div>
+        <div className="hook-grid">
+          {viralTriggers.map((hook, index) => (
+            <button key={hook} onClick={() => index % 2 === 0 ? setHash('/share') : setHash('/friends')}>
+              <span>0{index + 1}</span>
+              <strong>{hook}</strong>
+            </button>
+          ))}
         </div>
       </section>
 
       <section id="features" className="section">
         <div className="section-heading">
           <p className="eyebrow">Fictional Autobiography</p>
-          <h2>“結果”じゃなくて、世界そのものを作る。</h2>
-          <p>写真アルバム、連絡、SNSログ、検索履歴、日記、思い出の品、音楽まで。1枚の診断画像で終わらない、触れるもうひとつの人生です。</p>
+          <h2>未読を開くと、存在しない人生が出てくる。</h2>
+          <p>写真アルバム、連絡、SNSログ、検索履歴、日記、思い出の品、音楽まで。診断結果より先に、感情の証拠が残っている体験にします。</p>
         </div>
 
         <div className="feature-grid">
@@ -880,6 +1012,22 @@ function FriendsPage({ worldline }: { worldline: Worldline }) {
           <button className="primary-button" onClick={() => setHash(`/chat/${rememberer.friend.id}`)}>この人と話す</button>
         </div>
         <FriendAvatar friend={rememberer.friend} className="memory-avatar" />
+      </section>
+
+      <section className="contact-bait">
+        <div>
+          <p className="eyebrow">Reply Bait</p>
+          <h2>開く理由を、未読の中に仕込む。</h2>
+          <p>ただ話せるだけでは弱いので、相手ごとに「聞きたいこと」を先に置きます。友だちがスクショを見た瞬間、自分の結果も知りたくなる導線です。</p>
+        </div>
+        <div className="contact-chip-grid">
+          {contactHooks.map((hook, index) => (
+            <button key={hook} onClick={() => setHash(`/chat/${worldline.characters[index % worldline.characters.length].id}`)}>
+              <span>{worldline.characters[index % worldline.characters.length].name}</span>
+              <strong>{hook}</strong>
+            </button>
+          ))}
+        </div>
       </section>
 
       <section className="phone-list-panel">
@@ -1070,7 +1218,7 @@ function SnsPage({ worldline }: { worldline: Worldline }) {
   const [copiedDraft, setCopiedDraft] = useState(false);
   const topPost = worldline.snsPosts.reduce((best, post) => post.likes > best.likes ? post : best, worldline.snsPosts[0]);
   const savedCount = worldline.snsPosts.reduce((sum, post) => sum + post.likes + post.comments.length * 7, 0);
-  const draftText = `${worldline.place}で${worldline.role}だった私へ。${draftMode}として残すなら、たぶん「${worldline.mood}」って言葉になる。 #もしもログ`;
+  const draftText = `黒歴史未読を開けたら、${worldline.place}で${worldline.role}だった私が出てきた。${draftMode}として残すなら「${worldline.mood}」。 #黒歴史の未読`;
 
   const copyDraft = async () => {
     try {
@@ -1129,6 +1277,35 @@ function SnsPage({ worldline }: { worldline: Worldline }) {
             </button>
           ))}
           <button className="primary-button" onClick={copyDraft}>{copiedDraft ? 'コピー済み' : '投稿文をコピー'}</button>
+        </div>
+      </section>
+
+      <section className="sns-viral-lab">
+        <div className="sns-lab-main">
+          <p className="eyebrow">Share Hooks</p>
+          <h2>伸びる投稿は、説明より「ちょっと見られたくない」で始まる。</h2>
+          <p>そのまま使える短文を置いて、暴露カード、相性診断、未読ページへ回遊させます。</p>
+          <div className="sns-hook-list">
+            {snsHooks.map((hook) => (
+              <button key={hook} onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(`${hook} #黒歴史の未読`);
+                  setCopiedDraft(true);
+                } catch {
+                  setCopiedDraft(false);
+                }
+              }}>
+                {hook}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="comment-forecast">
+          <span>コメント予測</span>
+          <p>「誰から来たかだけ教えて」</p>
+          <p>「元恋人は無理、親友がいい」</p>
+          <p>「検索履歴だけ見たい」</p>
+          <button className="small-primary" onClick={() => setHash('/share')}>暴露カードを作る</button>
         </div>
       </section>
 
@@ -1266,7 +1443,7 @@ function makeGachaWorldline(index: number): Worldline {
   return normalizeWorldline({
     id: `gacha-${Date.now()}`,
     title: `${rarity}世界線: ${place}`,
-    summary: `${role}として過ごす、${mood}もしもログ。結果は「${result.title}」。`,
+    summary: `${role}として過ごす、${mood}黒歴史の未読。結果は「${result.title}」。`,
     diary: `今日は${place}にいた。何も起きていないふりをしたけど、たぶん全部始まっていた。`,
     item: `${rarity}の印が入った、少し傷のあるキーホルダー。`,
     bgm: `${place}、${mood}夜`,
@@ -1389,7 +1566,7 @@ function ShareCardPage({ worldline }: { worldline: Worldline }) {
 
       ctx.fillStyle = '#6ee7f2';
       ctx.font = '700 28px sans-serif';
-      ctx.fillText('もしもログ 診断結果', 64, 88);
+      ctx.fillText('黒歴史の未読 開封結果', 64, 88);
 
       ctx.fillStyle = '#ffffff';
       ctx.font = '900 72px sans-serif';
@@ -1445,12 +1622,12 @@ function ShareCardPage({ worldline }: { worldline: Worldline }) {
     <main className="sub-page">
       <section className="sub-hero compact">
         <p className="eyebrow">Share Studio</p>
-        <h1>結果カードを作る</h1>
-        <p>診断結果を投稿しやすい1枚にします。保存してSNSに載せる導線をここに集約しました。</p>
+        <h1>暴露カードを作る</h1>
+        <p>黒歴史未読の結果を投稿しやすい1枚にします。保存してSNSに載せる導線をここに集約しました。</p>
       </section>
 
       <section className="share-studio">
-        <canvas ref={canvasRef} width="1080" height="1080" aria-label="もしもログの結果カード" />
+        <canvas ref={canvasRef} width="1080" height="1080" aria-label="黒歴史の未読の結果カード" />
         <div className="share-tools">
           <span className="result-badge">{vibe.badge}</span>
           <h2>{vibe.title}</h2>
@@ -1599,9 +1776,9 @@ function InvitePage({ worldline }: { worldline: Worldline }) {
   const rememberer = getRememberer(worldline);
   const [copied, setCopied] = useState('');
   const invites = [
-    `これやって。あなたの「あったかもしれない人生」も見たい。私は${worldline.place}の${worldline.role}だった。`,
-    `私の世界線、${rememberer.friend.name}が一番覚えてくれてた。あなたは誰が出るか気になる。`,
-    `写真・連絡・検索履歴まで出るのずるい。あなたの結果も送って。 #もしもログ`,
+    `これやって。あなたの黒歴史未読、誰から来るか見たい。私は${worldline.place}の${worldline.role}だった。`,
+    `私の黒歴史未読、${rememberer.friend.name}が持ってた。あなたは元恋人・親友・未来の自分どれが出る？`,
+    `検索履歴まで出るのずるい。あなたの暴露カードも送って。 #黒歴史の未読`,
   ];
 
   const copyInvite = async (text: string) => {
@@ -1629,6 +1806,26 @@ function InvitePage({ worldline }: { worldline: Worldline }) {
           </article>
         ))}
       </section>
+
+      <section className="challenge-panel">
+        <div>
+          <p className="eyebrow">Friend Challenge</p>
+          <h2>送る理由を3つに分ける。</h2>
+          <p>相手に合わせて、元恋人、親友、検索履歴のどれで煽るかを変えられます。</p>
+        </div>
+        <div className="challenge-grid">
+          {[
+            ['元恋人で煽る', `私は「${getVibeResult(worldline.title).title}」だった。あなた元恋人から来るか見たい。`],
+            ['親友で煽る', `${rememberer.friend.name}がスクショ持ってた。あなたは誰が出るかやって。`],
+            ['検索履歴で煽る', `深夜検索が妙にリアルだった。あなたのも見せて。`],
+          ].map(([title, text]) => (
+            <button key={title} onClick={() => copyInvite(`${text} #黒歴史の未読`)}>
+              <span>{title}</span>
+              <strong>{text}</strong>
+            </button>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
@@ -1641,7 +1838,7 @@ function App() {
     setWorldline(getWorldline());
   }, [route]);
 
-  let page: React.ReactNode;
+  let page: ReactNode;
 
   if (route.startsWith('/chat/')) {
     page = <ChatPage worldline={worldline} friendId={route.replace('/chat/', '')} />;
