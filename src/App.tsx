@@ -569,6 +569,17 @@ const exposureCards = [
   },
 ];
 
+const instaImages = [
+  '/kuro-hero-woman.png',
+  '/kuro-social-woman.png',
+  '/kuro-chat-woman.png',
+  '/kuro-archive-woman.png',
+  '/album-memory-collage.png',
+  '/share-card-memory-ring.png',
+  '/memory-objects-archive.png',
+  '/worldline-gacha-station.png',
+];
+
 function scoreText(seed: string) {
   return Array.from(seed).reduce((sum, char) => sum + char.charCodeAt(0), 0);
 }
@@ -585,6 +596,21 @@ function getRememberer(worldline: Worldline) {
     hook: memoryHooks[seed % memoryHooks.length],
     score: 82 + (seed % 17),
   };
+}
+
+function getIntimacyScore(worldline: Worldline, friend: Character, role: string) {
+  const base = scoreText(`${worldline.id}${worldline.title}${friend.id}${role}`);
+  return 58 + (base % 41);
+}
+
+function getPartnerCopy(role: string, friend: Character, score: number) {
+  if (role === '彼氏') {
+    return `${friend.name}は、雑に見えてかなり覚えているタイプ。親密度${score}%、未読を開くと距離が一気に近づきます。`;
+  }
+  if (role === '彼女') {
+    return `${friend.name}は、言葉より空気で近づくタイプ。親密度${score}%、スクショしたくなる関係値です。`;
+  }
+  return `${friend.name}との距離はまだ曖昧。親密度${score}%、ここから彼氏・彼女ルートにできます。`;
 }
 
 function makeShareText(worldline: Worldline, vibeTitle: string) {
@@ -982,6 +1008,10 @@ function HomePage({ onWorldlineUpdate }: { onWorldlineUpdate: (worldline: Worldl
 function FriendsPage({ worldline }: { worldline: Worldline }) {
   const rememberer = getRememberer(worldline);
   const unreadTotal = worldline.characters.reduce((sum, friend) => sum + (friend.unread || 0), 0);
+  const [partnerId, setPartnerId] = useState(rememberer.friend.id);
+  const [partnerRole, setPartnerRole] = useState<'彼氏' | '彼女'>('彼女');
+  const partner = worldline.characters.find((friend) => friend.id === partnerId) ?? rememberer.friend;
+  const intimacy = getIntimacyScore(worldline, partner, partnerRole);
 
   return (
     <main className="sub-page">
@@ -1014,6 +1044,44 @@ function FriendsPage({ worldline }: { worldline: Worldline }) {
         <FriendAvatar friend={rememberer.friend} className="memory-avatar" />
       </section>
 
+      <section className="partner-lab">
+        <div className="partner-card">
+          <p className="eyebrow">Relationship Route</p>
+          <div className="partner-main">
+            <FriendAvatar friend={partner} className="partner-avatar" />
+            <div>
+              <span className="partner-role">{partnerRole}候補</span>
+              <h2>{partner.name}</h2>
+              <p>{getPartnerCopy(partnerRole, partner, intimacy)}</p>
+            </div>
+          </div>
+          <div className="intimacy-meter" aria-label={`親密度 ${intimacy}%`}>
+            <div>
+              <span>親密度</span>
+              <strong>{intimacy}%</strong>
+            </div>
+            <i style={{ width: `${intimacy}%` }} />
+          </div>
+          <div className="partner-actions">
+            <button className={partnerRole === '彼氏' ? 'selected' : ''} onClick={() => setPartnerRole('彼氏')}>彼氏にする</button>
+            <button className={partnerRole === '彼女' ? 'selected' : ''} onClick={() => setPartnerRole('彼女')}>彼女にする</button>
+            <button className="primary-button" onClick={() => setHash(`/chat/${partner.id}`)}>親密トークへ</button>
+          </div>
+        </div>
+        <div className="partner-picks">
+          {worldline.characters.map((friend) => {
+            const score = getIntimacyScore(worldline, friend, partnerRole);
+            return (
+              <button className={friend.id === partner.id ? 'selected' : ''} key={friend.id} onClick={() => setPartnerId(friend.id)}>
+                <FriendAvatar friend={friend} className="small" />
+                <span>{friend.name}</span>
+                <strong>{score}%</strong>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="contact-bait">
         <div>
           <p className="eyebrow">Reply Bait</p>
@@ -1038,19 +1106,23 @@ function FriendsPage({ worldline }: { worldline: Worldline }) {
         </div>
 
         <div className="friend-list">
-          {worldline.characters.map((friend) => (
-            <button className="friend-item" key={friend.id} onClick={() => setHash(`/chat/${friend.id}`)}>
-              <FriendAvatar friend={friend} />
-              <div className="friend-main">
-                <div className="friend-name-row">
-                  <strong>{friend.name}</strong>
-                  <span>{friend.relationship}</span>
+          {worldline.characters.map((friend) => {
+            const score = getIntimacyScore(worldline, friend, partnerRole);
+            return (
+              <button className="friend-item" key={friend.id} onClick={() => setHash(`/chat/${friend.id}`)}>
+                <FriendAvatar friend={friend} />
+                <div className="friend-main">
+                  <div className="friend-name-row">
+                    <strong>{friend.name}</strong>
+                    <span>{friend.relationship} / 親密度 {score}%</span>
+                  </div>
+                  <p>{friend.latestMessage}</p>
+                  <div className="mini-intimacy"><i style={{ width: `${score}%` }} /></div>
                 </div>
-                <p>{friend.latestMessage}</p>
-              </div>
-              {friend.unread ? <span className="unread-badge">{friend.unread}</span> : <span className="chevron">›</span>}
-            </button>
-          ))}
+                {friend.unread ? <span className="unread-badge">{friend.unread}</span> : <span className="chevron">›</span>}
+              </button>
+            );
+          })}
         </div>
       </section>
     </main>
@@ -1241,9 +1313,45 @@ function SnsPage({ worldline }: { worldline: Worldline }) {
 
       <section className="visual-band sns-band">
         <div>
-          <span>Timeline Preview</span>
-          <strong>この世界線で、誰かが見ていた投稿。</strong>
+          <span>Instagram Mood</span>
+          <strong>ストーリー、リール、削除済み投稿まで。</strong>
         </div>
+      </section>
+
+      <section className="insta-stories" aria-label="Instagram風ストーリー">
+        {worldline.characters.slice(0, 7).map((friend, index) => (
+          <button key={friend.id} onClick={() => setHash(`/chat/${friend.id}`)}>
+            <span className="story-ring">
+              <img src={instaImages[index % instaImages.length]} alt={`${friend.name}のストーリー`} />
+            </span>
+            <strong>{friend.name}</strong>
+          </button>
+        ))}
+      </section>
+
+      <section className="insta-showcase">
+        <div className="insta-profile">
+          <img src="/kuro-social-woman.png" alt="Instagram風プロフィール" />
+          <div>
+            <p className="eyebrow">Archive Profile</p>
+            <h2>@black_unread_{worldline.era.replace(/\D/g, '') || 'life'}</h2>
+            <p>{worldline.mood} / {worldline.place}</p>
+          </div>
+        </div>
+        <div className="insta-stats">
+          <article><strong>{worldline.snsPosts.length * 3}</strong><span>posts</span></article>
+          <article><strong>{savedCount}</strong><span>saves</span></article>
+          <article><strong>{topPost.likes}</strong><span>likes</span></article>
+        </div>
+      </section>
+
+      <section className="insta-grid">
+        {instaImages.map((image, index) => (
+          <button key={image} onClick={() => index % 3 === 0 ? setHash('/share') : index % 3 === 1 ? setHash('/friends') : setHash('/archive')}>
+            <img src={image} alt={`Instagram風投稿 ${index + 1}`} />
+            <span>{index % 3 === 0 ? '暴露カード' : index % 3 === 1 ? '未読DM' : '深夜検索'}</span>
+          </button>
+        ))}
       </section>
 
       <section className="social-snapshot">
@@ -1351,6 +1459,18 @@ function SnsPage({ worldline }: { worldline: Worldline }) {
               </article>
             ))}
           </div>
+        </div>
+        <div className="reel-stack">
+          {instaImages.slice(0, 3).map((image, index) => (
+            <article key={image}>
+              <img src={image} alt={`リール風演出 ${index + 1}`} />
+              <div>
+                <span>REEL 0{index + 1}</span>
+                <strong>{['元恋人から未読', '親友のスクショ', '深夜検索がバレる'][index]}</strong>
+                <p>{['開けたら気まずい通知', '消す前に見られていた投稿', '02:13の検索履歴'][index]}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </main>
