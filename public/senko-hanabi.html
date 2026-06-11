@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>線香花火 — SENKO-HANABI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night-0:#04050c;
+    --night-1:#0a0e22;
+    --night-2:#101530;
+    --ivory:#e8e0cf;
+    --dim:rgba(232,224,207,.5);
+    --ember:#ffb259;
+    --hair:rgba(232,224,207,.14);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:linear-gradient(180deg,var(--night-0) 0%,var(--night-1) 46%,var(--night-2) 78%,#060912 100%);
+    font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+    color:var(--ivory);
+    user-select:none;-webkit-user-select:none;touch-action:none;
+    -webkit-font-smoothing:antialiased;
+  }
+  #moon{
+    position:fixed;top:9vh;right:12vw;width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle at 42% 40%, rgba(240,238,225,.16), rgba(240,238,225,.05) 55%, transparent 72%);
+    filter:blur(2px);pointer-events:none;z-index:1;
+  }
+  #grass{position:fixed;left:0;right:0;bottom:0;height:18vh;z-index:1;pointer-events:none;opacity:.9}
+  canvas{position:fixed;inset:0}
+  #trail{z-index:2}
+  #fore{z-index:3}
+  #grainy{
+    position:fixed;inset:0;z-index:4;pointer-events:none;opacity:.4;mix-blend-mode:overlay;
+  }
+  #vig{position:fixed;inset:0;z-index:5;pointer-events:none;
+    background:radial-gradient(120% 120% at 50% 42%, transparent 52%, rgba(2,3,8,.6) 100%);}
+
+  .title{position:fixed;top:6vh;left:5vw;z-index:7;pointer-events:none}
+  .title h1{
+    writing-mode:vertical-rl;font-weight:500;line-height:1;
+    font-size:clamp(2.4rem,4.6vw,4.2rem);letter-spacing:.4em;
+    text-shadow:0 1px 26px rgba(0,0,0,.6);
+  }
+  .caption{
+    position:fixed;left:calc(5vw + clamp(3.4rem,6.4vw,5.8rem));top:6.6vh;z-index:7;pointer-events:none;
+    writing-mode:vertical-rl;font-family:"Cormorant Garamond",serif;
+    font-size:.68rem;letter-spacing:.55em;color:var(--dim);text-transform:uppercase;
+  }
+  .ethos{
+    position:fixed;right:5vw;bottom:10vh;z-index:7;pointer-events:none;
+    writing-mode:vertical-rl;font-size:.8rem;letter-spacing:.4em;color:var(--dim);line-height:2.4;
+  }
+
+  /* phase indicator */
+  #phase{
+    position:fixed;right:8vw;top:14vh;z-index:7;pointer-events:none;text-align:center;
+    opacity:0;transition:opacity 1.4s ease;
+  }
+  #phase.on{opacity:1}
+  #phase .k{
+    writing-mode:vertical-rl;font-size:clamp(1.6rem,2.6vw,2.4rem);
+    letter-spacing:.3em;color:var(--ivory);
+    text-shadow:0 0 18px rgba(255,178,89,.25);
+    transition:opacity .9s ease;margin:0 auto;
+  }
+  #phase .r{
+    font-family:"Cormorant Garamond",serif;font-size:.6rem;letter-spacing:.5em;
+    color:var(--dim);margin-top:1.1em;text-transform:uppercase;
+  }
+  #phase .seq{margin-top:1.4em;display:flex;flex-direction:column;gap:.55em;align-items:center}
+  #phase .seq i{width:4px;height:4px;border-radius:50%;background:var(--hair);transition:all .8s}
+  #phase .seq i.lit{background:var(--ember);box-shadow:0 0 8px rgba(255,178,89,.9)}
+
+  /* centre messages */
+  .msg{
+    position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+    z-index:8;text-align:center;transition:opacity 1.2s ease;
+  }
+  .msg.hide{opacity:0;pointer-events:none}
+  #ignite{cursor:pointer}
+  #ignite .big{
+    font-size:1.25rem;letter-spacing:.65em;text-indent:.65em;
+    padding:1.1em 2.2em;border:1px solid var(--hair);border-radius:999px;
+    background:rgba(5,7,15,.4);backdrop-filter:blur(6px);
+    transition:border-color .4s, box-shadow .4s;
+  }
+  #ignite:hover .big{border-color:rgba(255,178,89,.55);box-shadow:0 0 30px rgba(255,178,89,.12)}
+  #ignite .sub{margin-top:1.6em;font-size:.74rem;letter-spacing:.4em;color:var(--dim)}
+  #endmsg{pointer-events:none}
+  #endmsg .big{font-size:1.3rem;letter-spacing:.5em;text-indent:.5em}
+  #endmsg .sub{margin-top:1.4em;font-family:"Cormorant Garamond",serif;font-size:.8rem;letter-spacing:.35em;color:var(--dim)}
+  #steady{
+    position:fixed;left:50%;bottom:20vh;transform:translateX(-50%);z-index:8;
+    font-size:.78rem;letter-spacing:.45em;color:var(--dim);
+    transition:opacity 1.2s ease;pointer-events:none;white-space:nowrap;
+  }
+  #steady.hide{opacity:0}
+  #warn{
+    position:fixed;left:50%;bottom:20vh;transform:translateX(-50%);z-index:8;
+    font-size:.8rem;letter-spacing:.5em;color:#ff9f6a;opacity:0;
+    transition:opacity .3s;pointer-events:none;white-space:nowrap;
+  }
+
+  /* control bar */
+  .bar{
+    position:fixed;left:50%;bottom:4.5vh;transform:translateX(-50%);
+    z-index:9;display:flex;align-items:center;gap:1.1rem;
+    padding:.65rem 1.4rem;border:1px solid var(--hair);border-radius:999px;
+    background:rgba(5,7,14,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  }
+  .tx{
+    background:none;border:none;color:var(--ivory);cursor:pointer;
+    font-family:inherit;font-size:.84rem;letter-spacing:.28em;
+    display:flex;align-items:center;gap:.55em;padding:.2em .1em;
+  }
+  .tx:hover{color:#fff}
+  .tx:focus-visible{outline:2px solid var(--ember);outline-offset:3px;border-radius:4px}
+  .dot{width:7px;height:7px;border-radius:50%;border:1px solid var(--ember);transition:background .3s}
+  .tx[aria-pressed="true"] .dot{background:var(--ember);box-shadow:0 0 8px rgba(255,178,89,.8)}
+  .div{width:1px;height:1.3rem;background:var(--hair)}
+
+  @media (max-width:640px){
+    .ethos{display:none}
+    #moon{width:80px;height:80px;right:8vw}
+    #phase{right:6vw}
+    .caption{display:none}
+    #steady,#warn{bottom:24vh;font-size:.68rem}
+  }
+</style>
+</head>
+<body>
+
+<div id="moon"></div>
+<svg id="grass" preserveAspectRatio="none" viewBox="0 0 1200 160">
+  <path d="M0,160 L0,120 Q60,98 120,118 T260,108 T420,122 T560,104 T720,120 T880,106 T1040,118 T1200,110 L1200,160 Z"
+        fill="#04060e"/>
+  <path d="M0,160 L0,140 Q90,120 180,136 T380,128 T600,140 T820,126 T1020,138 T1200,130 L1200,160 Z"
+        fill="#03040a"/>
+</svg>
+
+<canvas id="trail"></canvas>
+<canvas id="fore"></canvas>
+<canvas id="grainy"></canvas>
+<div id="vig"></div>
+
+<div class="title"><h1>線香花火</h1></div>
+<div class="caption">SENKO-HANABI — A SUMMER'S LAST LIGHT</div>
+<div class="ethos">手がゆれると、<br>火玉は落ちる。</div>
+
+<div id="phase" aria-live="polite">
+  <div class="k" id="phk">蕾</div>
+  <div class="r" id="phr">TSUBOMI</div>
+  <div class="seq" id="phs"><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+
+<div class="msg" id="ignite" role="button" tabindex="0" aria-label="火を点ける">
+  <div class="big">火を点ける</div>
+  <div class="sub">そっと持って、最後まで見届けてください</div>
+</div>
+
+<div class="msg hide" id="endmsg">
+  <div class="big" id="endbig"></div>
+  <div class="sub" id="endsub"></div>
+</div>
+
+<p id="steady" class="hide">そっと——動かさないで</p>
+<p id="warn">ゆれている</p>
+
+<div class="bar" role="toolbar" aria-label="操作">
+  <button class="tx" id="again">もう一度</button>
+  <div class="div"></div>
+  <button class="tx" id="wind" aria-pressed="false"><span class="dot"></span>夜風</button>
+  <div class="div"></div>
+  <button class="tx" id="sound" aria-pressed="true"><span class="dot"></span>音</button>
+</div>
+
+<script>
+(()=>{
+"use strict";
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ===== canvases ===== */
+const trail = document.getElementById('trail'), tctx = trail.getContext('2d');
+const fore  = document.getElementById('fore'),  fctx = fore.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){
+  DPR = Math.min(devicePixelRatio||1, 2);
+  W=innerWidth; H=innerHeight;
+  for(const c of [trail,fore]){ c.width=W*DPR; c.height=H*DPR; c.style.width=W+'px'; c.style.height=H+'px'; }
+  tctx.setTransform(DPR,0,0,DPR,0,0);
+  fctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener('resize', resize); resize();
+
+/* grain */
+(function(){
+  const g=document.getElementById('grainy'), s=220;
+  g.width=s; g.height=s;
+  const gx=g.getContext('2d'), img=gx.createImageData(s,s);
+  for(let i=0;i<img.data.length;i+=4){const v=110+Math.random()*40;img.data[i]=img.data[i+1]=img.data[i+2]=v;img.data[i+3]=22;}
+  gx.putImageData(img,0,0);
+  const url=g.toDataURL(); gx.clearRect(0,0,s,s);
+  g.style.background=`url(${url}) repeat`;
+  g.style.width='100%';g.style.height='100%';
+})();
+
+/* ===== audio ===== */
+let actx=null, master=null, hiss=null, hissGain=null, noiseBuf=null, soundOn=true;
+function initAudio(){
+  if(actx) return;
+  try{
+    actx = new (window.AudioContext||window.webkitAudioContext)();
+    master = actx.createGain(); master.gain.value = soundOn?0.7:0;
+    master.connect(actx.destination);
+    const len = actx.sampleRate;
+    noiseBuf = actx.createBuffer(1, len, actx.sampleRate);
+    const d = noiseBuf.getChannelData(0);
+    for(let i=0;i<len;i++) d[i] = Math.random()*2-1;
+    // soft burning hiss
+    hiss = actx.createBufferSource(); hiss.buffer=noiseBuf; hiss.loop=true;
+    const lp = actx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2600;
+    hissGain = actx.createGain(); hissGain.gain.value=0;
+    hiss.connect(lp).connect(hissGain).connect(master);
+    hiss.start();
+  }catch(e){ actx=null; }
+}
+let lastCrack=0;
+function crackle(intensity){
+  if(!actx || !soundOn) return;
+  const now = performance.now();
+  if(now - lastCrack < 18) return;
+  lastCrack = now;
+  const t = actx.currentTime;
+  const dur = 0.02 + Math.random()*0.05;
+  const src = actx.createBufferSource(); src.buffer = noiseBuf;
+  src.playbackRate.value = 0.8 + Math.random()*0.8;
+  const bp = actx.createBiquadFilter(); bp.type='bandpass';
+  bp.frequency.value = 1400 + Math.random()*5200; bp.Q.value = 1.2;
+  const g = actx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(Math.min(.5, .1 + intensity*.3), t+0.004);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  src.connect(bp); bp.connect(g); g.connect(master);
+  src.start(t, Math.random()*0.7, dur+0.05);
+  src.stop(t+dur+0.1);
+}
+function setHiss(v){ if(hissGain) hissGain.gain.value += (v - hissGain.gain.value)*0.08; }
+
+/* ===== phases ===== */
+const PHASES=[
+  {id:'tsubomi', k:'蕾',   r:'TSUBOMI · BUD',           dur: 3200},
+  {id:'botan',   k:'牡丹', r:'BOTAN · PEONY',           dur: 9000},
+  {id:'matsuba', k:'松葉', r:'MATSUBA · PINE NEEDLES',  dur:14000},
+  {id:'yanagi',  k:'柳',   r:'YANAGI · WILLOW',         dur: 9500},
+  {id:'chirigiku',k:'散り菊',r:'CHIRI-GIKU · FALLING MUM',dur: 7000},
+];
+const TOTAL = PHASES.reduce((s,p)=>s+p.dur,0);
+
+/* ===== state ===== */
+let state='idle'; // idle | lighting | burning | falling | ended
+let phaseIndex=0, phaseStart=0, burnStart=0, lightStart=0, endAt=0;
+let windOn=false;
+
+/* stick & ball */
+const stick = { angle:0, angV:0 };
+const ball  = { x:0, y:0, vx:0, vy:0, wob:0 };
+
+/* pointer / shake */
+let px = W/2, moved=0, shake=0;
+addEventListener('pointermove', e=>{
+  moved += Math.hypot(e.movementX||0, e.movementY||0) ||
+           Math.hypot(e.clientX-px, 0)*0.4;
+  px = e.clientX;
+}, {passive:true});
+addEventListener('touchmove', e=>{
+  if(e.touches[0]) px = e.touches[0].clientX;
+},{passive:true});
+
+/* ===== particles ===== */
+const parts=[];
+const MAXP = reduced? 350 : 950;
+function spawn(x,y,angle,speed,life,w,branch,grav){
+  if(parts.length>MAXP) return;
+  parts.push({
+    x,y, px:x, py:y,
+    vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed,
+    life, max:life, w, branch, grav
+  });
+}
+function burst(p){
+  const n = 2 + (Math.random()*4|0);
+  const a0 = Math.atan2(p.vy, p.vx);
+  const sp = Math.hypot(p.vx,p.vy);
+  for(let i=0;i<n;i++){
+    spawn(p.x, p.y,
+      a0 + (Math.random()-0.5)*2.4,
+      sp*(0.45+Math.random()*0.4)+0.5,
+      p.max*(0.45+Math.random()*0.3),
+      p.w*0.78, p.branch-1, p.grav);
+  }
+  if(Math.random()<0.6) crackle(Math.min(1, sp/5));
+}
+
+function sparkColor(t, alpha){ // t = remaining life ratio 1→0
+  if(t>0.7) return `rgba(255,246,214,${alpha})`;
+  if(t>0.45) return `rgba(255,198,107,${alpha})`;
+  if(t>0.22) return `rgba(255,122,60,${alpha*0.95})`;
+  return `rgba(195,59,31,${alpha*0.8})`;
+}
+
+/* ===== emission per phase ===== */
+let nextBurst=0;
+function emit(now, dtn){
+  const ph = PHASES[phaseIndex].id;
+  const bx = ball.x, by = ball.y;
+  const w = windOn? 0.35 : 0;
+  if(ph==='tsubomi'){
+    if(Math.random()<0.10*dtn) spawn(bx,by, Math.random()*6.283, 0.6+Math.random()*1.2, 260+Math.random()*240, 0.9, 0, 0.012);
+    setHissSafe(0.015);
+  }
+  else if(ph==='botan'){
+    if(now>nextBurst){
+      nextBurst = now + 220 + Math.random()*520;
+      const n = 1 + (Math.random()*2|0);
+      for(let i=0;i<n;i++)
+        spawn(bx,by, Math.random()*6.283, 2.4+Math.random()*2.4, 460+Math.random()*360, 1.6, 2, 0.02);
+      crackle(0.8);
+    }
+    if(Math.random()<0.35*dtn) spawn(bx,by, Math.random()*6.283, 0.8+Math.random()*1.6, 240+Math.random()*200, 0.9, 0, 0.015);
+    setHissSafe(0.03);
+  }
+  else if(ph==='matsuba'){
+    const k = reduced? 0.45 : 0.95;
+    if(Math.random()<k){
+      const n = 1 + (Math.random()*3|0);
+      for(let i=0;i<n;i++)
+        spawn(bx,by, Math.random()*6.283, 1.6+Math.random()*4.2, 300+Math.random()*380, 1.1, 2+(Math.random()<0.4?1:0), 0.018);
+    }
+    if(Math.random()<0.10*dtn) crackle(0.5+Math.random()*0.5);
+    setHissSafe(0.05);
+  }
+  else if(ph==='yanagi'){
+    if(Math.random()<0.5*dtn){
+      const a = Math.PI/2 + (Math.random()-0.5)*1.7;
+      spawn(bx,by, a, 0.9+Math.random()*1.8, 900+Math.random()*800, 1.15, Math.random()<0.25?1:0, 0.05);
+    }
+    setHissSafe(0.025);
+  }
+  else if(ph==='chirigiku'){
+    const fade = 1 - (now-phaseStart)/PHASES[4].dur;
+    if(Math.random()<0.10*dtn*Math.max(0.2,fade))
+      spawn(bx,by, Math.random()*6.283, 1+Math.random()*2, 280+Math.random()*260, 1, 1, 0.03);
+    setHissSafe(0.012*fade);
+  }
+  // wind drift applied in update
+  if(w) for(const p of parts) p.vx += w*0.004*dtn;
+}
+function setHissSafe(v){ if(actx && soundOn) setHiss(v); }
+
+/* ===== drop thresholds ===== */
+const FRAGILE = {tsubomi:999, botan:60, matsuba:34, yanagi:20, chirigiku:13};
+
+/* ===== UI helpers ===== */
+const $ = id=>document.getElementById(id);
+const phaseEl=$('phase'), phk=$('phk'), phr=$('phr');
+const seqDots=[...$('phs').children];
+function showPhase(i){
+  phk.style.opacity=0;
+  setTimeout(()=>{
+    phk.textContent=PHASES[i].k; phr.textContent=PHASES[i].r;
+    phk.style.opacity=1;
+  }, 450);
+  seqDots.forEach((d,j)=>d.classList.toggle('lit', j<=i));
+}
+function showEnd(natural, seconds){
+  $('endbig').textContent = natural? '静かに、燃え尽きた。' : '火玉が、落ちた。';
+  $('endsub').textContent = `あなたの夏は ${seconds} 秒でした`;
+  $('endmsg').classList.remove('hide');
+  phaseEl.classList.remove('on');
+  fore.style.cursor='default';
+  setHissSafe(0);
+}
+
+/* ===== lifecycle ===== */
+function light(){
+  if(state!=='idle' && state!=='ended') return;
+  initAudio();
+  if(actx && actx.state==='suspended') actx.resume();
+  parts.length=0;
+  tctx.clearRect(0,0,W,H);
+  $('ignite').classList.add('hide');
+  $('endmsg').classList.add('hide');
+  state='lighting'; lightStart=performance.now();
+  shake=0; moved=0;
+  ball.vx=ball.vy=0; ball.wob=0;
+  fore.style.cursor='none';
+}
+function startBurn(now){
+  state='burning'; burnStart=now;
+  phaseIndex=0; phaseStart=now;
+  showPhase(0); phaseEl.classList.add('on');
+  $('steady').classList.remove('hide');
+  setTimeout(()=>$('steady').classList.add('hide'), 4200);
+}
+function drop(now){
+  if(state!=='burning') return;
+  state='falling';
+  ball.vx = (Math.random()-0.5)*1.2;
+  ball.vy = 0.4;
+  crackle(1);
+}
+function finish(now, natural){
+  state='ended'; endAt=now;
+  const secs = Math.round((now - burnStart)/1000);
+  showEnd(natural, secs);
+}
+
+/* ===== main loop ===== */
+let prev=performance.now();
+function frame(now){
+  const dt = Math.min(50, now-prev); prev=now;
+  const dtn = dt/16.67;
+
+  /* fade trails */
+  tctx.globalCompositeOperation='destination-out';
+  tctx.fillStyle=`rgba(0,0,0,${reduced?0.22:0.13})`;
+  tctx.fillRect(0,0,W,H);
+  tctx.globalCompositeOperation='lighter';
+
+  fctx.clearRect(0,0,W,H);
+
+  /* shake metric */
+  shake = shake*Math.pow(0.86, dtn) + moved*0.16;
+  moved = 0;
+
+  /* stick sway */
+  const targetA = Math.max(-0.32, Math.min(0.32, (px - W/2)/W * 0.9))
+                + (windOn? Math.sin(now*0.0007)*0.05 : 0);
+  const accel = (targetA - stick.angle)*0.004*dtn - stick.angV*0.06*dtn;
+  stick.angV += accel; stick.angle += stick.angV*dtn;
+
+  const topX = W/2, topY = -10;
+  const L = Math.min(H*0.42, 420);
+  const tipX = topX + Math.sin(stick.angle)*L;
+  const tipY = topY + Math.cos(stick.angle)*L;
+
+  /* draw stick (always, faint when idle) */
+  const burnt = state==='burning'||state==='falling'||state==='ended';
+  fctx.lineCap='round';
+  fctx.strokeStyle = burnt? '#181014' : '#241a1f';
+  fctx.lineWidth = 3.4;
+  fctx.beginPath(); fctx.moveTo(topX,topY);
+  fctx.quadraticCurveTo(topX+Math.sin(stick.angle)*L*0.5, topY+L*0.52, tipX, tipY);
+  fctx.stroke();
+  fctx.strokeStyle='rgba(232,224,207,.07)';
+  fctx.lineWidth=1;
+  fctx.beginPath(); fctx.moveTo(topX,topY);
+  fctx.quadraticCurveTo(topX+Math.sin(stick.angle)*L*0.5, topY+L*0.52, tipX, tipY);
+  fctx.stroke();
+
+  if(state==='lighting'){
+    const t = (now-lightStart)/1100;
+    // match flame rising to tip
+    const fy = tipY + 60*(1-Math.min(1,t));
+    const fl = fctx.createRadialGradient(tipX,fy,0,tipX,fy,26);
+    fl.addColorStop(0,'rgba(255,240,200,.9)');
+    fl.addColorStop(.4,'rgba(255,160,70,.45)');
+    fl.addColorStop(1,'rgba(255,120,40,0)');
+    fctx.globalCompositeOperation='lighter';
+    fctx.fillStyle=fl;
+    fctx.beginPath(); fctx.arc(tipX,fy,26,0,7); fctx.fill();
+    fctx.globalCompositeOperation='source-over';
+    if(t>=1){ ball.x=tipX; ball.y=tipY+6; startBurn(now); }
+  }
+
+  if(state==='burning'){
+    const ph = PHASES[phaseIndex];
+    if(now - phaseStart > ph.dur){
+      phaseIndex++;
+      if(phaseIndex >= PHASES.length){ finish(now, true); }
+      else { phaseStart = now; showPhase(phaseIndex); }
+    }
+  }
+
+  if(state==='burning'){
+    /* ball follows tip with sag + wobble */
+    ball.wob = ball.wob*0.9 + shake*0.012;
+    const jx = (Math.random()-0.5)*(0.6+ball.wob*4);
+    const jy = (Math.random()-0.5)*(0.6+ball.wob*4);
+    ball.x += ((tipX+jx) - ball.x)*0.3*dtn;
+    ball.y += ((tipY+7+jy) - ball.y)*0.3*dtn;
+
+    /* fragility */
+    const limit = FRAGILE[PHASES[phaseIndex].id];
+    const danger = shake/limit;
+    $('warn').style.opacity = danger>0.55? Math.min(1,(danger-0.55)*2.2) : 0;
+    if(danger >= 1) drop(now);
+
+    emit(now, dtn);
+  }
+
+  if(state==='falling'){
+    ball.vy += 0.09*dtn;
+    ball.x += ball.vx*dtn; ball.y += ball.vy*dtn;
+    if(Math.random()<0.4) spawn(ball.x,ball.y, Math.random()*6.283, 0.5+Math.random(), 200+Math.random()*200, 0.9, 0, 0.03);
+    const ground = H*0.9;
+    if(ball.y >= ground){
+      for(let i=0;i<14;i++)
+        spawn(ball.x, ground, -Math.PI*Math.random(), 0.8+Math.random()*2.2, 260+Math.random()*240, 1, 0, 0.05);
+      crackle(1);
+      finish(now, false);
+    }
+  }
+
+  /* update + draw particles on trail canvas */
+  tctx.lineCap='round';
+  for(let i=parts.length-1;i>=0;i--){
+    const p=parts[i];
+    p.px=p.x; p.py=p.y;
+    p.vy += p.grav*dtn;
+    p.vx *= Math.pow(0.992, dtn);
+    p.vy *= Math.pow(0.996, dtn);
+    p.x += p.vx*dtn*1.9;
+    p.y += p.vy*dtn*1.9;
+    p.life -= dt;
+    const t = p.life/p.max;
+    if(p.life<=0 || p.y>H+20 || p.x<-20 || p.x>W+20){
+      if(p.life<=0 && p.branch>0 && p.y<H && Math.random()<0.92) burst(p);
+      parts.splice(i,1); continue;
+    }
+    tctx.strokeStyle = sparkColor(t, Math.min(1, t*1.6));
+    tctx.lineWidth = p.w * (0.5 + t*0.7);
+    tctx.beginPath();
+    tctx.moveTo(p.px, p.py);
+    tctx.lineTo(p.x, p.y);
+    tctx.stroke();
+  }
+
+  /* the ember ball */
+  if(state==='burning' || state==='falling'){
+    const prog = Math.min(1, (now-burnStart)/TOTAL);
+    const baseR = state==='falling'? 4 :
+      [4.5,5.6,5.2,4.4,3.2][phaseIndex] * (PHASES[phaseIndex]?.id==='tsubomi'
+        ? Math.min(1,(now-phaseStart)/2200)+0.25 : 1);
+    const flick = 0.8 + Math.random()*0.45;
+    const r = baseR*flick;
+    const cool = prog; // 0 young → 1 old
+    const core = `rgba(255,${244-60*cool},${208-110*cool},.95)`;
+    const mid  = `rgba(255,${170-50*cool},${80-30*cool},.55)`;
+    const g1 = fctx.createRadialGradient(ball.x,ball.y,0,ball.x,ball.y,r*5.5);
+    g1.addColorStop(0, core);
+    g1.addColorStop(.25, mid);
+    g1.addColorStop(1, 'rgba(255,90,30,0)');
+    fctx.globalCompositeOperation='lighter';
+    fctx.fillStyle=g1;
+    fctx.beginPath(); fctx.arc(ball.x,ball.y,r*5.5,0,7); fctx.fill();
+    fctx.fillStyle=core;
+    fctx.beginPath(); fctx.arc(ball.x,ball.y,r,0,7); fctx.fill();
+    fctx.globalCompositeOperation='source-over';
+  }
+
+  /* fireflies */
+  drawFireflies(now);
+
+  requestAnimationFrame(frame);
+}
+
+/* fireflies */
+const flies = Array.from({length: reduced?0:7}, (_,i)=>({
+  s: Math.random()*1000, x:Math.random(), y:0.55+Math.random()*0.3
+}));
+function drawFireflies(now){
+  fctx.globalCompositeOperation='lighter';
+  for(const f of flies){
+    const t = now*0.0001 + f.s;
+    const x = (f.x + Math.sin(t*1.7+f.s)*0.05 + t*0.012) % 1.05 * W;
+    const y = f.y*H + Math.sin(t*2.3)*26;
+    const a = Math.max(0, Math.sin(now*0.0016 + f.s*7));
+    if(a<0.05) continue;
+    const g = fctx.createRadialGradient(x,y,0,x,y,7);
+    g.addColorStop(0,`rgba(190,255,170,${0.5*a})`);
+    g.addColorStop(1,'rgba(190,255,170,0)');
+    fctx.fillStyle=g;
+    fctx.beginPath(); fctx.arc(x,y,7,0,7); fctx.fill();
+  }
+  fctx.globalCompositeOperation='source-over';
+}
+
+/* ===== controls ===== */
+$('ignite').addEventListener('click', light);
+$('ignite').addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') light(); });
+$('again').addEventListener('click', ()=>{
+  if(state==='burning'||state==='falling'){
+    // restart immediately
+    state='ended';
+  }
+  $('endmsg').classList.add('hide');
+  light();
+});
+$('wind').addEventListener('click', e=>{
+  windOn=!windOn;
+  e.currentTarget.setAttribute('aria-pressed', windOn);
+});
+$('sound').addEventListener('click', e=>{
+  soundOn=!soundOn;
+  e.currentTarget.setAttribute('aria-pressed', soundOn);
+  if(master) master.gain.linearRampToValueAtTime(soundOn?0.7:0, actx.currentTime+0.2);
+});
+
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
