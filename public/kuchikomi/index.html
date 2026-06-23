@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>口コミ返信サポート | Google口コミ返信案・GBP投稿文作成</title>
+  <meta name="description" content="店舗向けのGoogle口コミ返信案とGoogleビジネスプロフィール投稿文作成サービス。管理権限不要、直近3件の無料診断、月14,800円から。">
+  <meta property="og:title" content="口コミ返信サポート">
+  <meta property="og:description" content="Google口コミへの返信案と店舗投稿文を、低評価口コミの人間チェック込みで毎月作成します。">
+  <meta property="og:type" content="website">
+  <style>
+    :root {
+      --ink: #17211f;
+      --muted: #5f6b67;
+      --line: #d8dfdc;
+      --paper: #f7faf8;
+      --panel: #ffffff;
+      --soft: #eaf3ef;
+      --accent: #176b57;
+      --accent-dark: #104c3e;
+      --warm: #d85b3f;
+      --amber: #f2b84b;
+      --blue: #2b6f9d;
+      --shadow: 0 22px 70px rgba(23, 33, 31, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Yu Gothic", "Meiryo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(23, 33, 31, 0.12);
+      background: rgba(247, 250, 248, 0.94);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(1160px, calc(100% - 32px));
+      min-height: 66px;
+      margin: 0 auto;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 900;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--accent);
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--accent);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 58px 0 42px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(247,250,248,0.99) 0%, rgba(247,250,248,0.9) 44%, rgba(247,250,248,0.28) 100%),
+        url("assets/review-hero.png") center right / cover no-repeat;
+      z-index: -2;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 120px;
+      background: linear-gradient(180deg, rgba(247,250,248,0), var(--paper));
+      z-index: -1;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 0.96fr) minmax(310px, 0.7fr);
+      gap: 48px;
+      align-items: end;
+      width: min(1160px, calc(100% - 32px));
+      min-height: calc(100svh - 130px);
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      color: var(--accent-dark);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warm);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: anywhere;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0 0 20px;
+      font-size: clamp(42px, 6.2vw, 74px);
+      line-height: 1.06;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 680px;
+      margin: 0 0 28px;
+      color: #42514d;
+      font-size: 18px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 0 0 28px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      padding: 0 18px;
+      border: 1px solid var(--accent);
+      border-radius: 7px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 900;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .button.secondary {
+      color: var(--accent-dark);
+      background: rgba(255,255,255,0.72);
+    }
+
+    .proof-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      max-width: 700px;
+    }
+
+    .proof {
+      border: 1px solid rgba(23, 33, 31, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+      padding: 14px;
+      box-shadow: 0 8px 26px rgba(23, 33, 31, 0.06);
+    }
+
+    .proof strong {
+      display: block;
+      font-size: 23px;
+      line-height: 1.1;
+    }
+
+    .proof span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .sample-panel {
+      align-self: center;
+      border: 1px solid rgba(23, 33, 31, 0.14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .sample-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--soft);
+      font-weight: 900;
+    }
+
+    .stars {
+      color: var(--amber);
+      white-space: nowrap;
+    }
+
+    .sample-body {
+      padding: 18px;
+    }
+
+    .sample-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .review-box {
+      margin: 8px 0 16px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+    }
+
+    .reply-box {
+      padding: 14px;
+      border-left: 4px solid var(--accent);
+      background: #f2f7f4;
+      color: #2d3a36;
+    }
+
+    .sample-foot {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .sample-foot div {
+      padding: 14px 16px;
+      border-right: 1px solid var(--line);
+    }
+
+    .sample-foot div:last-child {
+      border-right: 0;
+    }
+
+    .sample-foot strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .sample-foot span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    section {
+      padding: 72px 0;
+      border-top: 1px solid rgba(23, 33, 31, 0.1);
+    }
+
+    .wrap {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.88fr) minmax(260px, 0.55fr);
+      gap: 34px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .problem-grid,
+    .deliverables,
+    .plans,
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card,
+    .plan,
+    .quote,
+    .faq {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 22px;
+    }
+
+    .card h3,
+    .plan h3,
+    .quote h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .card p,
+    .quote p,
+    .plan p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: var(--accent-dark);
+      background: var(--soft);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .band {
+      background: #fff;
+    }
+
+    .example {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .message {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 20px;
+    }
+
+    .message.bad {
+      background: #fff8f5;
+    }
+
+    .message.good {
+      background: #f3f8f5;
+      border-color: rgba(23, 107, 87, 0.25);
+    }
+
+    .message h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+
+    .message p {
+      margin: 0;
+      color: #33413d;
+    }
+
+    .included-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .included-list li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      color: #33413d;
+    }
+
+    .check {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--accent);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .plan.featured {
+      border-color: rgba(23, 107, 87, 0.45);
+      box-shadow: 0 18px 54px rgba(23, 107, 87, 0.14);
+    }
+
+    .price {
+      margin: 16px 0;
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .price small {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .plan ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+    }
+
+    .plan li + li {
+      margin-top: 8px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      counter-reset: step;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 20px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      margin-bottom: 14px;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--accent);
+      font-weight: 900;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    details.faq {
+      padding: 0;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 18px 20px;
+      font-weight: 900;
+    }
+
+    details p {
+      margin: 0;
+      padding: 0 20px 20px;
+      color: var(--muted);
+    }
+
+    .risk-note {
+      display: grid;
+      grid-template-columns: 0.55fr 1fr;
+      gap: 18px;
+      align-items: center;
+      border: 1px solid rgba(216, 91, 63, 0.28);
+      border-radius: 8px;
+      background: #fff8f5;
+      padding: 22px;
+    }
+
+    .risk-note strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .risk-note p {
+      margin: 0;
+      color: #674237;
+    }
+
+    .cta {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      padding: 30px;
+    }
+
+    .cta h2 {
+      color: #fff;
+    }
+
+    .cta p {
+      margin: 10px 0 0;
+      color: rgba(255,255,255,0.74);
+    }
+
+    .cta .button {
+      border-color: #fff;
+      color: var(--accent-dark);
+      background: #fff;
+    }
+
+    footer {
+      padding: 30px 0 88px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .mobile-sticky {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      left: 12px;
+      z-index: 30;
+      display: none;
+      grid-template-columns: 1fr;
+      box-shadow: 0 16px 48px rgba(23, 33, 31, 0.22);
+    }
+
+    @media (max-width: 900px) {
+      .nav-links a:not(.nav-cta) {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 42px;
+      }
+
+      .hero::before {
+        background:
+          linear-gradient(180deg, rgba(247,250,248,0.99) 0%, rgba(247,250,248,0.88) 52%, rgba(247,250,248,0.72) 100%),
+          url("assets/review-hero.png") center / cover no-repeat;
+      }
+
+      .hero-inner,
+      .section-head,
+      .example,
+      .risk-note,
+      .cta {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-inner {
+        min-height: auto;
+      }
+
+      .proof-row,
+      .problem-grid,
+      .deliverables,
+      .plans,
+      .faq-grid,
+      .flow,
+      .before-after {
+        grid-template-columns: 1fr;
+      }
+
+      .sample-panel {
+        margin-top: 10px;
+      }
+
+      .sample-foot {
+        grid-template-columns: 1fr;
+      }
+
+      .sample-foot div {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .sample-foot div:last-child {
+        border-bottom: 0;
+      }
+
+      .footer-inner {
+        display: block;
+      }
+
+      .mobile-sticky {
+        display: grid;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .brand span:last-child {
+        font-size: 14px;
+      }
+
+      .nav {
+        width: min(100% - 24px, 1160px);
+      }
+
+      .nav-cta {
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+
+      .wrap,
+      .hero-inner {
+        width: min(100% - 24px, 1160px);
+      }
+
+      h1 {
+        font-size: 38px;
+      }
+
+      section {
+        padding: 54px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="主要ナビゲーション">
+      <a class="brand" href="#top" aria-label="口コミ返信サポート トップ">
+        <span class="mark">返</span>
+        <span>口コミ返信サポート</span>
+      </a>
+      <div class="nav-links">
+        <a href="#service">内容</a>
+        <a href="#plans">料金</a>
+        <a href="#faq">FAQ</a>
+        <a class="nav-cta" href="mailto:hello@example.com?subject=無料診断を希望します">無料診断</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="ファーストビュー">
+      <div class="hero-inner">
+        <div>
+          <div class="eyebrow"><span class="dot"></span>Google口コミ返信案・店舗投稿文を毎月作成</div>
+          <h1>口コミ返信を、集客の安心材料に変える。</h1>
+          <p class="lead">不動産店舗、美容室、整体院、歯科、飲食店向けに、Google口コミへの返信案とGoogleビジネスプロフィール投稿文を作成します。低評価口コミは人が確認し、反論や炎上に見えない言葉へ整えます。</p>
+          <div class="actions">
+            <a class="button" href="mailto:hello@example.com?subject=無料診断を希望します">直近3件を無料診断</a>
+            <a class="button secondary" href="#example">返信例を見る</a>
+          </div>
+          <div class="proof-row" aria-label="サービスの特徴">
+            <div class="proof"><strong>0円</strong><span>直近3件の返信案を無料作成</span></div>
+            <div class="proof"><strong>14,800円</strong><span>月額標準プラン</span></div>
+            <div class="proof"><strong>権限不要</strong><span>返信文だけ納品も可能</span></div>
+          </div>
+        </div>
+
+        <aside class="sample-panel" aria-label="返信サンプル">
+          <div class="sample-head">
+            <span>返信サンプル</span>
+            <span class="stars">★★★★★</span>
+          </div>
+          <div class="sample-body">
+            <div class="sample-label">お客様の口コミ</div>
+            <div class="review-box">初めて相談しましたが、説明が丁寧で安心できました。少し待ち時間が長かったです。</div>
+            <div class="sample-label">返信案</div>
+            <div class="reply-box">このたびはご来店いただきありがとうございます。説明面で安心していただけたとのこと、大変うれしく思います。一方で待ち時間についてご不便をおかけし申し訳ございません。ご案内の流れを見直し、より快適にご相談いただけるよう改善してまいります。</div>
+          </div>
+          <div class="sample-foot">
+            <div><strong>口コミ返信案</strong><span>月30件まで</span></div>
+            <div><strong>投稿文</strong><span>月4本まで</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="problem">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>返信していない口コミも、見込み客には読まれています。</h2>
+          <p>口コミ返信は投稿者への返事であると同時に、これから問い合わせる人への接客です。定型文や放置が続くと、せっかくの高評価も伝わりきりません。</p>
+        </div>
+        <div class="problem-grid">
+          <article class="card">
+            <span class="tag">課題 1</span>
+            <h3>低評価への返し方が難しい</h3>
+            <p>反論に見える返信、謝りすぎる返信、事実確認なしの断定を避け、落ち着いた改善姿勢が伝わる文面にします。</p>
+          </article>
+          <article class="card">
+            <span class="tag">課題 2</span>
+            <h3>返信が定型文になりがち</h3>
+            <p>「ありがとうございます」だけで終わらせず、口コミの内容に具体的に触れて、店舗らしい温度感を残します。</p>
+          </article>
+          <article class="card">
+            <span class="tag">課題 3</span>
+            <h3>Google投稿が止まる</h3>
+            <p>空き状況、よくある質問、季節の案内、キャンペーンなど、検索ユーザーが知りたい情報を投稿文にします。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="service" class="band">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>返信案、投稿文、改善メモまで。運用の面倒な部分だけ引き受けます。</h2>
+          <p>MEO全体の高額運用ではなく、まずは口コミ返信とGoogleビジネスプロフィール投稿に絞った小さな運用代行です。</p>
+        </div>
+        <div class="deliverables">
+          <article class="card">
+            <span class="tag">返信案</span>
+            <h3>口コミ返信案を作成</h3>
+            <p>星評価、口コミ内容、店舗の文体に合わせて、そのまま使える返信案を作ります。</p>
+          </article>
+          <article class="card">
+            <span class="tag">投稿文</span>
+            <h3>GBP投稿文を月4本</h3>
+            <p>店舗の強みや今月のお知らせを、検索中のお客様に伝わる短い投稿文に整えます。</p>
+          </article>
+          <article class="card">
+            <span class="tag">確認</span>
+            <h3>低評価は人がチェック</h3>
+            <p>低評価、クレーム、医療・効果表現を含む内容は、AI任せにせず人の目で確認します。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="example">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>定型文ではなく、次のお客様に伝わる返信へ。</h2>
+          <p>返信の目的は「感じよく返す」だけではありません。口コミを見ている未来のお客様に、店舗の姿勢を伝えることです。</p>
+        </div>
+        <div class="example">
+          <div class="quote">
+            <h3>対応できる業種</h3>
+            <ul class="included-list">
+              <li><span class="check">✓</span><span>不動産店舗: 問い合わせ前の安心感、担当者の丁寧さを伝える</span></li>
+              <li><span class="check">✓</span><span>美容室・サロン: 雰囲気、接客、再来店のきっかけを自然に出す</span></li>
+              <li><span class="check">✓</span><span>整体院・歯科: 断定表現を避け、説明の丁寧さを伝える</span></li>
+              <li><span class="check">✓</span><span>飲食店: 味、接客、混雑、改善姿勢をバランスよく返す</span></li>
+            </ul>
+          </div>
+          <div class="before-after">
+            <article class="message bad">
+              <h3>よくある返信</h3>
+              <p>ご来店ありがとうございました。またのご来店をお待ちしております。</p>
+            </article>
+            <article class="message good">
+              <h3>改善後の返信</h3>
+              <p>このたびはご来店いただきありがとうございます。スタッフの説明について安心できたとのお言葉、大変励みになります。今後も初めてのお客様にも分かりやすくご案内できるよう努めてまいります。</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="plans" class="band">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>料金</h2>
+          <p>まずは無料診断で返信案の品質を確認できます。管理権限を共有せず、返信文だけ受け取る運用も可能です。</p>
+        </div>
+        <div class="plans">
+          <article class="plan">
+            <span class="tag">初回</span>
+            <h3>お試し</h3>
+            <div class="price">4,980円 <small>/ 初月</small></div>
+            <ul>
+              <li>口コミ返信案 10件まで</li>
+              <li>投稿文 2本</li>
+              <li>文体の初期設定</li>
+            </ul>
+          </article>
+          <article class="plan featured">
+            <span class="tag">おすすめ</span>
+            <h3>標準</h3>
+            <div class="price">14,800円 <small>/ 月</small></div>
+            <ul>
+              <li>口コミ返信案 30件まで</li>
+              <li>Google投稿文 4本</li>
+              <li>低評価口コミの人間チェック</li>
+              <li>月1回の改善メモ</li>
+            </ul>
+          </article>
+          <article class="plan">
+            <span class="tag">複数店舗</span>
+            <h3>店舗追加</h3>
+            <div class="price">9,800円〜 <small>/ 店舗</small></div>
+            <ul>
+              <li>店舗ごとの文体調整</li>
+              <li>投稿テーマの共通化</li>
+              <li>月次まとめ納品</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <h2>開始までの流れ</h2>
+          <p>最初に必要なのは、店舗名またはGoogleマップURLだけです。無料診断を見てから継続判断できます。</p>
+        </div>
+        <div class="flow">
+          <div class="step"><strong>店舗URLを共有</strong><span>店舗名またはGoogleマップURLを送ってください。</span></div>
+          <div class="step"><strong>3件分を無料作成</strong><span>直近口コミへの返信案を無料で作成します。</span></div>
+          <div class="step"><strong>文体を調整</strong><span>丁寧、親しみ、かためなど店舗に合わせます。</span></div>
+          <div class="step"><strong>毎月納品</strong><span>返信案と投稿文をまとめて納品します。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="band">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>FAQ</h2>
+          <p>小さく試せるよう、権限共有なし・返信文だけの納品にも対応しています。</p>
+        </div>
+        <div class="faq-grid">
+          <details class="faq">
+            <summary>Googleアカウントの権限共有は必要ですか？</summary>
+            <p>不要です。最初は返信文だけ納品し、店舗側でコピーして投稿できます。必要な場合のみ管理権限の共有を検討します。</p>
+          </details>
+          <details class="faq">
+            <summary>低評価口コミも対応できますか？</summary>
+            <p>対応できます。ただし事実確認が必要な内容は断定せず、反論に見えない文面へ調整します。</p>
+          </details>
+          <details class="faq">
+            <summary>口コミ投稿の代行もできますか？</summary>
+            <p>できません。虚偽レビュー作成、口コミ購入、レビュー投稿代行は扱いません。返信案と投稿文作成に限定しています。</p>
+          </details>
+          <details class="faq">
+            <summary>どの業種が向いていますか？</summary>
+            <p>不動産、美容室、整体院、歯科、飲食店、サロンなど、Googleマップ経由の来店・問い合わせがある店舗に向いています。</p>
+          </details>
+          <details class="faq">
+            <summary>納品頻度は選べますか？</summary>
+            <p>週1回まとめ、月1回まとめ、急ぎの低評価だけ随時など、店舗の運用に合わせて調整できます。</p>
+          </details>
+          <details class="faq">
+            <summary>医療・整体の表現は大丈夫ですか？</summary>
+            <p>効果保証や断定表現を避けます。必要に応じて店舗側で最終確認してから投稿してください。</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="risk-note">
+          <strong>レビュー投稿代行ではありません。</strong>
+          <p>このサービスは、実際に投稿された口コミへの返信案と、店舗からのお知らせ投稿文を作成するものです。虚偽レビュー、口コミ購入、なりすまし投稿は行いません。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="cta">
+          <div>
+            <h2>まずは直近3件だけ、無料で作ります。</h2>
+            <p>返信案を見てから判断できます。店舗名またはGoogleマップURLを送ってください。</p>
+          </div>
+          <a class="button" href="mailto:hello@example.com?subject=無料診断を希望します">無料診断を依頼</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>口コミ返信サポート</div>
+      <div>Google口コミの投稿代行や虚偽レビュー作成は行いません。</div>
+    </div>
+  </footer>
+
+  <a class="button mobile-sticky" href="mailto:hello@example.com?subject=無料診断を希望します">直近3件を無料診断</a>
+</body>
+</html>
