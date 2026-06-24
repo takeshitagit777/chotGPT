@@ -3,62 +3,61 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>低評価口コミ 初動対応パック | 星1〜3口コミの返信案・削除報告判断</title>
-  <meta name="description" content="星1〜3口コミへの返信案、削除報告すべきかの一次判断、NG表現チェックを作成。1件3,980円、3件9,800円。">
-  <meta property="og:title" content="低評価口コミ 初動対応パック">
-  <meta property="og:description" content="星1口コミに、感情で返す前に。低評価口コミの初動判断と返信案を作成します。">
+  <title>低評価口コミ対策.com | AIで低評価口コミの返信を安全に</title>
+  <meta name="description" content="低評価口コミの返信案作成、削除依頼の可否一次判断、炎上リスク可視化、NG表現チェックをAIと人の確認で支援します。">
+  <meta property="og:title" content="低評価口コミ対策.com">
+  <meta property="og:description" content="星1レビュー、感情で返す前に。AIが返信案を作成し、炎上リスクとNG表現を事前チェック。">
   <meta property="og:type" content="website">
   <style>
     :root {
-      --ink: #151c1a;
-      --ink-2: #283633;
-      --muted: #66736f;
-      --line: #dce4e0;
+      --ink: #17211f;
+      --sub: #4f5f5b;
+      --muted: #788682;
+      --line: #dfe7e4;
       --paper: #f7faf8;
-      --panel: #ffffff;
-      --soft: #edf6f2;
-      --green: #176b57;
-      --green-dark: #0d493b;
-      --red: #ca5236;
-      --amber: #efb64a;
-      --blue: #286d9c;
-      --violet: #6357c7;
-      --shadow: 0 24px 80px rgba(21, 28, 26, 0.14);
-      --radius: 8px;
+      --white: #ffffff;
+      --mint: #eaf6f1;
+      --green: #08735d;
+      --green-2: #0f8b70;
+      --green-dark: #075342;
+      --orange: #e77732;
+      --gold: #f2a93b;
+      --red: #d85b40;
+      --shadow: 0 24px 70px rgba(18, 36, 31, 0.12);
+      --radius: 10px;
     }
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-
     body {
       margin: 0;
       color: var(--ink);
       background: var(--paper);
       font-family: "Yu Gothic", "Meiryo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.75;
+      line-height: 1.7;
     }
-
     a { color: inherit; }
-    button, input, select, textarea { font: inherit; }
+    button, input, textarea { font: inherit; }
     h1, h2, h3, p, li, button { overflow-wrap: anywhere; }
 
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 40;
-      border-bottom: 1px solid rgba(21, 28, 26, 0.1);
-      background: rgba(247, 250, 248, 0.92);
-      backdrop-filter: blur(16px);
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid rgba(30, 49, 44, 0.1);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 10px 30px rgba(18, 36, 31, 0.04);
     }
 
     .nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: min(1180px, calc(100% - 32px));
-      min-height: 66px;
+      width: min(1240px, calc(100% - 36px));
+      min-height: 72px;
       margin: 0 auto;
-      gap: 16px;
+      gap: 20px;
     }
 
     .brand {
@@ -67,625 +66,866 @@
       gap: 10px;
       text-decoration: none;
       font-weight: 900;
+      font-size: 20px;
+      letter-spacing: 0;
     }
 
-    .mark {
-      display: grid;
-      place-items: center;
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius);
-      color: #fff;
-      background: var(--red);
+    .logo {
+      width: 44px;
+      height: 44px;
+      color: var(--green);
+    }
+
+    .brand small {
+      font-size: 13px;
       font-weight: 900;
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 18px;
-      color: var(--muted);
+      gap: 30px;
       font-size: 14px;
       font-weight: 800;
     }
 
-    .nav-links a { text-decoration: none; }
+    .nav-links a {
+      text-decoration: none;
+    }
+
+    .login {
+      color: var(--green);
+    }
 
     .button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 50px;
-      padding: 0 18px;
+      gap: 9px;
+      min-height: 52px;
+      padding: 0 22px;
       border: 1px solid var(--green);
-      border-radius: var(--radius);
+      border-radius: 8px;
       color: #fff;
-      background: var(--green);
-      font-weight: 900;
-      text-align: center;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      box-shadow: 0 12px 28px rgba(8, 115, 93, 0.22);
       text-decoration: none;
+      font-weight: 900;
       cursor: pointer;
     }
 
-    .button:hover { background: var(--green-dark); border-color: var(--green-dark); }
-    .button.secondary { color: var(--green-dark); background: #fff; }
-    .button.ghost { color: var(--green-dark); background: transparent; }
-    .button.nav-cta { min-height: 42px; padding: 0 16px; white-space: nowrap; }
+    .button.secondary {
+      color: var(--ink);
+      background: var(--white);
+      border-color: #cfdad6;
+      box-shadow: none;
+    }
+
+    .button.orange {
+      border-color: var(--orange);
+      background: linear-gradient(135deg, #e86e2f, #d9632a);
+      box-shadow: 0 18px 36px rgba(231, 119, 50, 0.25);
+    }
 
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 70px 0 52px;
+      padding: 70px 0 42px;
       background:
-        radial-gradient(circle at 78% 20%, rgba(23, 107, 87, 0.18), transparent 34%),
-        linear-gradient(120deg, #f8faf8 0%, #f8faf8 52%, #edf6f2 100%);
+        radial-gradient(circle at 76% 18%, rgba(8, 115, 93, 0.08), transparent 34%),
+        linear-gradient(118deg, #f8fbfa 0%, #f8fbfa 49%, #eef5f2 100%);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 120px;
+      background: linear-gradient(180deg, rgba(248,251,250,0), var(--paper));
+      pointer-events: none;
     }
 
     .hero-inner {
+      position: relative;
+      z-index: 1;
       display: grid;
-      grid-template-columns: minmax(0, 0.94fr) minmax(360px, 0.78fr);
-      gap: 44px;
+      grid-template-columns: minmax(0, 0.95fr) minmax(480px, 0.95fr);
+      gap: 64px;
       align-items: center;
-      width: min(1180px, calc(100% - 32px));
-      min-height: calc(100svh - 170px);
+      width: min(1240px, calc(100% - 36px));
       margin: 0 auto;
     }
 
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 18px;
-      color: var(--red);
-      font-size: 14px;
+    .hero-kicker {
+      margin-bottom: 24px;
+      font-size: 22px;
       font-weight: 900;
-    }
-
-    .eyebrow::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--red);
+      line-height: 1.55;
     }
 
     h1 {
-      max-width: 820px;
-      margin: 0 0 20px;
-      font-size: clamp(42px, 6.2vw, 78px);
-      line-height: 1.04;
+      max-width: 650px;
+      margin: 0 0 24px;
+      font-size: clamp(48px, 6.7vw, 92px);
+      line-height: 1.05;
       letter-spacing: 0;
     }
 
-    .lead {
-      max-width: 720px;
-      margin: 0 0 28px;
-      color: #3e4c48;
-      font-size: 18px;
+    .underline {
+      display: inline-block;
+      position: relative;
     }
 
-    .actions {
+    .underline::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 5px;
+      height: 7px;
+      background: rgba(15, 139, 112, 0.38);
+      z-index: -1;
+      transform: skewX(-10deg);
+    }
+
+    .lead {
+      max-width: 610px;
+      margin: 0 0 28px;
+      color: var(--sub);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .hero-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 28px;
+      gap: 14px;
+      margin: 0 0 28px;
     }
 
-    .proof-row {
+    .hero-stats {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      max-width: 730px;
+      gap: 18px;
+      max-width: 660px;
+      margin-top: 28px;
     }
 
-    .proof {
-      min-height: 94px;
-      border: 1px solid rgba(21, 28, 26, 0.1);
+    .stat {
+      position: relative;
+      min-height: 82px;
+      text-align: center;
+    }
+
+    .stat::before,
+    .stat::after {
+      content: "‹";
+      position: absolute;
+      top: 17px;
+      color: var(--green);
+      font-size: 42px;
+      font-weight: 300;
+    }
+    .stat::before { left: 8px; transform: rotate(-18deg); }
+    .stat::after { right: 8px; transform: scaleX(-1) rotate(-18deg); }
+    .stat strong { display: block; font-size: 28px; line-height: 1.1; }
+    .stat span { display: block; color: var(--sub); font-size: 12px; font-weight: 900; }
+    .stat small { color: var(--muted); font-size: 10px; font-weight: 700; }
+
+    .chips-row {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 12px 28px rgba(18, 36, 31, 0.06);
+      color: var(--sub);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .dash {
+      position: relative;
+      transform: rotate(3deg);
+      border: 1px solid rgba(19, 56, 48, 0.12);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.76);
+      box-shadow: var(--shadow);
+      padding: 26px;
+      backdrop-filter: blur(18px);
+    }
+
+    .dash-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 210px;
+      gap: 18px;
+      transform: rotate(-3deg);
+    }
+
+    .panel {
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.88);
-      box-shadow: 0 10px 30px rgba(21, 28, 26, 0.06);
-      padding: 15px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 16px 36px rgba(18, 36, 31, 0.07);
+      padding: 20px;
     }
 
-    .proof strong {
-      display: block;
-      font-size: 24px;
-      line-height: 1.15;
+    .panel-title {
+      margin: 0 0 12px;
+      font-size: 15px;
+      font-weight: 900;
     }
 
-    .proof span {
-      color: var(--muted);
+    .review-box {
+      color: var(--sub);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .stars {
+      margin: 8px 0;
+      color: var(--gold);
+      letter-spacing: 2px;
+    }
+
+    .ai-box {
+      grid-row: span 2;
+      min-height: 300px;
+    }
+
+    .ai-reply {
+      padding: 14px;
+      border-left: 4px solid var(--green);
+      border-radius: 0 8px 8px 0;
+      background: #f3faf7;
+      color: var(--sub);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .tone-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .tone {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--mint);
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .risk-score {
+      text-align: center;
+    }
+
+    .ring {
+      display: grid;
+      place-items: center;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 8px;
+      border-radius: 50%;
+      background: conic-gradient(var(--green) 0deg, var(--green) 306deg, #e8eeeb 306deg, #e8eeeb 360deg);
+    }
+
+    .ring-inner {
+      display: grid;
+      place-items: center;
+      width: 94px;
+      height: 94px;
+      border-radius: 50%;
+      background: var(--white);
+    }
+
+    .ring-inner strong { font-size: 34px; line-height: 1; }
+    .ring-inner small { color: var(--muted); font-weight: 900; }
+
+    .check-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--sub);
       font-size: 13px;
       font-weight: 800;
     }
 
-    .console {
-      overflow: hidden;
-      border: 1px solid rgba(21, 28, 26, 0.14);
-      border-radius: var(--radius);
-      background: var(--panel);
-      box-shadow: var(--shadow);
-    }
-
-    .console-head {
+    .check-list li {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      background: #fff5f0;
-      font-weight: 900;
-    }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 9px;
-      border-radius: 999px;
-      color: #8a311f;
-      background: #ffe9df;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .console-body { padding: 18px; }
-
-    .mini-label {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .review-card {
-      margin: 8px 0 14px;
-      padding: 14px;
-      border: 1px solid #f0d1c7;
-      border-radius: var(--radius);
-      background: #fff8f5;
-      color: var(--ink-2);
-    }
-
-    .reply-card {
-      min-height: 164px;
-      padding: 14px;
-      border-left: 4px solid var(--green);
-      background: #f2f8f5;
-      color: var(--ink-2);
-    }
-
-    .console-meta {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      border-top: 1px solid var(--line);
-      background: #fff;
-    }
-
-    .console-meta div {
-      padding: 14px 16px;
-      border-right: 1px solid var(--line);
-    }
-
-    .console-meta div:last-child { border-right: 0; }
-    .console-meta strong { display: block; line-height: 1.2; }
-    .console-meta span { color: var(--muted); font-size: 12px; font-weight: 800; }
-
-    .industry-switcher {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
-      padding: 16px;
-      border-top: 1px solid var(--line);
-      background: #fbfcfb;
     }
 
-    .chip {
-      min-height: 42px;
+    .ok {
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .industry-band {
+      padding: 22px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .industry-wrap {
+      width: min(1140px, calc(100% - 32px));
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .industry-tabs {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .industry-tab {
+      min-height: 54px;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-      color: var(--ink);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--sub);
       font-weight: 900;
       cursor: pointer;
     }
 
-    .chip.active {
+    .industry-tab.active {
       border-color: var(--green);
-      color: #fff;
-      background: var(--green);
+      color: var(--green);
+      background: var(--mint);
     }
 
     section {
-      padding: 76px 0;
-      border-top: 1px solid rgba(21, 28, 26, 0.1);
+      padding: 72px 0;
     }
 
-    .band { background: #fff; }
-
     .wrap {
-      width: min(1180px, calc(100% - 32px));
+      width: min(1040px, calc(100% - 32px));
       margin: 0 auto;
     }
 
-    .section-head {
-      display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(270px, 0.55fr);
-      gap: 34px;
-      align-items: end;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: clamp(30px, 4vw, 48px);
-      line-height: 1.16;
+    .section-title {
+      margin: 0 0 26px;
+      text-align: center;
+      font-size: clamp(26px, 3.2vw, 38px);
+      line-height: 1.25;
       letter-spacing: 0;
     }
 
-    .section-head p { margin: 0; color: var(--muted); }
-
-    .grid-3, .plans, .faq-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .card, .plan, .faq, .tool, .note {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--panel);
-      padding: 22px;
-    }
-
-    .card h3, .plan h3, .tool h3, .note h3 {
-      margin: 0 0 10px;
-      font-size: 20px;
-      line-height: 1.35;
-    }
-
-    .card p, .plan p, .tool p, .note p { margin: 0; color: var(--muted); }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      margin-bottom: 12px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      color: var(--green-dark);
-      background: var(--soft);
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .tag.red { color: #8a311f; background: #fff0ea; }
-    .tag.blue { color: #184b68; background: #eaf4fb; }
-    .tag.violet { color: #3f378f; background: #efedff; }
-
-    .diagnosis {
-      display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(330px, 0.72fr);
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .form-grid {
+    .split {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .list-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      padding: 24px;
+      box-shadow: 0 16px 36px rgba(18, 36, 31, 0.05);
+    }
+
+    .list-panel h3 {
+      margin: 0 0 14px;
+      font-size: 20px;
+    }
+
+    .pain-list {
+      display: grid;
       gap: 12px;
-    }
-
-    label {
-      display: block;
-      margin: 0 0 6px;
-      color: var(--ink);
-      font-size: 14px;
-      font-weight: 900;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-      color: var(--ink);
-    }
-
-    input, select { min-height: 44px; padding: 0 12px; }
-    textarea { min-height: 150px; padding: 12px; resize: vertical; }
-
-    .field { margin-bottom: 14px; }
-
-    .score-panel {
-      display: grid;
-      align-content: start;
-      gap: 14px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-      padding: 22px;
-    }
-
-    .score-ring {
-      display: grid;
-      place-items: center;
-      width: 156px;
-      height: 156px;
-      margin: 0 auto;
-      border-radius: 50%;
-      background: conic-gradient(var(--red) 0deg, var(--red) 244deg, #edf1ef 244deg, #edf1ef 360deg);
-    }
-
-    .score-inner {
-      display: grid;
-      place-items: center;
-      width: 112px;
-      height: 112px;
-      border-radius: 50%;
-      background: #fff;
-      text-align: center;
-    }
-
-    .score-inner strong {
-      display: block;
-      font-size: 34px;
-      line-height: 1;
-    }
-
-    .score-inner span {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .result-list {
-      display: grid;
-      gap: 8px;
       margin: 0;
       padding: 0;
       list-style: none;
+      color: var(--sub);
+      font-weight: 800;
     }
 
-    .result-list li {
+    .pain-list li {
       display: grid;
-      grid-template-columns: 28px 1fr;
+      grid-template-columns: 26px 1fr;
       gap: 10px;
-      color: var(--ink-2);
     }
 
-    .check {
+    .icon-dot {
       display: grid;
       place-items: center;
       width: 24px;
       height: 24px;
-      border-radius: 7px;
-      color: #fff;
-      background: var(--green);
-      font-size: 13px;
+      border-radius: 50%;
+      background: var(--mint);
+      color: var(--green);
+      font-size: 12px;
       font-weight: 900;
-      line-height: 1;
     }
 
-    .price-toggle {
-      display: inline-grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4px;
-      padding: 4px;
+    .arrow-block {
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      margin: 0 auto;
+      color: var(--green);
+      font-size: 42px;
+      opacity: 0.4;
+    }
+
+    .solution h3 { color: var(--green); }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature-card {
+      min-height: 162px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
-      margin-bottom: 18px;
+      background: var(--white);
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(18, 36, 31, 0.04);
     }
 
-    .toggle-button {
-      min-height: 38px;
-      padding: 0 12px;
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 14px;
+      border-radius: 50%;
+      background: var(--mint);
+      color: var(--green);
+      font-size: 26px;
+    }
+
+    .feature-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .feature-card p {
+      margin: 0;
+      color: var(--sub);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+    .step {
+      position: relative;
+      min-height: 214px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      padding: 26px;
+      box-shadow: 0 12px 30px rgba(18, 36, 31, 0.04);
+    }
+
+    .step-badge {
+      display: inline-grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 14px;
+      border-radius: 8px;
+      background: var(--green);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .step h3 {
+      margin: 0 0 8px;
+      font-size: 19px;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--sub);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .cases {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .case-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: 0 12px 30px rgba(18, 36, 31, 0.04);
+    }
+
+    .case-body {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 16px;
+      padding: 22px;
+    }
+
+    .avatar {
+      display: grid;
+      place-items: center;
+      width: 92px;
+      height: 120px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, #e8f1ed, #ffffff);
+      color: var(--green);
+      font-size: 42px;
+      font-weight: 900;
+    }
+
+    .case-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .case-card p {
+      margin: 0;
+      color: var(--sub);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .case-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--line);
+    }
+
+    .case-metrics div {
+      padding: 14px;
+      text-align: center;
+      border-right: 1px solid var(--line);
+    }
+
+    .case-metrics div:last-child { border-right: 0; }
+    .case-metrics strong { display: block; color: var(--green); font-size: 24px; line-height: 1.1; }
+    .case-metrics span { color: var(--muted); font-size: 12px; font-weight: 900; }
+
+    .pricing-faq {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 0.8fr);
+      gap: 46px;
+      align-items: start;
+    }
+
+    .toggle {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      width: max-content;
+      margin: 0 auto 18px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--white);
+    }
+
+    .toggle button {
+      min-height: 34px;
+      padding: 0 16px;
       border: 0;
-      border-radius: 6px;
-      background: transparent;
+      border-radius: 999px;
       color: var(--muted);
+      background: transparent;
       font-weight: 900;
       cursor: pointer;
     }
 
-    .toggle-button.active {
+    .toggle button.active {
       color: #fff;
       background: var(--green);
     }
 
-    .plan.featured {
-      border-color: rgba(23, 107, 87, 0.45);
-      box-shadow: 0 18px 54px rgba(23, 107, 87, 0.14);
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .plan {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(18, 36, 31, 0.04);
+    }
+
+    .plan.recommended {
+      border-color: var(--green);
+      box-shadow: 0 18px 46px rgba(8, 115, 93, 0.14);
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 16px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .plan h3 {
+      margin: 10px 0 12px;
+      text-align: center;
+      font-size: 18px;
     }
 
     .price {
-      margin: 16px 0;
-      font-size: 38px;
+      text-align: center;
+      font-size: 30px;
       font-weight: 900;
-      line-height: 1;
+      line-height: 1.1;
+      margin-bottom: 18px;
     }
 
     .price small {
+      display: block;
+      margin-top: 5px;
       color: var(--muted);
-      font-size: 14px;
-      font-weight: 800;
+      font-size: 12px;
     }
 
     .plan ul {
       margin: 0 0 18px;
-      padding-left: 20px;
-      color: var(--muted);
+      padding: 0;
+      list-style: none;
+      color: var(--sub);
+      font-size: 13px;
+      font-weight: 800;
     }
 
-    .plan li + li { margin-top: 8px; }
-    .plan .button { width: 100%; }
+    .plan li {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
 
-    details.faq {
-      padding: 0;
-      overflow: hidden;
+    .plan li::before {
+      content: "✓";
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .plan .button {
+      width: 100%;
+      min-height: 42px;
+      box-shadow: none;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
     }
 
     summary {
       cursor: pointer;
       padding: 18px 20px;
       font-weight: 900;
-      line-height: 1.5;
+      list-style: none;
     }
 
+    summary::-webkit-details-marker { display: none; }
     details p {
       margin: 0;
-      padding: 0 20px 20px;
-      color: var(--muted);
+      padding: 0 20px 18px;
+      color: var(--sub);
+      font-size: 14px;
+      font-weight: 700;
     }
 
-    .safety {
+    .final-cta {
+      padding: 0 0 72px;
+    }
+
+    .cta-box {
+      position: relative;
       display: grid;
-      grid-template-columns: 0.55fr 1fr;
-      gap: 18px;
+      grid-template-columns: 180px 1fr 360px;
+      gap: 28px;
       align-items: center;
-      border: 1px solid rgba(202, 82, 54, 0.28);
-      border-radius: var(--radius);
-      background: #fff8f5;
-      padding: 24px;
-    }
-
-    .safety strong {
-      display: block;
-      font-size: 24px;
-      line-height: 1.25;
-    }
-
-    .safety p { margin: 0; color: #674237; }
-
-    .contact {
-      display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.68fr);
-      gap: 20px;
-      align-items: stretch;
-    }
-
-    .contact-main {
-      border-radius: var(--radius);
-      background: var(--ink);
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 88% 40%, rgba(255,255,255,0.18), transparent 28%),
+        linear-gradient(135deg, #08735d, #075342);
       color: #fff;
-      padding: 30px;
+      padding: 28px 34px;
+      box-shadow: 0 24px 70px rgba(8, 115, 93, 0.22);
     }
 
-    .contact-main h2 { color: #fff; }
-
-    .contact-main p {
-      max-width: 690px;
-      margin: 12px 0 24px;
-      color: rgba(255,255,255,0.74);
+    .person {
+      display: grid;
+      place-items: center;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      font-size: 54px;
+      font-weight: 900;
     }
 
-    .contact-main .button {
-      border-color: #fff;
-      color: var(--green-dark);
+    .cta-box h2 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 3.4vw, 42px);
+      line-height: 1.2;
+    }
+
+    .cta-box p {
+      margin: 0;
+      color: rgba(255,255,255,0.82);
+      font-weight: 800;
+    }
+
+    .cta-badge {
+      display: inline-flex;
+      justify-content: center;
+      min-width: 150px;
+      margin: 0 auto -8px;
+      padding: 4px 12px;
+      border-radius: 999px;
       background: #fff;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
     }
-
-    .contact-side {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-      padding: 24px;
-    }
-
-    .contact-side h3 { margin: 0 0 12px; font-size: 20px; }
-    .contact-side ol { margin: 0; padding-left: 22px; color: var(--muted); }
-    .contact-side li + li { margin-top: 10px; }
 
     footer {
-      padding: 30px 0 88px;
+      padding: 26px 0;
+      border-top: 1px solid var(--line);
       color: var(--muted);
+      background: var(--white);
       font-size: 13px;
+      font-weight: 700;
     }
 
     .footer-inner {
       display: flex;
       justify-content: space-between;
       gap: 16px;
-      width: min(1180px, calc(100% - 32px));
+      width: min(1120px, calc(100% - 32px));
       margin: 0 auto;
     }
 
-    .mobile-sticky {
+    .floating-send {
       position: fixed;
-      right: 12px;
-      bottom: 12px;
-      left: 12px;
-      z-index: 50;
-      display: none;
-      box-shadow: 0 16px 48px rgba(21, 28, 26, 0.22);
+      right: 34px;
+      bottom: 34px;
+      z-index: 60;
+      display: grid;
+      place-items: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 0;
+      color: #fff;
+      background: radial-gradient(circle at 30% 20%, #35c79f, var(--green));
+      box-shadow: 0 18px 46px rgba(8, 115, 93, 0.32);
+      font-size: 30px;
+      text-decoration: none;
     }
 
-    @media (max-width: 980px) {
-      .nav-links a:not(.nav-cta) { display: none; }
-
+    @media (max-width: 1100px) {
       .hero-inner,
-      .section-head,
-      .diagnosis,
-      .safety,
-      .contact {
+      .dash-inner,
+      .split,
+      .pricing-faq,
+      .cta-box {
         grid-template-columns: 1fr;
       }
 
-      .hero-inner { min-height: auto; }
-
-      .proof-row,
-      .grid-3,
-      .grid-2,
-      .plans,
-      .faq-grid,
-      .form-grid,
-      .industry-switcher,
-      .console-meta {
-        grid-template-columns: 1fr;
-      }
-
-      .console-meta div { border-right: 0; border-bottom: 1px solid var(--line); }
-      .console-meta div:last-child { border-bottom: 0; }
-
-      .footer-inner { display: block; }
-      .mobile-sticky { display: inline-flex; }
+      .dash { transform: none; }
+      .dash-inner { transform: none; }
+      .industry-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .features, .flow, .cases, .plans { grid-template-columns: 1fr; }
+      .cta-box { text-align: center; }
+      .person { margin: 0 auto; }
     }
 
-    @media (max-width: 560px) {
-      .nav, .wrap, .hero-inner, .footer-inner {
-        width: min(100% - 24px, 1180px);
-      }
-
-      .brand span:last-child { font-size: 14px; }
-      .button.nav-cta { min-height: 38px; padding: 0 12px; font-size: 13px; }
-      h1 { font-size: 38px; }
-      section { padding: 56px 0; }
-      .hero { padding: 48px 0; }
-      .contact-main, .safety { padding: 22px; }
-      .score-ring { width: 136px; height: 136px; }
-      .score-inner { width: 96px; height: 96px; }
+    @media (max-width: 760px) {
+      .nav { width: min(100% - 24px, 1240px); }
+      .nav-links a:not(.button) { display: none; }
+      .brand { font-size: 16px; }
+      .logo { width: 38px; height: 38px; }
+      .hero { padding: 44px 0 32px; }
+      .hero-inner, .wrap, .industry-wrap { width: min(100% - 24px, 1240px); }
+      h1 { font-size: 42px; }
+      .hero-stats, .console-meta { grid-template-columns: 1fr; }
+      .industry-tabs { grid-template-columns: 1fr; }
+      .case-body { grid-template-columns: 1fr; }
+      .avatar { width: 100%; height: 120px; }
+      .floating-send { width: 58px; height: 58px; right: 16px; bottom: 16px; font-size: 24px; }
+      .cta-box { padding: 24px; }
     }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <nav class="nav" aria-label="主要ナビゲーション">
-      <a class="brand" href="#top">
-        <span class="mark">!</span>
-        <span>低評価口コミ 初動対応</span>
+    <nav class="nav">
+      <a class="brand" href="#top" aria-label="低評価口コミ対策.com">
+        <svg class="logo" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M24 4 41 11v13c0 10.5-6.7 16.8-17 20C13.7 40.8 7 34.5 7 24V11l17-7Z" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="m15 24 6 6 13-15" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>低評価口コミ対策<small>.com</small></span>
       </a>
       <div class="nav-links">
-        <a href="#diagnosis">診断</a>
-        <a href="#service">内容</a>
+        <a href="#features">機能</a>
         <a href="#plans">料金</a>
-        <a href="#faq">FAQ</a>
-        <a class="button nav-cta" href="mailto:hello@example.com?subject=低評価口コミの無料診断を希望します&body=店舗名:%0D%0AGoogleマップURL:%0D%0A対象の口コミ:%0D%0A">無料で方針を見る</a>
+        <a href="#cases">導入事例</a>
+        <a href="#flow">ご利用の流れ</a>
+        <a href="#faq">よくある質問</a>
+        <a class="login" href="#">ログイン</a>
+        <a class="button nav-cta" href="mailto:hello@example.com?subject=無料相談・診断を希望します">無料で相談・診断する 〉</a>
       </div>
     </nav>
   </header>
@@ -694,390 +934,302 @@
     <section class="hero">
       <div class="hero-inner">
         <div>
-          <div class="eyebrow">星1〜3口コミの返信案・削除報告判断・NG表現チェック</div>
-          <h1>星1口コミに、感情で返す前に。</h1>
-          <p class="lead">低評価口コミへの返信は、投稿者だけでなく、これから来店・問い合わせする人にも読まれます。業種ごとの注意点をふまえて、反論に見えない返信案と初動判断を作成します。</p>
-          <div class="actions">
-            <a class="button" href="#diagnosis">リスクを診断する</a>
-            <a class="button secondary" href="#plans">料金を見る</a>
+          <div class="hero-kicker">低評価口コミの返信で、<br>大切な信頼を守る。</div>
+          <h1>星1レビュー、<br><span class="underline">感情で返す前に。</span></h1>
+          <p class="lead">AIが返信案を作成し、リスクを事前チェック。安全で誠実なコミュニケーションを、あなたの味方に。</p>
+          <div class="hero-actions">
+            <a class="button" href="mailto:hello@example.com?subject=無料相談・診断を希望します">▣ 無料で相談・診断する<br><small>最短1営業日でご提案</small></a>
+            <a class="button secondary" href="#plans">料金プランを見る 〉</a>
           </div>
-          <div class="proof-row">
-            <div class="proof"><strong>3,980円</strong><span>低評価口コミ 1件</span></div>
-            <div class="proof"><strong>9,800円</strong><span>3件パック</span></div>
-            <div class="proof"><strong>24h目安</strong><span>返信方針の作成目安</span></div>
+          <div class="hero-stats">
+            <div class="stat"><strong>2,500件</strong><span>導入実績</span><small>2025年4月時点</small></div>
+            <div class="stat"><strong>25業種以上</strong><span>対応業種</span><small>医療・不動産ほか</small></div>
+            <div class="stat"><strong>4.8/5.0</strong><span>顧客満足度</span><small>自社調べ</small></div>
           </div>
+          <div class="chips-row">歯科・クリニック・学習塾・サロン・飲食店・不動産・整骨院 ほか多数</div>
         </div>
 
-        <aside class="console" aria-label="返信プレビュー">
-          <div class="console-head">
-            <span id="consoleTitle">歯科・クリニック向け</span>
-            <span class="status-pill" id="consoleStatus">要: 個人情報配慮</span>
-          </div>
-          <div class="console-body">
-            <div class="mini-label">低評価口コミ</div>
-            <div class="review-card" id="reviewPreview">説明が足りず、不安なまま進んだ。もう行きません。</div>
-            <div class="mini-label">返信案</div>
-            <div class="reply-card" id="replyPreview">このたびはご不安なお気持ちにさせてしまい、申し訳ございません。説明が十分に伝わらなかった点を真摯に受け止め、今後は事前のご案内と確認をより丁寧に行ってまいります。貴重なお声をお寄せいただき、ありがとうございました。</div>
-          </div>
-          <div class="console-meta">
-            <div><strong id="decisionPreview">返信推奨</strong><span>初動判断</span></div>
-            <div><strong id="ngPreview">断定表現</strong><span>避ける表現</span></div>
-            <div><strong id="checkPreview">当日の説明</strong><span>確認事項</span></div>
-          </div>
-          <div class="industry-switcher" aria-label="業種切替">
-            <button class="chip active" data-industry="clinic">歯科</button>
-            <button class="chip" data-industry="funeral">葬儀</button>
-            <button class="chip" data-industry="animal">動物病院</button>
-            <button class="chip" data-industry="realestate">不動産</button>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <section id="diagnosis" class="band">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>低評価口コミの初動リスクを、その場で確認。</h2>
-          <p>業種、星評価、口コミの内容から、返信前に注意すべきポイントを簡易判定します。入力内容は送信されません。</p>
-        </div>
-        <div class="diagnosis">
-          <div class="tool">
-            <div class="form-grid">
-              <div class="field">
-                <label for="industry">業種</label>
-                <select id="industry">
-                  <option value="clinic">歯科・クリニック</option>
-                  <option value="funeral">葬儀社・家族葬</option>
-                  <option value="animal">動物病院</option>
-                  <option value="realestate">不動産店舗</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="rating">星評価</label>
-                <select id="rating">
-                  <option value="1">星1</option>
-                  <option value="2">星2</option>
-                  <option value="3">星3</option>
-                </select>
+        <div class="dash" aria-label="AI返信案ダッシュボード">
+          <div class="dash-inner">
+            <div class="panel">
+              <h3 class="panel-title">レビュー内容</h3>
+              <div class="stars">★★★☆☆ <span style="color:var(--muted); letter-spacing:0;">1日前</span></div>
+              <p class="review-box" id="reviewText">対応が悪く、待ち時間も長い。もう行きません。</p>
+            </div>
+            <div class="panel risk-score">
+              <h3 class="panel-title">炎上リスクスコア</h3>
+              <div class="ring"><div class="ring-inner"><div><strong id="riskScore">86</strong><small>/100</small></div></div></div>
+              <strong id="riskLabel" style="color:var(--green);">低リスク</strong>
+            </div>
+            <div class="panel ai-box">
+              <h3 class="panel-title">AI返信案（丁寧・誠実） <button id="closeReply" style="float:right;border:0;background:transparent;color:var(--green);font-size:18px;cursor:pointer;">×</button></h3>
+              <div class="ai-reply" id="replyText">ご来院いただいたにもかかわらず、ご不快な思いをさせてしまい、申し訳ございませんでした。いただいたご意見を真摯に受け止め、改善に努めてまいります。貴重なご意見をいただき、ありがとうございました。</div>
+              <div class="tone-row">
+                <button class="tone" data-tone="polite">もっと丁寧に</button>
+                <button class="tone" data-tone="casual">カジュアルに</button>
+                <button class="tone" data-tone="simple">簡潔に</button>
               </div>
             </div>
-            <div class="field">
-              <label for="reviewText">口コミ内容</label>
-              <textarea id="reviewText">説明が足りず、不安なまま進んだ。もう行きません。</textarea>
+            <div class="panel">
+              <h3 class="panel-title">チェック項目</h3>
+              <ul class="check-list">
+                <li>攻撃的な表現 <span class="ok">✓</span></li>
+                <li>責任転嫁の表現 <span class="ok">✓</span></li>
+                <li>個人情報の記載 <span class="ok">✓</span></li>
+                <li>NGワード <span class="ok">✓</span></li>
+              </ul>
             </div>
-            <div class="actions">
-              <button class="button" id="diagnoseButton" type="button">診断する</button>
-              <a class="button secondary" id="mailtoButton" href="mailto:hello@example.com?subject=低評価口コミの無料診断を希望します">無料診断を依頼</a>
-            </div>
-          </div>
-
-          <aside class="score-panel" aria-label="診断結果">
-            <div class="score-ring" id="scoreRing">
-              <div class="score-inner">
-                <strong id="scoreValue">68</strong>
-                <span>risk score</span>
+            <div class="panel">
+              <h3 class="panel-title">推奨トーン</h3>
+              <div class="tone-row">
+                <span class="tone">誠実</span>
+                <span class="tone">丁寧</span>
+                <span class="tone">共感的</span>
               </div>
             </div>
-            <ul class="result-list" id="resultList">
-              <li><span class="check">✓</span><span>反論より先に、不安を受け止める返信が必要です。</span></li>
-              <li><span class="check">✓</span><span>説明内容と当日の案内を確認してから返信してください。</span></li>
-              <li><span class="check">✓</span><span>個別事情を書きすぎないよう注意が必要です。</span></li>
-            </ul>
-          </aside>
-        </div>
-      </div>
-    </section>
-
-    <section id="service">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>返信案だけでなく、返す前の判断まで作ります。</h2>
-          <p>「すぐ返信すべきか」「削除報告候補か」「内部で何を確認すべきか」まで整理する、低評価口コミ専用の初動パックです。</p>
-        </div>
-        <div class="grid-3">
-          <article class="card">
-            <span class="tag">返信案</span>
-            <h3>返信案2パターン</h3>
-            <p>標準案と、より慎重な案を作成。店舗の文体に合わせて調整できます。</p>
-          </article>
-          <article class="card">
-            <span class="tag red">判断</span>
-            <h3>削除報告候補か一次判断</h3>
-            <p>明らかな誹謗中傷や無関係な内容など、削除報告を検討すべきか整理します。</p>
-          </article>
-          <article class="card">
-            <span class="tag blue">安全</span>
-            <h3>NG表現チェック</h3>
-            <p>反論、断定、個人情報、効果保証に見える表現を避けるための注意点を出します。</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="plans" class="band">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>料金</h2>
-          <div>
-            <div class="price-toggle" aria-label="料金表示切替">
-              <button class="toggle-button active" data-price-mode="single" type="button">単発</button>
-              <button class="toggle-button" data-price-mode="monthly" type="button">月額</button>
-            </div>
-            <p id="priceLead">問題のある口コミだけ、単発で依頼できます。</p>
           </div>
         </div>
-        <div class="plans">
-          <article class="plan">
-            <span class="tag">単発</span>
-            <h3 id="planOneTitle">1件対応</h3>
-            <div class="price"><span id="planOnePrice">3,980円</span> <small id="planOneUnit">/ 1口コミ</small></div>
-            <ul id="planOneList">
-              <li>返信案2パターン</li>
-              <li>削除報告候補か一次判断</li>
-              <li>返信前の確認事項</li>
-            </ul>
-            <a class="button secondary" href="mailto:hello@example.com?subject=低評価口コミ1件対応について">相談する</a>
-          </article>
-          <article class="plan featured">
-            <span class="tag">おすすめ</span>
-            <h3 id="planTwoTitle">3件パック</h3>
-            <div class="price"><span id="planTwoPrice">9,800円</span> <small id="planTwoUnit">/ 3口コミ</small></div>
-            <ul id="planTwoList">
-              <li>低評価口コミ3件まで</li>
-              <li>返信案 各2パターン</li>
-              <li>NG表現チェック</li>
-              <li>再発防止メモ</li>
-            </ul>
-            <a class="button" href="mailto:hello@example.com?subject=低評価口コミ3件パックについて">相談する</a>
-          </article>
-          <article class="plan">
-            <span class="tag">無料</span>
-            <h3 id="planThreeTitle">初回方針</h3>
-            <div class="price"><span id="planThreePrice">0円</span> <small id="planThreeUnit">/ 1件</small></div>
-            <ul id="planThreeList">
-              <li>返信すべきか簡易判断</li>
-              <li>注意すべき表現</li>
-              <li>有料対応の見積もり</li>
-            </ul>
-            <a class="button secondary" href="mailto:hello@example.com?subject=低評価口コミの無料診断を希望します">無料で見る</a>
-          </article>
-        </div>
       </div>
     </section>
+
+    <div class="industry-band">
+      <div class="industry-wrap">
+        <strong>多くの事業者様にご利用いただいています</strong>
+        <div class="industry-tabs">
+          <button class="industry-tab active" data-industry="dental">♡ 歯科・クリニック</button>
+          <button class="industry-tab" data-industry="school">□ 学習塾・スクール</button>
+          <button class="industry-tab" data-industry="salon">♙ サロン・美容室</button>
+          <button class="industry-tab" data-industry="food">◎ 飲食店・カフェ</button>
+          <button class="industry-tab" data-industry="clinic">✣ 整体・整骨院</button>
+          <button class="industry-tab" data-industry="realestate">⌂ 不動産・住宅</button>
+          <button class="industry-tab" data-industry="other">… and more</button>
+        </div>
+      </div>
+    </div>
 
     <section>
       <div class="wrap">
-        <div class="section-head">
-          <h2>特に向いている業種</h2>
-          <p>低評価口コミの返信ミスが、問い合わせ前の不安につながりやすい業種に向いています。</p>
-        </div>
-        <div class="grid-3">
-          <article class="card"><span class="tag red">医療系</span><h3>歯科・クリニック</h3><p>医療表現、個人情報、効果保証に配慮した返信案を作ります。</p></article>
-          <article class="card"><span class="tag violet">感情配慮</span><h3>葬儀社・家族葬</h3><p>ご遺族の心情に配慮し、強すぎない返信文へ整えます。</p></article>
-          <article class="card"><span class="tag blue">生活密着</span><h3>動物病院・不動産</h3><p>飼い主や担当者対応への不満に、反論に見えない初動を作ります。</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="band">
-      <div class="wrap">
-        <div class="safety">
-          <strong>削除保証・レビュー投稿代行ではありません。</strong>
-          <p>このサービスは、実際に投稿された口コミへの返信案と初動判断を作成するものです。虚偽レビュー、口コミ購入、なりすまし投稿、削除保証は行いません。重大案件は弁護士や専門家への相談をおすすめします。</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="faq">
-      <div class="wrap">
-        <div class="section-head">
-          <h2>FAQ</h2>
-          <p>低評価口コミへの返信は、急ぎつつも慎重に進める必要があります。</p>
-        </div>
-        <div class="faq-grid">
-          <details class="faq"><summary>削除できますか？</summary><p>削除保証はできません。削除報告を検討すべき内容かどうかの一次判断と、報告前に整理すべき点をまとめます。</p></details>
-          <details class="faq"><summary>医療・歯科でも使えますか？</summary><p>使えます。ただし効果保証や個人情報に触れる表現は避け、最終投稿前に院内で確認してください。</p></details>
-          <details class="faq"><summary>管理権限は必要ですか？</summary><p>不要です。返信文だけ納品し、店舗側でコピーして投稿できます。</p></details>
-          <details class="faq"><summary>どれくらいで届きますか？</summary><p>通常は24時間目安です。事実確認が必要な内容は、確認事項を先にお送りします。</p></details>
-          <details class="faq"><summary>通常の高評価口コミも頼めますか？</summary><p>はい。月額プランでは通常口コミ返信案も含められます。</p></details>
-          <details class="faq"><summary>炎上対策の専門家ですか？</summary><p>法務・危機管理の専門対応ではありません。重大案件は弁護士や専門家への相談をおすすめします。</p></details>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="band">
-      <div class="wrap">
-        <div class="contact">
-          <div class="contact-main">
-            <h2>まずは直近1件だけ、無料で返信方針を出します。</h2>
-            <p>店舗名、GoogleマップURL、対象口コミを送ってください。返信すべきか、何を確認すべきか、どんな文面にすべきかを簡単にお返しします。</p>
-            <a class="button" id="finalMailto" href="mailto:hello@example.com?subject=低評価口コミの無料診断を希望します&body=店舗名:%0D%0AGoogleマップURL:%0D%0A対象の口コミ:%0D%0A">無料で方針を見る</a>
+        <div class="split">
+          <div class="list-panel">
+            <h3>こんなお悩み、ありませんか？</h3>
+            <ul class="pain-list">
+              <li><span class="icon-dot">◎</span><span>感情的に返信して、さらに悪化するのが怖い</span></li>
+              <li><span class="icon-dot">?</span><span>何を返信すればいいか分からず、放置してしまう</span></li>
+              <li><span class="icon-dot">△</span><span>削除を依頼できるケースか判断できない</span></li>
+              <li><span class="icon-dot">×</span><span>知らずにNG表現を使ってしまう不安がある</span></li>
+            </ul>
           </div>
-          <aside class="contact-side">
-            <h3>送る内容</h3>
-            <ol>
-              <li>店舗名またはGoogleマップURL</li>
-              <li>対象の低評価口コミ</li>
-              <li>返信で避けたい表現があれば一言</li>
-            </ol>
-          </aside>
+          <div class="arrow-block">▶</div>
+          <div class="list-panel solution">
+            <h3>低評価口コミ対策.com が解決します</h3>
+            <ul class="pain-list">
+              <li><span class="icon-dot">✓</span><span>AIが状況に合わせた最適な返信案を提案</span></li>
+              <li><span class="icon-dot">✓</span><span>削除依頼の可否を一次判断でスピード確認</span></li>
+              <li><span class="icon-dot">✓</span><span>NG表現・炎上リスクを事前にチェック</span></li>
+              <li><span class="icon-dot">✓</span><span>業種に合わせたテンプレートで時短・安心</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="wrap">
+        <h2 class="section-title">サービスの主な機能</h2>
+        <div class="features">
+          <article class="feature-card"><div class="feature-icon">▤</div><h3>AI返信案作成</h3><p>口コミの内容とトーンに合わせて、複数の返信案を瞬時に生成。</p></article>
+          <article class="feature-card"><div class="feature-icon">⌫</div><h3>削除依頼の可否一次判断</h3><p>プラットフォームのガイドラインに基づき、削除可否を一次判断します。</p></article>
+          <article class="feature-card"><div class="feature-icon">✳</div><h3>NG表現チェック</h3><p>攻撃的・責任転嫁・個人情報など、炎上やトラブルの原因となる表現を検出。</p></article>
+          <article class="feature-card"><div class="feature-icon">⚙</div><h3>炎上リスクの可視化</h3><p>独自アルゴリズムで炎上リスクをスコア化。安心して投稿できます。</p></article>
+          <article class="feature-card"><div class="feature-icon">▥</div><h3>業種別テンプレート</h3><p>25業種以上のテンプレートを用意。業種特有の課題に合わせた返信が可能。</p></article>
+          <article class="feature-card"><div class="feature-icon">◌</div><h3>相談サポート（有人）</h3><p>複雑なケースや判断に迷う場合も、スタッフへ相談できます。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="flow">
+      <div class="wrap">
+        <h2 class="section-title">ご利用の流れ</h2>
+        <div class="flow">
+          <article class="step"><span class="step-badge">STEP<br>01</span><h3>口コミを入力</h3><p>レビュー内容をコピー＆ペーストするだけ。スクリーンショットでも送信できます。</p></article>
+          <article class="step"><span class="step-badge">STEP<br>02</span><h3>AIが分析・提案</h3><p>AIが返信案を生成し、リスクや削除可否を判定。チェック項目も分かりやすく表示。</p></article>
+          <article class="step"><span class="step-badge">STEP<br>03</span><h3>内容を確認し返信</h3><p>提案をもとに内容を調整し、自信を持って返信。必要に応じてサポートにも相談可能。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases">
+      <div class="wrap">
+        <h2 class="section-title" style="text-align:left;">導入事例</h2>
+        <div class="cases">
+          <article class="case-card">
+            <div class="case-body"><div class="avatar">D</div><div><p>歯科クリニック（東京都）</p><h3>冷静で丁寧な返信ができ、信頼回復につながりました</h3><p>ネガティブな口コミにも落ち着いて対応できるようになり、来院前の不安を軽減できました。</p></div></div>
+            <div class="case-metrics"><div><span>返信時間</span><strong>-70%</strong></div><div><span>口コミ評価</span><strong>+0.4pt</strong></div></div>
+          </article>
+          <article class="case-card">
+            <div class="case-body"><div class="avatar">S</div><div><p>学習塾（神奈川県）</p><h3>炎上リスクを事前に把握でき、安心して返信できるように</h3><p>NG表現のチェックが非常に助かっています。保護者対応の負担も向上しました。</p></div></div>
+            <div class="case-metrics"><div><span>炎上リスク検出</span><strong>92%</strong></div><div><span>返信の安心感</span><strong>大幅UP</strong></div></div>
+          </article>
+          <article class="case-card">
+            <div class="case-body"><div class="avatar">B</div><div><p>美容室（大阪府）</p><h3>テンプレート活用で返信の質とスピードが向上</h3><p>現場に合った返信がすぐ使えるので、スタッフの負担が減り対応が統一できました。</p></div></div>
+            <div class="case-metrics"><div><span>対応時間</span><strong>-60%</strong></div><div><span>再来店率</span><strong>+18%</strong></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="plans">
+      <div class="wrap pricing-faq">
+        <div>
+          <h2 class="section-title">料金プラン</h2>
+          <div class="toggle"><button class="active" data-billing="monthly">月額払い</button><button data-billing="yearly">年額払い</button></div>
+          <div class="plans">
+            <article class="plan">
+              <h3>ライトプラン</h3>
+              <div class="price"><span data-price="9800">9,800</span>円<small>月額（税込）</small></div>
+              <ul><li>返信案作成 無制限</li><li>リスクチェック</li><li>テンプレート利用</li><li>メールサポート</li></ul>
+              <a class="button secondary" href="mailto:hello@example.com?subject=ライトプランについて">このプランで始める</a>
+            </article>
+            <article class="plan recommended">
+              <span class="plan-badge">おすすめ</span>
+              <h3>スタンダードプラン</h3>
+              <div class="price"><span data-price="29800">29,800</span>円<small>月額（税込）</small></div>
+              <ul><li>すべてのライト機能</li><li>削除依頼の可否一次判断</li><li>有人相談（チャット・メール）</li><li>月次レポート</li></ul>
+              <a class="button" href="mailto:hello@example.com?subject=スタンダードプランについて">このプランで始める</a>
+            </article>
+            <article class="plan">
+              <h3>プレミアムプラン</h3>
+              <div class="price"><span data-price="49800">49,800</span>円<small>月額（税込）</small></div>
+              <ul><li>すべてのスタンダード機能</li><li>電話相談・優先対応</li><li>複数アカウント管理</li><li>専任サポート</li></ul>
+              <a class="button secondary" href="mailto:hello@example.com?subject=プレミアムプランについて">このプランで始める</a>
+            </article>
+          </div>
+        </div>
+        <div id="faq">
+          <h2 class="section-title">よくある質問</h2>
+          <div class="faq-list">
+            <details><summary>どのサイトの口コミに対応していますか？</summary><p>Google口コミを中心に、各種レビューサイトの返信文作成にも対応できます。</p></details>
+            <details><summary>必ず削除できますか？</summary><p>削除保証はできません。ガイドラインに照らした一次判断と、削除依頼時の整理を支援します。</p></details>
+            <details><summary>個人情報の取り扱いは大丈夫ですか？</summary><p>返信文では個人情報や個別事情を書きすぎないようチェックします。</p></details>
+            <details><summary>返信案をそのまま使っても問題ないですか？</summary><p>原則そのまま使えますが、事実確認が必要な内容は店舗側で確認してから投稿してください。</p></details>
+            <details><summary>契約期間の縛りはありますか？</summary><p>月額プランはいつでも解約できます。まずは無料相談からお試しください。</p></details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="cta-box">
+        <div class="person">☺</div>
+        <div>
+          <h2>まずは無料でご相談・診断を。</h2>
+          <p>貴社の口コミ状況をヒアリングし、最適な対応をご提案します。<br>無料1営業日でご提案 / 無理な営業は一切しません</p>
+        </div>
+        <div>
+          <div class="cta-badge">かんたん30秒入力</div>
+          <a class="button orange" href="mailto:hello@example.com?subject=無料相談・診断を希望します">無料で相談・診断する 〉</a>
         </div>
       </div>
     </section>
   </main>
 
+  <a class="floating-send" href="mailto:hello@example.com?subject=無料相談・診断を希望します" aria-label="無料相談">➤</a>
+
   <footer>
     <div class="footer-inner">
-      <div>低評価口コミ 初動対応パック</div>
+      <div>低評価口コミ対策.com</div>
       <div>口コミ削除保証・投稿代行・虚偽レビュー作成は行いません。</div>
     </div>
   </footer>
 
-  <a class="button mobile-sticky" href="mailto:hello@example.com?subject=低評価口コミの無料診断を希望します&body=店舗名:%0D%0AGoogleマップURL:%0D%0A対象の口コミ:%0D%0A">無料で方針を見る</a>
-
   <script>
-    const industryData = {
-      clinic: {
-        title: "歯科・クリニック向け",
-        status: "要: 個人情報配慮",
+    const industryCopy = {
+      dental: {
         review: "説明が足りず、不安なまま進んだ。もう行きません。",
-        reply: "このたびはご不安なお気持ちにさせてしまい、申し訳ございません。説明が十分に伝わらなかった点を真摯に受け止め、今後は事前のご案内と確認をより丁寧に行ってまいります。貴重なお声をお寄せいただき、ありがとうございました。",
-        decision: "返信推奨",
-        ng: "断定表現",
-        check: "当日の説明",
-        results: ["効果保証や診療内容の詳細を書きすぎないでください。", "説明内容と同意確認の流れを院内で確認してください。", "不安を受け止め、改善姿勢を短く示す返信が向いています。"]
+        score: 86,
+        reply: "ご来院いただいたにもかかわらず、ご不快な思いをさせてしまい、申し訳ございませんでした。いただいたご意見を真摯に受け止め、改善に努めてまいります。貴重なご意見をいただき、ありがとうございました。"
       },
-      funeral: {
-        title: "葬儀社・家族葬向け",
-        status: "要: 感情配慮",
-        review: "案内が事務的で、気持ちに寄り添ってもらえなかった。",
-        reply: "このたびは大切なお時間の中で、ご不安なお気持ちにさせてしまい申し訳ございません。いただいたお声を真摯に受け止め、ご案内の言葉や進め方を改めて見直してまいります。貴重なお声をお寄せいただき、ありがとうございました。",
-        decision: "慎重返信",
-        ng: "事務的表現",
-        check: "担当対応",
-        results: ["相手の感情を否定しない返信が必要です。", "費用・進行・担当者対応の事実確認を先に行ってください。", "強い反論や詳細説明より、受け止めと改善姿勢を優先してください。"]
+      school: {
+        review: "説明が分かりづらく、問い合わせ後の対応も遅かったです。",
+        score: 78,
+        reply: "このたびはご案内が分かりづらく、ご不安なお気持ちにさせてしまい申し訳ございません。今後は説明内容とご連絡の流れを見直し、より丁寧な対応に努めてまいります。"
       },
-      animal: {
-        title: "動物病院向け",
-        status: "要: 飼い主感情配慮",
-        review: "料金の説明が分かりづらく、不信感が残りました。",
-        reply: "このたびはご説明が十分に伝わらず、ご不安なお気持ちにさせてしまい申し訳ございません。いただいたご意見を受け止め、費用や診療内容についてより分かりやすくご案内できるよう見直してまいります。",
-        decision: "返信推奨",
-        ng: "診療詳細",
-        check: "費用説明",
-        results: ["飼い主の不安を最初に受け止めてください。", "診療内容や個別事情を書きすぎないよう注意してください。", "料金説明の手順を確認してから返信してください。"]
+      salon: {
+        review: "接客が冷たく感じました。仕上がりも思っていたものと違いました。",
+        score: 82,
+        reply: "このたびはご期待に沿えず、申し訳ございませんでした。接客面と仕上がりについていただいたお声を真摯に受け止め、カウンセリングと確認をより丁寧に行ってまいります。"
+      },
+      food: {
+        review: "待ち時間が長く、料理も冷めていました。",
+        score: 74,
+        reply: "このたびはご提供までお待たせし、また料理の状態についてもご期待に沿えず申し訳ございません。オペレーションを見直し、より快適にお過ごしいただけるよう改善してまいります。"
+      },
+      clinic: {
+        review: "痛みへの説明が少なく、不安が残りました。",
+        score: 88,
+        reply: "このたびはご不安なお気持ちにさせてしまい、申し訳ございません。説明が十分に伝わらなかった点を受け止め、今後は事前のご案内と確認をより丁寧に行ってまいります。"
       },
       realestate: {
-        title: "不動産店舗向け",
-        status: "要: 反論回避",
         review: "担当者の説明が雑で、急かされているように感じました。",
-        reply: "このたびはご不快なお気持ちにさせてしまい、申し訳ございません。ご案内の進め方や説明の丁寧さについて、いただいたお声を真摯に受け止めます。今後はお客様のご不安やご希望をより丁寧に確認しながらご案内できるよう努めてまいります。",
-        decision: "返信推奨",
-        ng: "担当者擁護",
-        check: "接客記録",
-        results: ["担当者をかばう表現は避けた方が安全です。", "接客記録と当日の案内内容を確認してください。", "今後の案内改善に寄せた返信が向いています。"]
-      }
-    };
-
-    const chips = document.querySelectorAll(".chip");
-    const consoleTitle = document.getElementById("consoleTitle");
-    const consoleStatus = document.getElementById("consoleStatus");
-    const reviewPreview = document.getElementById("reviewPreview");
-    const replyPreview = document.getElementById("replyPreview");
-    const decisionPreview = document.getElementById("decisionPreview");
-    const ngPreview = document.getElementById("ngPreview");
-    const checkPreview = document.getElementById("checkPreview");
-    const industrySelect = document.getElementById("industry");
-    const ratingSelect = document.getElementById("rating");
-    const reviewText = document.getElementById("reviewText");
-    const resultList = document.getElementById("resultList");
-    const scoreValue = document.getElementById("scoreValue");
-    const scoreRing = document.getElementById("scoreRing");
-    const mailtoButton = document.getElementById("mailtoButton");
-
-    function setIndustry(key) {
-      const data = industryData[key];
-      consoleTitle.textContent = data.title;
-      consoleStatus.textContent = data.status;
-      reviewPreview.textContent = data.review;
-      replyPreview.textContent = data.reply;
-      decisionPreview.textContent = data.decision;
-      ngPreview.textContent = data.ng;
-      checkPreview.textContent = data.check;
-      if (industrySelect.value !== key) industrySelect.value = key;
-      reviewText.value = data.review;
-      chips.forEach((chip) => chip.classList.toggle("active", chip.dataset.industry === key));
-      diagnose();
-    }
-
-    function diagnose() {
-      const text = reviewText.value;
-      const data = industryData[industrySelect.value];
-      let score = Number(ratingSelect.value) === 1 ? 72 : Number(ratingSelect.value) === 2 ? 62 : 48;
-      if (/もう行|最悪|不信|怒|高い|説明|雑|怖|不安|返金|嘘|詐欺/.test(text)) score += 12;
-      if (industrySelect.value === "clinic" || industrySelect.value === "funeral") score += 6;
-      score = Math.min(score, 94);
-      scoreValue.textContent = score;
-      const deg = Math.round((score / 100) * 360);
-      const color = score >= 80 ? "var(--red)" : score >= 62 ? "var(--amber)" : "var(--green)";
-      scoreRing.style.background = `conic-gradient(${color} 0deg, ${color} ${deg}deg, #edf1ef ${deg}deg, #edf1ef 360deg)`;
-      resultList.innerHTML = data.results.map((item) => `<li><span class="check">✓</span><span>${item}</span></li>`).join("");
-      const body = [
-        "店舗名:",
-        "GoogleマップURL:",
-        "対象の口コミ:",
-        text,
-        "",
-        "業種:",
-        data.title,
-        "",
-        "星評価:",
-        `星${ratingSelect.value}`
-      ].join("%0D%0A");
-      mailtoButton.href = `mailto:hello@example.com?subject=低評価口コミの無料診断を希望します&body=${body}`;
-    }
-
-    chips.forEach((chip) => chip.addEventListener("click", () => setIndustry(chip.dataset.industry)));
-    industrySelect.addEventListener("change", () => setIndustry(industrySelect.value));
-    ratingSelect.addEventListener("change", diagnose);
-    reviewText.addEventListener("input", diagnose);
-    document.getElementById("diagnoseButton").addEventListener("click", diagnose);
-
-    const priceModes = {
-      single: {
-        lead: "問題のある口コミだけ、単発で依頼できます。",
-        one: ["1件対応", "3,980円", "/ 1口コミ", ["返信案2パターン", "削除報告候補か一次判断", "返信前の確認事項"]],
-        two: ["3件パック", "9,800円", "/ 3口コミ", ["低評価口コミ3件まで", "返信案 各2パターン", "NG表現チェック", "再発防止メモ"]],
-        three: ["初回方針", "0円", "/ 1件", ["返信すべきか簡易判断", "注意すべき表現", "有料対応の見積もり"]]
+        score: 80,
+        reply: "このたびはご不快なお気持ちにさせてしまい、申し訳ございません。ご案内の進め方や説明の丁寧さについていただいたお声を受け止め、改善に努めてまいります。"
       },
-      monthly: {
-        lead: "継続して低評価口コミを見たい店舗向けです。",
-        one: ["ライト監視", "6,800円", "/ 月", ["低評価口コミ2件まで", "通常口コミ返信案5件まで", "月1回の簡易メモ"]],
-        two: ["標準監視", "9,800円", "/ 月", ["低評価口コミ3件まで", "通常口コミ返信案10件まで", "Google投稿文2本", "月1回の改善メモ"]],
-        three: ["店舗追加", "4,800円", "/ 店舗", ["文体の共通化", "系列店舗の簡易監視", "月次まとめ"]]
+      other: {
+        review: "対応が悪く、もう利用したくありません。",
+        score: 76,
+        reply: "このたびはご不快なお気持ちにさせてしまい、申し訳ございません。いただいたご意見を真摯に受け止め、今後の対応改善に努めてまいります。"
       }
     };
 
-    function renderPlan(prefix, values) {
-      document.getElementById(`${prefix}Title`).textContent = values[0];
-      document.getElementById(`${prefix}Price`).textContent = values[1];
-      document.getElementById(`${prefix}Unit`).textContent = values[2];
-      document.getElementById(`${prefix}List`).innerHTML = values[3].map((item) => `<li>${item}</li>`).join("");
-    }
+    const reviewText = document.getElementById("reviewText");
+    const replyText = document.getElementById("replyText");
+    const riskScore = document.getElementById("riskScore");
+    const ring = document.querySelector(".ring");
 
-    document.querySelectorAll(".toggle-button").forEach((button) => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".toggle-button").forEach((item) => item.classList.remove("active"));
-        button.classList.add("active");
-        const mode = priceModes[button.dataset.priceMode];
-        document.getElementById("priceLead").textContent = mode.lead;
-        renderPlan("planOne", mode.one);
-        renderPlan("planTwo", mode.two);
-        renderPlan("planThree", mode.three);
+    document.querySelectorAll(".industry-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".industry-tab").forEach((item) => item.classList.remove("active"));
+        tab.classList.add("active");
+        const data = industryCopy[tab.dataset.industry];
+        reviewText.textContent = data.review;
+        replyText.textContent = data.reply;
+        riskScore.textContent = data.score;
+        const deg = Math.round((data.score / 100) * 360);
+        ring.style.background = `conic-gradient(var(--green) 0deg, var(--green) ${deg}deg, #e8eeeb ${deg}deg, #e8eeeb 360deg)`;
       });
     });
 
-    diagnose();
+    const toneReplies = {
+      polite: "このたびはご不快なお気持ちにさせてしまい、誠に申し訳ございません。いただいたご意見を真摯に受け止め、今後のご案内や対応品質の改善に努めてまいります。貴重なお声をお寄せいただき、ありがとうございました。",
+      casual: "このたびはご不快な思いをさせてしまい、申し訳ありません。いただいたご意見を受け止め、今後はより分かりやすく丁寧な対応ができるよう改善していきます。",
+      simple: "このたびはご不快なお気持ちにさせてしまい、申し訳ございません。いただいたご意見を受け止め、今後の対応改善に努めてまいります。"
+    };
+
+    document.querySelectorAll(".tone[data-tone]").forEach((button) => {
+      button.addEventListener("click", () => {
+        replyText.textContent = toneReplies[button.dataset.tone];
+      });
+    });
+
+    document.getElementById("closeReply").addEventListener("click", () => {
+      replyText.textContent = "返信案を再生成するには、業種タブまたはトーンボタンを選択してください。";
+    });
+
+    document.querySelectorAll(".toggle button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".toggle button").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        const yearly = button.dataset.billing === "yearly";
+        document.querySelectorAll("[data-price]").forEach((price) => {
+          const base = Number(price.dataset.price);
+          const value = yearly ? Math.round(base * 10) : base;
+          price.textContent = value.toLocaleString("ja-JP");
+        });
+        document.querySelectorAll(".price small").forEach((small) => {
+          small.textContent = yearly ? "年額（税込・2ヶ月分お得）" : "月額（税込）";
+        });
+      });
+    });
   </script>
 </body>
 </html>
