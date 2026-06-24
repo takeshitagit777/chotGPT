@@ -111,6 +111,7 @@
       box-shadow: 0 12px 28px rgba(8, 115, 93, 0.22);
       text-decoration: none;
       font-weight: 900;
+      line-height: 1.35;
       cursor: pointer;
     }
 
@@ -256,6 +257,7 @@
       box-shadow: var(--shadow);
       padding: 26px;
       backdrop-filter: blur(18px);
+      max-width: 100%;
     }
 
     .dash-inner {
@@ -263,6 +265,7 @@
       grid-template-columns: minmax(0, 1fr) 210px;
       gap: 18px;
       transform: rotate(-3deg);
+      min-width: 0;
     }
 
     .panel {
@@ -271,6 +274,7 @@
       background: rgba(255, 255, 255, 0.92);
       box-shadow: 0 16px 36px rgba(18, 36, 31, 0.07);
       padding: 20px;
+      min-width: 0;
     }
 
     .panel-title {
@@ -885,6 +889,7 @@
 
       .dash { transform: none; }
       .dash-inner { transform: none; }
+      .dash { width: min(100%, 720px); margin: 0 auto; }
       .industry-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .features, .flow, .cases, .plans { grid-template-columns: 1fr; }
       .cta-box { text-align: center; }
@@ -899,6 +904,13 @@
       .hero { padding: 44px 0 32px; }
       .hero-inner, .wrap, .industry-wrap { width: min(100% - 24px, 1240px); }
       h1 { font-size: 42px; }
+      .lead { font-size: 16px; }
+      .hero-actions .button { width: 100%; }
+      .nav-cta { min-height: 40px; padding: 0 12px; font-size: 12px; }
+      .dash { padding: 14px; border-radius: 18px; }
+      .panel { padding: 16px; }
+      .ai-box { min-height: auto; }
+      .pricing-faq { gap: 28px; }
       .hero-stats, .console-meta { grid-template-columns: 1fr; }
       .industry-tabs { grid-template-columns: 1fr; }
       .case-body { grid-template-columns: 1fr; }
@@ -1082,26 +1094,26 @@
       <div class="wrap pricing-faq">
         <div>
           <h2 class="section-title">料金プラン</h2>
-          <div class="toggle"><button class="active" data-billing="monthly">月額払い</button><button data-billing="yearly">年額払い</button></div>
+          <div class="toggle"><button class="active" data-billing="spot">単発対応</button><button data-billing="monthly">月額対応</button></div>
           <div class="plans">
             <article class="plan">
-              <h3>ライトプラン</h3>
-              <div class="price"><span data-price="9800">9,800</span>円<small>月額（税込）</small></div>
-              <ul><li>返信案作成 無制限</li><li>リスクチェック</li><li>テンプレート利用</li><li>メールサポート</li></ul>
-              <a class="button secondary" href="mailto:hello@example.com?subject=ライトプランについて">このプランで始める</a>
+              <h3 id="planOneTitle">1件だけ相談</h3>
+              <div class="price"><span id="planOnePrice">1,980</span>円<small id="planOneUnit">1口コミ（税込）</small></div>
+              <ul id="planOneList"><li>返信方針の作成</li><li>NG表現チェック</li><li>返信前の確認事項</li><li>メール納品</li></ul>
+              <a class="button secondary" id="planOneLink" href="mailto:hello@example.com?subject=1件だけ相談について">このプランで始める</a>
             </article>
             <article class="plan recommended">
               <span class="plan-badge">おすすめ</span>
-              <h3>スタンダードプラン</h3>
-              <div class="price"><span data-price="29800">29,800</span>円<small>月額（税込）</small></div>
-              <ul><li>すべてのライト機能</li><li>削除依頼の可否一次判断</li><li>有人相談（チャット・メール）</li><li>月次レポート</li></ul>
-              <a class="button" href="mailto:hello@example.com?subject=スタンダードプランについて">このプランで始める</a>
+              <h3 id="planTwoTitle">3件パック</h3>
+              <div class="price"><span id="planTwoPrice">4,980</span>円<small id="planTwoUnit">3口コミ（税込）</small></div>
+              <ul id="planTwoList"><li>返信案 各2パターン</li><li>削除依頼の可否一次判断</li><li>NG表現チェック</li><li>再発防止メモ</li></ul>
+              <a class="button" id="planTwoLink" href="mailto:hello@example.com?subject=3件パックについて">このプランで始める</a>
             </article>
             <article class="plan">
-              <h3>プレミアムプラン</h3>
-              <div class="price"><span data-price="49800">49,800</span>円<small>月額（税込）</small></div>
-              <ul><li>すべてのスタンダード機能</li><li>電話相談・優先対応</li><li>複数アカウント管理</li><li>専任サポート</li></ul>
-              <a class="button secondary" href="mailto:hello@example.com?subject=プレミアムプランについて">このプランで始める</a>
+              <h3 id="planThreeTitle">無料方針チェック</h3>
+              <div class="price"><span id="planThreePrice">0</span>円<small id="planThreeUnit">初回1件</small></div>
+              <ul id="planThreeList"><li>返信すべきか簡易判断</li><li>注意すべき表現</li><li>有料対応の見積もり</li><li>管理権限不要</li></ul>
+              <a class="button secondary" id="planThreeLink" href="mailto:hello@example.com?subject=無料方針チェックについて">このプランで始める</a>
             </article>
           </div>
         </div>
@@ -1215,19 +1227,35 @@
       replyText.textContent = "返信案を再生成するには、業種タブまたはトーンボタンを選択してください。";
     });
 
+    const planModes = {
+      spot: {
+        one: ["1件だけ相談", "1,980", "1口コミ（税込）", ["返信方針の作成", "NG表現チェック", "返信前の確認事項", "メール納品"], "1件だけ相談について"],
+        two: ["3件パック", "4,980", "3口コミ（税込）", ["返信案 各2パターン", "削除依頼の可否一次判断", "NG表現チェック", "再発防止メモ"], "3件パックについて"],
+        three: ["無料方針チェック", "0", "初回1件", ["返信すべきか簡易判断", "注意すべき表現", "有料対応の見積もり", "管理権限不要"], "無料方針チェックについて"]
+      },
+      monthly: {
+        one: ["ライト監視", "4,980", "月額（税込）", ["低評価口コミ1件まで", "通常口コミ返信案5件まで", "メール納品", "管理権限不要"], "ライト監視プランについて"],
+        two: ["標準監視", "7,980", "月額（税込）", ["低評価口コミ3件まで", "通常口コミ返信案10件まで", "Google投稿文1本", "月1回の改善メモ"], "標準監視プランについて"],
+        three: ["店舗追加", "3,980", "1店舗/月（税込）", ["系列店舗の追加", "文体の共通化", "簡易監視", "月次まとめ"], "店舗追加プランについて"]
+      }
+    };
+
+    function renderPlan(slot, data) {
+      document.getElementById(`${slot}Title`).textContent = data[0];
+      document.getElementById(`${slot}Price`).textContent = data[1];
+      document.getElementById(`${slot}Unit`).textContent = data[2];
+      document.getElementById(`${slot}List`).innerHTML = data[3].map((item) => `<li>${item}</li>`).join("");
+      document.getElementById(`${slot}Link`).href = `mailto:hello@example.com?subject=${encodeURIComponent(data[4])}`;
+    }
+
     document.querySelectorAll(".toggle button").forEach((button) => {
       button.addEventListener("click", () => {
         document.querySelectorAll(".toggle button").forEach((item) => item.classList.remove("active"));
         button.classList.add("active");
-        const yearly = button.dataset.billing === "yearly";
-        document.querySelectorAll("[data-price]").forEach((price) => {
-          const base = Number(price.dataset.price);
-          const value = yearly ? Math.round(base * 10) : base;
-          price.textContent = value.toLocaleString("ja-JP");
-        });
-        document.querySelectorAll(".price small").forEach((small) => {
-          small.textContent = yearly ? "年額（税込・2ヶ月分お得）" : "月額（税込）";
-        });
+        const mode = planModes[button.dataset.billing];
+        renderPlan("planOne", mode.one);
+        renderPlan("planTwo", mode.two);
+        renderPlan("planThree", mode.three);
       });
     });
   </script>
